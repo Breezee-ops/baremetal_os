@@ -47,7 +47,21 @@ int idt_test(){
 
 // add more tests here
 
+int test_divzero(){
+	TEST_HEADER;
+
+	int i;
+	int result = PASS;
+	i = 5 / 0;
+	assertion_failure();
+	result = FAIL;
+		
+	return result;
+}
+
+
 /* Checkpoint 2 tests */
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -57,4 +71,6 @@ int idt_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
+	TEST_OUTPUT("test_divzero", test_divzero());
+
 }
