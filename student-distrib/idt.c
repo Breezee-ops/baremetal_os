@@ -10,7 +10,7 @@ void init_idt(idt_desc_t* idt){
         idt[i].reserved2 = 1;
         idt[i].reserved1 = 1;
         idt[i].reserved0 = 0;
-        idt[i].size = 1;s
+        idt[i].size = 1;
         idt[i].dpl = 0;
         idt[i].present = 0;
         if(i == 33 || i == 34 || i == 40){ // these are for interrupts, interrupts are from 32 - 256 in IDT
