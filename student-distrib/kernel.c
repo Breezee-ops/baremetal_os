@@ -138,7 +138,7 @@ void entry(unsigned long magic, unsigned long addr) {
     }
 
     /* Init the PIC */
-    i8259_init();
+    // i8259_init();
 
     init_idt(idt);
 

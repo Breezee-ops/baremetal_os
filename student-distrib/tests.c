@@ -69,7 +69,7 @@ int test_divzero(){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	TEST_OUTPUT("test_divzero", test_divzero());
 

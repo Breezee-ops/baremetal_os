@@ -28,11 +28,6 @@ ldt_desc:
 
     .align 4
 
-gdt_desc:
-    .long gdt_bottom - gdt - 1
-    .long gdt
-    .align 4
-
 tss:
 _tss:
     .rept 104
@@ -99,6 +94,11 @@ ldt_bottom:
 
 .align 4
     .word 0 # Padding
+
+gdt_desc:
+    .word gdt_bottom - gdt - 1
+    .long gdt
+
 idt_desc_ptr:
     .word idt_bottom - idt - 1
     .long idt
