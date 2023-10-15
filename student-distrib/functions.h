@@ -16,3 +16,4 @@ void floating_excep() ;
 void alignment_check() ; 
 void machine_check() ; 
 void smd() ; 
+void coprocessor() ; // added
