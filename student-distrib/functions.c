@@ -80,3 +80,14 @@ void coprocessor() {
     while(1); 
 }
 
+void keyboard_init(void){
+    enable_irq(1);
+}
+
+void keyboard_handler(void){
+    uint8_t key = inb(0x60);
+
+    putc('@');
+    send_eoi(1);
+}
+

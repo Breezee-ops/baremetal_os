@@ -45,19 +45,30 @@ int idt_test(){
 	return result;
 }
 
-// add more tests here
+//add more tests here
 
 int test_divzero(){
 	TEST_HEADER;
 
-	int i;
-	int result = PASS;
-	i = 5 / 0;
+	float i;
+	int result; 
+	i = (float)2 / 0; 
 	assertion_failure();
 	result = FAIL;
 		
 	return result;
 }
+
+// int test_overflow(){
+// 	TEST_HEADER;
+
+// 	float i 
+// 	i = 2 / 0; 
+// 	assertion_failure();
+// 	result = FAIL;
+		
+// 	return result;
+// }
 
 
 /* Checkpoint 2 tests */
