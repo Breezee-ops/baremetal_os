@@ -140,7 +140,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     keyboard_init();
     /* Init the PIC */
-    // i8259_init();
+    i8259_init();
 
     init_idt(idt);
 
