@@ -1,5 +1,6 @@
 #include "types.h"
 #include "i8259.h"
+#include "lib.h"
 
 void diverror() ; 
 void debug() ; 

@@ -27,7 +27,7 @@
 #define MASTER_OFFSET			0x08
 #define SLAVE_OFFSET			0x70
 
-#define PIC_EOI					0x20		/* End-of-interrupt command code */
+#define PIC_EOI					0x60		/* End-of-interrupt command code */
 
 
 /* Interrupt masks to determine which interrupts are enabled and disabled */
@@ -39,35 +39,37 @@ static inline void io_wait(void)
     outb(0x80, 0);
 }
 
-/* Initialize the 8259 PIC */\
+/* Initialize the 8259 PIC */
 /* Taken largely from OSdevwiki */
 void i8259_init(void) {
 
 	unsigned char a1, a2;
  
-	a1 = inb(PIC1_DATA);                        // save masks
-	a2 = inb(PIC2_DATA);
+	a1 = 0xFF;                        // save masks
+	a2 = 0xFF;
  
-	outb(ICW1_INIT | ICW1_ICW4, PIC1_COMMAND);  // starts the initialization sequence (in cascade mode)
-	io_wait();
-	outb(ICW1_INIT | ICW1_ICW4, PIC2_COMMAND);
-	io_wait();
-	outb(MASTER_OFFSET, PIC1_DATA);                 // ICW2: Master PIC vector offset
-	io_wait();
-	outb(SLAVE_OFFSET, PIC2_DATA);                 // ICW2: Slave PIC vector offset
-	io_wait();
-	outb(4, PIC1_DATA);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
-	io_wait();
-	outb(2, PIC2_DATA);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
-	io_wait();
+	outb(0x11, PIC1_COMMAND);  // starts the initialization sequence (in cascade mode)
+	//io_wait();
+	outb(0x11, PIC2_COMMAND);
+	//io_wait();
+	outb(0x20, PIC1_DATA);                 // ICW2: Master PIC vector offset
+	//io_wait();
+	outb(0x28, PIC2_DATA);                 // ICW2: Slave PIC vector offset
+	//io_wait();
+	outb(0x04, PIC1_DATA);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	//io_wait();
+	outb(0x02, PIC2_DATA);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
+	//io_wait();
  
-	outb(ICW4_8086, PIC1_DATA);               // ICW4: have the PICs use 8086 mode (and not 8080 mode)
-	io_wait();
-	outb(ICW4_8086, PIC2_DATA);
-	io_wait();
+	outb(0x01, PIC1_DATA);               // ICW4: have the PICs use 8086 mode (and not 8080 mode)
+	//io_wait();
+	outb(0x01, PIC2_DATA);
+	//io_wait();
  
 	outb(a1, PIC1_DATA);   // restore saved masks.
 	outb(a2, PIC2_DATA);
+
+	enable_irq(2); 
 }
 
 /* Enable (unmask) the specified IRQ */
@@ -78,7 +80,7 @@ void enable_irq(uint32_t irq_num) {
  
     if(irq_num < 8) {
         port = PIC1_DATA;
-    } else {
+    } else { 
         port = PIC2_DATA;
         irq_num -= 8;
     }

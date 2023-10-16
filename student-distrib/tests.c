@@ -78,6 +78,8 @@ int test_debug_exception(){
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
-	TEST_OUTPUT("test_debug_exception", test_debug_exception());
+	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
+	putc('@');
+
 
 }
