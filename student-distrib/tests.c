@@ -49,26 +49,22 @@ int idt_test(){
 
 int test_divzero(){
 	TEST_HEADER;
-
 	float i;
 	int result; 
-	i = (float)2 / 0; 
+	i = 2 / 0; 
 	assertion_failure();
 	result = FAIL;
-		
 	return result;
 }
 
-// int test_overflow(){
-// 	TEST_HEADER;
-
-// 	float i 
-// 	i = 2 / 0; 
-// 	assertion_failure();
-// 	result = FAIL;
-		
-// 	return result;
-// }
+int test_debug_exception(){
+	TEST_HEADER;
+	int result; 
+	asm("int $3");	
+	assertion_failure();
+	result = FAIL;	
+	return result;
+}
 
 
 /* Checkpoint 2 tests */
@@ -82,6 +78,6 @@ int test_divzero(){
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
-	TEST_OUTPUT("test_divzero", test_divzero());
+	TEST_OUTPUT("test_debug_exception", test_debug_exception());
 
 }
