@@ -13,8 +13,6 @@ rtc_handler_asm:
     popal
     iret
 
-
-
 .globl keyboard_handler_asm
 keyboard_handler_asm: 
     pushal
