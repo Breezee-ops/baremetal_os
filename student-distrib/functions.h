@@ -1,3 +1,6 @@
+#include "types.h"
+#include "i8259.h"
+
 void diverror() ; 
 void debug() ; 
 void nmi() ; 
@@ -17,3 +20,5 @@ void alignment_check() ;
 void machine_check() ; 
 void smd() ; 
 void coprocessor() ; // added
+void keyboard_init(void);
+void keyboard_handler(void);

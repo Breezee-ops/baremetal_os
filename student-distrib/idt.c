@@ -1,7 +1,6 @@
 #include "idt.h"
 #include "x86_desc.h"
 #include "functions.h"
-#include "assembly_linkage.h"
 
 void init_idt(idt_desc_t* idt){
     int i;
@@ -46,25 +45,25 @@ void init_idt(idt_desc_t* idt){
     idt[0x80].dpl = 3;
 
     // set idt index and then the function pointer
-    SET_IDT_ENTRY(idt[0x0], diverror_asm);
-    SET_IDT_ENTRY(idt[0x1], debug_asm);
-    SET_IDT_ENTRY(idt[0x2], nmi_asm);
-    SET_IDT_ENTRY(idt[0x3], breakpoint_asm);
-    SET_IDT_ENTRY(idt[0x4], overflow_asm);
-    SET_IDT_ENTRY(idt[0x5], boundrange_asm);
-    SET_IDT_ENTRY(idt[0x6], invalidop_asm);
-    SET_IDT_ENTRY(idt[0x7], device_na_asm);
-    SET_IDT_ENTRY(idt[0x8], doublefault_asm);
-    SET_IDT_ENTRY(idt[0x9], coprocessor_asm);
-    SET_IDT_ENTRY(idt[0xa], invalidtss_asm);
-    SET_IDT_ENTRY(idt[0xb], segment_na_asm);
-    SET_IDT_ENTRY(idt[0xc], stack_seg_asm);
-    SET_IDT_ENTRY(idt[0xd], general_protection_asm);
-    SET_IDT_ENTRY(idt[0xe], page_fault_asm);
+    SET_IDT_ENTRY(idt[0x0], diverror);
+    SET_IDT_ENTRY(idt[0x1], debug);
+    SET_IDT_ENTRY(idt[0x2], nmi);
+    SET_IDT_ENTRY(idt[0x3], breakpoint);
+    SET_IDT_ENTRY(idt[0x4], overflow);
+    SET_IDT_ENTRY(idt[0x5], boundrange);
+    SET_IDT_ENTRY(idt[0x6], invalidop);
+    SET_IDT_ENTRY(idt[0x7], device_na);
+    SET_IDT_ENTRY(idt[0x8], doublefault);
+    SET_IDT_ENTRY(idt[0x9], coprocessor);
+    SET_IDT_ENTRY(idt[0xa], invalidtss);
+    SET_IDT_ENTRY(idt[0xb], segment_na);
+    SET_IDT_ENTRY(idt[0xc], stack_seg);
+    SET_IDT_ENTRY(idt[0xd], general_protection);
+    SET_IDT_ENTRY(idt[0xe], page_fault);
     // f is reserved
-    SET_IDT_ENTRY(idt[0x10], floating_excep_asm);
-    SET_IDT_ENTRY(idt[0x11], alignment_check_asm);
-    SET_IDT_ENTRY(idt[0x12], machine_check_asm);
-    SET_IDT_ENTRY(idt[0x13], smd_asm);
-
+    SET_IDT_ENTRY(idt[0x10], floating_excep);
+    SET_IDT_ENTRY(idt[0x11], alignment_check);
+    SET_IDT_ENTRY(idt[0x12], machine_check);
+    SET_IDT_ENTRY(idt[0x13], smd);
+    SET_IDT_ENTRY(idt[0x21], keyboard_handler);
 }

@@ -45,9 +45,30 @@ int idt_test(){
 	return result;
 }
 
-// add more tests here
+//add more tests here
+
+int test_divzero(){
+	TEST_HEADER;
+	float i;
+	int result; 
+	i = 2 / 0; 
+	assertion_failure();
+	result = FAIL;
+	return result;
+}
+
+int test_debug_exception(){
+	TEST_HEADER;
+	int result; 
+	asm("int $3");	
+	assertion_failure();
+	result = FAIL;	
+	return result;
+}
+
 
 /* Checkpoint 2 tests */
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -55,6 +76,8 @@ int idt_test(){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
+	TEST_OUTPUT("test_debug_exception", test_debug_exception());
+
 }
