@@ -143,7 +143,7 @@ void entry(unsigned long magic, unsigned long addr) {
     i8259_init();
 
     keyboard_init();
-
+    
     init_rtc(); 
 
     
