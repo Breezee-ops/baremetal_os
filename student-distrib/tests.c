@@ -83,17 +83,18 @@ int paging_test() {
     char result;
     char* pointer = (char*)0x400000;    //Kernel memory
     result = *pointer;
-
-    pointer = (char*)0xB8000;                    //Video memory address
+    
+	pointer = (char*)0x7FFFFF; // bottom of kernel
     result = *pointer;
 
-    pointer = (char*)0x7FFFFF;                 //Bottom of kernel memory
+    pointer = (char*)0xB8000; // top of video
     result = *pointer;
 
-    pointer = (char*)0xB8FFF;                 //Bottom of video memory
+
+    pointer = (char*)0xB8FFF; //Bottom of video
     result = *pointer;
 
-    return PASS; // If exception BSODs, we never get here
+    return PASS;
 }
 
 int above_kern() {
@@ -142,7 +143,7 @@ void launch_tests(){
 	// TEST_OUTPUT("above kern", above_kern());
 	// TEST_OUTPUT("below kern", below_kern());
 	// TEST_OUTPUT("below video", below_video());
-	// TEST_OUTPUT("above video", above_video());
+	TEST_OUTPUT("above video", above_video());
 	// TEST_OUTPUT("deref null", test_null());
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');
