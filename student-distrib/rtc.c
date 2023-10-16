@@ -11,7 +11,7 @@ void init_rtc() {
 }
 // copy paste osdev
 void rtc_handler(){
-    test_interrupts();
+    //test_interrupts();
     cli();
     outb(0x0c, 0x70);
     inb(0x71);
