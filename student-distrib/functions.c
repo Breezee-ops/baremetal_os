@@ -80,11 +80,12 @@ void coprocessor() {
     printf("coprocessor exception"); 
     while(1); 
 }
-
+//enable the irq line 1 on the master to accept keyboard input
 void keyboard_init(void){
     enable_irq(1);
 }
 
+//keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char keymap[128] =
 {
     0,  
@@ -144,16 +145,29 @@ char keymap[128] =
   '*',
   ' ',  
 };
-
+/* keyboard_handler
+ * 
+ * takes input from keyboard and converts the scancode to an ascii character
+ * Inputs: inb from keyboard port 0x60
+ * Outputs: 
+ * Side Effects: None
+ * Coverage: Keyboard I/O
+ */
 void keyboard_handler(void){
+    //begin critical section stop all interrupts
     cli();
+    //read pressed key from keyboard
     uint8_t key = inb(0x60);
+    //if the key is just being released, ignore it
     if(key & 0x80){
     }
+    //otherwise use putc and the keymap to write the ascii character to terminal
     else{
         putc(keymap[key]);
     }
+    //done with interrupt
     send_eoi(1);
+    //resume interrupts
     sti();
 }
 

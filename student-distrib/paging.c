@@ -3,7 +3,14 @@
 #include "lib.h"
 #include "paging.h"
 
-
+/* init_paging - Example
+ * 
+ * goes through the paging directory and sets all accesible addresses to available. Also initializes each entry in page directory
+ * Inputs: None
+ * Outputs: initialised page_directory and page table so that they are seen a spresent and carrying the corresponding address
+ * Side Effects: changes values in page_directory and page_table
+ * Coverage: page_directory and page_table def.
+ */
 void init_paging() {
     int i;
 
@@ -78,44 +85,16 @@ void init_paging() {
     page_table[VIDEO_MEMORY].P_addr = VIDEO_MEMORY;
 
     enable_paging();
-    // for(i = 0; i < 1024; i++)
-    // {
-    //     // // sets the following flags to the pages:
-    //     // // supervisor mode
-    //     // // write enabled
-    //     // // not present
-    //     page_directory[i] = (i * 0x400000);
-
-    //     // set entire page_table to not present
-    //     page_table[i] = (i * 0x1000) | 0x2;
-    // }
-    // //set video memory to present
-    // page_table[VIDEO_MEMORY] = (VIDEO_MEMORY * 0x1000) | 0x07;
-
-    // //4kB mode
-    // page_directory[0] = ((unsigned int)page_table * 0x1000) | 0x3;//add first 4MB of mem to PD
-    // //4MB mode
-    // // 0000 0000 01|00 0000 000|0| 000|1| 1|0|0|0| 0|0|1|1|
-    // // 1            2           3  4   5  6 7 8 9 10 11 12 13
-    // //
-    // // 1: Page base address(10) = 4MB
-    // // 2: Reserved(9)
-    // // 3: Page Attribute Table
-    // // 4: Available(3)
-    // // 5: PS = 4MB
-    // // 6: dirty
-    // // 7: Accessed
-    // // 8: Cache Disable
-    // // 9: Write-Through
-    // //10: User/Supervisor
-    // //11: Read/Write
-    // //12: Present
-    // page_directory[1] = 0x00400183;
-
-
-    
 }
-
+/* enable_paging
+ * 
+ * sets the paging directory registers so that they carry the right address for the pages. Kernel address, video memory address and the address of the actual page directory
+ * is loaded into the registers here
+ * Inputs: None
+ * Outputs: eax
+ * Side Effects: Sets the registers for paging
+ * Coverage: eax, cr0, cr3, cr4
+ */
 void enable_paging() {
     asm (
     "movl $page_directory, %%eax      ;"

@@ -12,6 +12,7 @@
 #define PIC2_COMMAND			PIC2
 #define PIC2_DATA				(PIC2+1)
 
+
 #define ICW1_ICW4				0x01		/* Indicates that ICW4 will be present */
 #define ICW1_SINGLE				0x02		/* Single (cascade) mode */
 #define ICW1_INTERVAL4			0x04		/* Call address interval 4 (8) */
@@ -48,15 +49,15 @@ void i8259_init(void) {
 	a1 = 0xFF;                       		 // save masks
 	a2 = 0xFF;
  
-	outb(0x11, PIC1_COMMAND);  					// starts the initialization sequence (in cascade mode)
+	outb(0x11, PIC1_COMMAND);   					// starts the initialization sequence (in cascade mode)
 	//io_wait();
 	outb(0x11, PIC2_COMMAND);
 	//io_wait();
-	outb(0x20, PIC1_DATA);                		// ICW2: Master PIC vector offset
+	outb(0x20, PIC1_DATA);               		// ICW2: Master PIC vector offset
 	//io_wait();
 	outb(0x28, PIC2_DATA);                		// ICW2: Slave PIC vector offset
 	//io_wait();
-	outb(0x04, PIC1_DATA);                      // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	outb(0x04, PIC1_DATA);                     // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
 	//io_wait();
 	outb(0x02, PIC2_DATA);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
 	//io_wait();
@@ -78,14 +79,17 @@ void enable_irq(uint32_t irq_num) {
 	uint16_t port;
     uint8_t value;
  
+	//check if interrupt came from master
     if(irq_num < 8) {
-        port = PIC1_DATA;
-    } else { 
-        port = PIC2_DATA;
-        irq_num -= 8;
+        port = PIC1_DATA;			//grab data port from master
+    } 
+	//otherwise interrupt came from slave
+	else { 
+        port = PIC2_DATA;			//grab data port from slave
+        irq_num -= 8;				//wrap irq number to match with slave 0-7
     }
 	
-    value = inb(port) & ~(1 << irq_num);
+    value = inb(port) & ~(1 << irq_num);		//grab interrupt value and send it to master or slave data port
     outb(value, port);        
 }
 
@@ -95,26 +99,29 @@ void disable_irq(uint32_t irq_num) {
 	uint16_t port;
     uint8_t value;
  
+	//same master or slave logic as above
     if(irq_num < 8) {
         port = PIC1_DATA;
     } else {
         port = PIC2_DATA;
         irq_num -= 8;
     }
-    value = inb(port) | (1 << irq_num);
+    value = inb(port) | (1 << irq_num);		//value is using | to send a disable signal through the irq line to the master or slave port
     outb(value, port); 
 }
 
 /* Send end-of-interrupt signal for the specified IRQ */
 /* Taken largely from OSdevwiki */
 void send_eoi(uint32_t irq_num) {
+	//start of critical section clear interrupts
 	cli(); 
+	//if EOI came from slave
 	if(irq_num >= 8){
-		outb(PIC_EOI | (irq_num - 8), PIC2_COMMAND);
-		send_eoi((uint32_t) 2);
+		outb(PIC_EOI | (irq_num - 8), PIC2_COMMAND);		//send the end signal through slave data port
+		send_eoi((uint32_t) 2);								//send it through IRQ2 which is the IRQ on master that connects to slave
 	}
-	outb((PIC_EOI | (irq_num)), PIC1_COMMAND);
-	sti(); 
+	outb((PIC_EOI | (irq_num)), PIC1_COMMAND);				//if master send the EOI through master port
+	sti(); 													//resume interrupts
 }
 
 
