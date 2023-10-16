@@ -2,6 +2,12 @@
 #include "i8259.h"
 #include "lib.h"
 
+#define LEFT_SHIFT 
+#define RIGHT_SHIFT
+#define LEFT_CTRL
+#define RIGHT_CTRL
+
+
 void diverror() ; 
 void debug() ; 
 void nmi() ; 
