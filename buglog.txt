@@ -1,1 +1,19 @@
+There were several bugs for MP3.1. 
 
+IDT:
+- We found it very difficult to do correct c/asm mapping. It took us a long time to figure out how to do the proper include statements, and figure out the logic behind using set_entry with asm functions as compared to c functions. 
+    - time to fix: 3 hours
+
+Paging: 
+
+PIC: 
+- ports listed on OSDevwiki did not map correctly to our system. We got it to work using a combination of OSDevWiki and the Intel docs
+    - time to fix: 2 hours
+- we were only getting one interrupt per boot, demonstrated by the keyboard typing only one character. To fix, we found via GDB that the issue was in our     send_eoi(). After changing the logic of our send_eoi we recieved the correct behavior. 
+    - time to fix: 1 hours
+
+Keyboard: 
+- Once the pic worked properly, there few bugs in getting the keyboard input and mapping it to characters. It is well described in OSDevWiki.  
+
+RTC: 
+- Similar to the keyboard, RTC worked simply when the PIC was working properly. 
