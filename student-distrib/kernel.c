@@ -11,6 +11,7 @@
 #include "idt.h"
 #include "functions.h"
 #include "rtc.h"
+#include "paging.h"
 
 #define RUN_TESTS
 
@@ -143,6 +144,8 @@ void entry(unsigned long magic, unsigned long addr) {
     i8259_init();
 
     keyboard_init();
+
+    init_paging();
     
     init_rtc(); 
 

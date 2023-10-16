@@ -66,6 +66,36 @@ int test_debug_exception(){
 	return result;
 }
 
+int test_null(){
+	TEST_HEADER;
+	int result; 
+	int* ptr = 0x40000000;
+	result = *ptr;
+	assertion_failure();
+	result = FAIL;	
+	return result;
+}
+
+// TESTING
+int paging_test() {
+    TEST_HEADER;
+    //Used to test dereference locations.
+    char result;
+    char* pointer = (char*)0x400000;    //Kernel memory
+    result = *pointer;
+
+    pointer = (char*)0xB8000;                    //Video memory address
+    result = *pointer;
+
+    pointer = (char*)0x7FFFFF;                 //Bottom of kernel memory
+    result = *pointer;
+
+    pointer = (char*)0xB8FFF;                 //Bottom of video memory
+    result = *pointer;
+
+    return PASS; // If exception BSODs, we never get here
+}
+//TESTING
 
 /* Checkpoint 2 tests */
 
@@ -77,6 +107,7 @@ int test_debug_exception(){
 /* Test suite entry point */
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
+	TEST_OUTPUT("paging tests", paging_test());
 	// launch your tests here
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');
