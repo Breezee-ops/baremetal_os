@@ -108,11 +108,13 @@ void disable_irq(uint32_t irq_num) {
 /* Send end-of-interrupt signal for the specified IRQ */
 /* Taken largely from OSdevwiki */
 void send_eoi(uint32_t irq_num) {
+	cli(); 
 	if(irq_num >= 8){
 		outb(PIC_EOI | (irq_num - 8), PIC2_COMMAND);
 		send_eoi((uint32_t) 2);
 	}
 	outb((PIC_EOI | (irq_num)), PIC1_COMMAND);
+	sti(); 
 }
 
 

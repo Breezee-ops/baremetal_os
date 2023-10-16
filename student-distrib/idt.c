@@ -2,6 +2,7 @@
 #include "x86_desc.h"
 #include "functions.h"
 #include "handler_wrap.h"
+#include "rtc.h"
 
 void init_idt(idt_desc_t* idt){
     int i;

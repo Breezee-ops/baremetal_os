@@ -6,7 +6,7 @@
 rtc_handler_asm:
     pushal
     pushfl
-    call init_rtc
+    call rtc_handler
     popfl
     popal
     iret
