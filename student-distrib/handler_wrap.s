@@ -1,7 +1,5 @@
 #define ASM 1
-
-#include "rtc.h"
-#include "functions.h"
+#include "handler_wrap.h"
 
 .globl rtc_handler_asm
 
@@ -21,3 +19,9 @@ keyboard_handler_asm:
     popfl
     popal
     iret
+
+    
+
+
+
+    

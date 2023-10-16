@@ -22,7 +22,7 @@
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
-
+    init_idt(idt);
     /* Clear the screen. */
     clear();
 
@@ -137,13 +137,13 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
     }
-
+    init_idt(idt);
     /* Init the PIC */
     i8259_init();
 
     keyboard_init();
 
-    init_idt(idt);
+    
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */

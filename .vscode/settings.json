@@ -2,6 +2,8 @@
     "files.associations": {
         "tests.h": "c",
         "lib.h": "c",
-        "x86_desc.h": "c"
+        "x86_desc.h": "c",
+        "handler_wrap.h": "c",
+        "*.s": "c"
     }
 }
