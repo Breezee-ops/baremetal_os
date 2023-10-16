@@ -85,15 +85,75 @@ void keyboard_init(void){
     enable_irq(1);
 }
 
+char keymap[128] =
+{
+    0,  
+    27, 
+    '1', 
+    '2', 
+    '3', 
+    '4', 
+    '5', 
+    '6', 
+    '7', 
+    '8', 
+    '9', 
+    '0', 
+    '-', 
+    '=', 
+    '\b', 
+    '\t',  
+    'q', 
+    'w', 
+    'e', 
+    'r', 
+    't', 
+    'y', 
+    'u', 
+    'i', 
+    'o', 
+    'p', 
+    '[', 
+    ']', 
+    '\n',
+    0,   
+  'a', 
+  's', 
+  'd', 
+  'f', 
+  'g', 
+  'h', 
+  'j', 
+  'k', 
+  'l', 
+  ';',
+ '\'', 
+ '`',   
+ 0,    
+ '\\', 
+ 'z', 
+ 'x', 
+ 'c', 
+ 'v', 
+ 'b', 
+ 'n',      
+  'm', 
+  ',', 
+  '.', 
+  '/', 
+  '*',
+  ' ',  
+};
+
 void keyboard_handler(void){
-    //uint8_t key = inb(0x60);
+    cli();
     uint8_t key = inb(0x60);
-    if(key == 0x32){
-        putc('B');
+    if(key & 0x80){
     }
     else{
-        putc('#');
+        putc(keymap[key]);
     }
     send_eoi(1);
+    sti();
 }
 
