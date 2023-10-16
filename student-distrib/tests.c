@@ -76,7 +76,7 @@ int test_null(){
 	return result;
 }
 
-// TESTING
+// Paging test within bounds
 int paging_test() {
     TEST_HEADER;
     //Used to test dereference locations.
@@ -95,8 +95,38 @@ int paging_test() {
 
     return PASS; // If exception BSODs, we never get here
 }
-//TESTING
 
+int above_kern() {
+	TEST_HEADER
+	char res;
+	char* pointer = (char*)0x3fffff;
+	res = *pointer;
+	return FAIL;
+}
+
+int below_kern() {
+	TEST_HEADER
+	char res;
+	char* pointer = (char*)0x800001;
+	res = *pointer;
+	return FAIL;
+}
+
+int below_video() {
+	TEST_HEADER
+	char res;
+	char* pointer = (char*)0xb7fff;
+	res = *pointer;
+	return FAIL;
+}
+
+int above_video() {
+	TEST_HEADER
+	char res;
+	char* pointer = (char*)0xb9001;
+	res = *pointer;
+	return FAIL;
+}
 /* Checkpoint 2 tests */
 
 /* Checkpoint 3 tests */
@@ -106,8 +136,9 @@ int paging_test() {
 
 /* Test suite entry point */
 void launch_tests(){
-	//TEST_OUTPUT("idt_test", idt_test());
-	TEST_OUTPUT("paging tests", paging_test());
+	// TEST_OUTPUT("idt_test", idt_test());
+	// TEST_OUTPUT("paging tests", paging_test());
+	TEST_OUTPUT("above kern", above_kern());
 	// launch your tests here
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');

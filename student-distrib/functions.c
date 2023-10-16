@@ -162,7 +162,7 @@ struct ScanCodeMap scanCodeToCharMap[] = {
     {0x49, '9'},    // 0x49 (keypad) 9 pressed
     {0x4A, '-'},    // 0x4A (keypad) - pressed
     {0x4B, '4'},    // 0
-}
+};
 
 void keyboard_handler(void){
     //uint8_t key = inb(0x60);
