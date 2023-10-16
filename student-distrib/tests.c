@@ -97,7 +97,7 @@ int paging_test() {
 }
 
 int above_kern() {
-	TEST_HEADER
+	TEST_HEADER;
 	char res;
 	char* pointer = (char*)0x3fffff;
 	res = *pointer;
@@ -105,7 +105,7 @@ int above_kern() {
 }
 
 int below_kern() {
-	TEST_HEADER
+	TEST_HEADER;
 	char res;
 	char* pointer = (char*)0x800001;
 	res = *pointer;
@@ -113,7 +113,7 @@ int below_kern() {
 }
 
 int below_video() {
-	TEST_HEADER
+	TEST_HEADER;
 	char res;
 	char* pointer = (char*)0xb7fff;
 	res = *pointer;
@@ -121,7 +121,7 @@ int below_video() {
 }
 
 int above_video() {
-	TEST_HEADER
+	TEST_HEADER;
 	char res;
 	char* pointer = (char*)0xb9001;
 	res = *pointer;
@@ -136,12 +136,14 @@ int above_video() {
 
 /* Test suite entry point */
 void launch_tests(){
-	// TEST_OUTPUT("idt_test", idt_test());
+	// TEST_OUTPUT("div zero", test_divzero());
+	// TEST_OUTPUT("debug exception", test_debug_exception());
 	// TEST_OUTPUT("paging tests", paging_test());
-	TEST_OUTPUT("above kern", above_kern());
-	// launch your tests here
+	// TEST_OUTPUT("above kern", above_kern());
+	// TEST_OUTPUT("below kern", below_kern());
+	// TEST_OUTPUT("below video", below_video());
+	// TEST_OUTPUT("above video", above_video());
+	// TEST_OUTPUT("deref null", test_null());
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');
-
-
 }
