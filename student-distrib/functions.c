@@ -86,9 +86,9 @@ void keyboard_init(void){
 }
 
 void keyboard_handler(void){
-    //uint8_t key = inb(0x60);
     cli();
-    putc('#');
+    uint8_t key = inb(0x60);
+    putc(key);
     send_eoi(1);
     sti();
 }
