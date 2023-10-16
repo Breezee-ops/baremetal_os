@@ -1,6 +1,8 @@
 #include "idt.h"
 #include "x86_desc.h"
 #include "functions.h"
+#include "handler_wrap.h"
+#include "rtc.h"
 
 void init_idt(idt_desc_t* idt){
     int i;
@@ -65,6 +67,7 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0x11], alignment_check);
     SET_IDT_ENTRY(idt[0x12], machine_check);
     SET_IDT_ENTRY(idt[0x13], smd);
+    
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
 }

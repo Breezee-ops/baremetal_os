@@ -45,18 +45,18 @@ void i8259_init(void) {
 
 	unsigned char a1, a2;
  
-	a1 = 0xFF;                        // save masks
+	a1 = 0xFF;                       		 // save masks
 	a2 = 0xFF;
  
-	outb(0x11, PIC1_COMMAND);  // starts the initialization sequence (in cascade mode)
+	outb(0x11, PIC1_COMMAND);  					// starts the initialization sequence (in cascade mode)
 	//io_wait();
 	outb(0x11, PIC2_COMMAND);
 	//io_wait();
-	outb(0x20, PIC1_DATA);                 // ICW2: Master PIC vector offset
+	outb(0x20, PIC1_DATA);                		// ICW2: Master PIC vector offset
 	//io_wait();
-	outb(0x28, PIC2_DATA);                 // ICW2: Slave PIC vector offset
+	outb(0x28, PIC2_DATA);                		// ICW2: Slave PIC vector offset
 	//io_wait();
-	outb(0x04, PIC1_DATA);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	outb(0x04, PIC1_DATA);                      // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
 	//io_wait();
 	outb(0x02, PIC2_DATA);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
 	//io_wait();
@@ -84,6 +84,7 @@ void enable_irq(uint32_t irq_num) {
         port = PIC2_DATA;
         irq_num -= 8;
     }
+	
     value = inb(port) & ~(1 << irq_num);
     outb(value, port);        
 }
@@ -107,9 +108,13 @@ void disable_irq(uint32_t irq_num) {
 /* Send end-of-interrupt signal for the specified IRQ */
 /* Taken largely from OSdevwiki */
 void send_eoi(uint32_t irq_num) {
-	if(irq_num >= 8)
-		outb(PIC_EOI, PIC2_COMMAND);
-	outb(PIC_EOI, PIC1_COMMAND);
+	cli(); 
+	if(irq_num >= 8){
+		outb(PIC_EOI | (irq_num - 8), PIC2_COMMAND);
+		send_eoi((uint32_t) 2);
+	}
+	outb((PIC_EOI | (irq_num)), PIC1_COMMAND);
+	sti(); 
 }
 
 

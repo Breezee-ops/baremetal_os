@@ -86,10 +86,14 @@ void keyboard_init(void){
 }
 
 void keyboard_handler(void){
-    cli();
+    //uint8_t key = inb(0x60);
     uint8_t key = inb(0x60);
-    putc(key);
+    if(key == 0x32){
+        putc('B');
+    }
+    else{
+        putc('#');
+    }
     send_eoi(1);
-    sti();
 }
 
