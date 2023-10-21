@@ -15,6 +15,12 @@ int terminal_init(){
 void terminal_write(){
 	term.x_pos = get_curr_pos()[0];
 	term.y_pos = get_curr_pos()[1];
+
+	if(term.x_pos == NUM_COLS - 1){
+		term.x_pos = 0;
+		term.y_pos++;
+	}
+
 	set_curr_pos(term.x_pos, term.y_pos);
 }
 
@@ -26,8 +32,8 @@ void uh_oh_backspace(){
 	if(term.x_pos == 0){
 		if(term.y_pos > 0){
 			term.y_pos--;
+			term.x_pos = NUM_COLS - 1;
 		}
-		term.x_pos = NUM_COLS - 1;
 	}
 	term.x_pos--;
 	set_curr_pos(term.x_pos, term.y_pos);

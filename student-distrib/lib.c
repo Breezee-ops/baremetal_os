@@ -249,14 +249,17 @@ uint32_t strlen(const int8_t* s) {
 }
 
 void
-set_curr_pos(int32_t x, int32_t y)
+set_curr_pos(int32_t x, int32_t y) 
 {
 	if (x >= 0 && x <= NUM_COLS)
 		screen_x = x;
 	if (y >= 0 && y <= NUM_ROWS)
 		screen_y = y;
-        
-	return;
+    int currPos = y * NUM_COLS + x;
+	outw(0x0F,0x3D4);
+	outb((uint8_t) (currPos & 0xFF), 0x3D5);
+	outb(0x0E, 0x3D4);
+	outb((uint8_t) ((currPos >> 8) & 0xFF), 0x3D5);
 }
 
 int32_t* get_curr_pos(){
