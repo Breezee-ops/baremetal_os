@@ -11,6 +11,11 @@
 #include "idt.h"
 #include "functions.h"
 #include "rtc.h"
+<<<<<<< Updated upstream
+=======
+#include "paging.h"
+#include "term.h"
+>>>>>>> Stashed changes
 
 #define RUN_TESTS
 
@@ -145,6 +150,8 @@ void entry(unsigned long magic, unsigned long addr) {
     keyboard_init();
 
     init_rtc(); 
+
+    terminal_init();
 
     
     /* Initialize devices, memory, filesystem, enable device interrupts on the

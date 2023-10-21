@@ -2,10 +2,23 @@
 #include "i8259.h"
 #include "lib.h"
 
-#define LEFT_SHIFT 
-#define RIGHT_SHIFT
-#define LEFT_CTRL
-#define RIGHT_CTRL
+#define MAX_CHARS 127
+
+#define L_SHIFT_HELD 0x2A
+#define R_SHIFT_HELD 0x36
+#define L_CTRL_HELD 0x1D
+#define R_CTRL_HELD 
+#define CAPS_HELD 0x3A
+#define L_ALT_HELD 0x38
+#define BACKSPACE_HELD 0x0E
+#define BACKSPACE_RAISE 0x8E
+
+#define L_SHIFT_RAISE 0xAA
+#define R_SHIFT_RAISE 0xB6
+#define L_CTRL_RAISE  0x9D
+#define R_CTRL_RAISE  
+#define CAPS_RAISE  0xBA
+#define L_ALT_RAISE 0xB8
 
 
 void diverror() ; 
@@ -29,3 +42,4 @@ void smd() ;
 void coprocessor() ; // added
 void keyboard_init(void);
 void keyboard_handler(void);
+int special_check(int key);
