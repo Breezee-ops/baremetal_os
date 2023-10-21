@@ -146,6 +146,8 @@ void entry(unsigned long magic, unsigned long addr) {
 
     keyboard_init();
 
+    init_paging();
+    
     init_rtc(); 
 
     terminal_init();

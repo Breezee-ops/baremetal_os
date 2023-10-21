@@ -223,7 +223,9 @@ char upper_keymap[128] =
  * Coverage: Keyboard I/O
  */
 void keyboard_handler(void){
+    //begin critical section stop all interrupts
     cli();
+    //read pressed key from keyboard
     uint8_t key = inb(0x60);
 
     unsigned char printed_key; 
@@ -245,10 +247,13 @@ void keyboard_handler(void){
     //if the key is just being released or a backspace, ignore it
     if(key & 0x80 || backspace_held == 1){
     }
+    //otherwise use putc and the keymap to write the ascii character to terminal
     else{
         putc(printed_key);
     }
+    //done with interrupt
     send_eoi(1);
+    //resume interrupts
     sti();
 }
 

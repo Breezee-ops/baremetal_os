@@ -66,7 +66,68 @@ int test_debug_exception(){
 	return result;
 }
 
+int test_null(){
+	TEST_HEADER;
+	int result; 
+	int* ptr = 0x40000000;
+	result = *ptr;
+	assertion_failure();
+	result = FAIL;	
+	return result;
+}
 
+// Paging test within bounds
+int paging_test() {
+    TEST_HEADER;
+    //Used to test dereference locations.
+    char result;
+    char* pointer = (char*)0x400000;    //Kernel memory
+    result = *pointer;
+    
+	pointer = (char*)0x7FFFFF; // bottom of kernel
+    result = *pointer;
+
+    pointer = (char*)0xB8000; // top of video
+    result = *pointer;
+
+
+    pointer = (char*)0xB8FFF; //Bottom of video
+    result = *pointer;
+
+    return PASS;
+}
+
+int above_kern() {
+	TEST_HEADER;
+	char res;
+	char* pointer = (char*)0x3fffff;
+	res = *pointer;
+	return FAIL;
+}
+
+int below_kern() {
+	TEST_HEADER;
+	char res;
+	char* pointer = (char*)0x800001;
+	res = *pointer;
+	return FAIL;
+}
+
+int below_video() {
+	TEST_HEADER;
+	char res;
+	char* pointer = (char*)0xb7fff;
+	res = *pointer;
+	return FAIL;
+}
+
+int above_video() {
+	TEST_HEADER;
+	char res;
+	char* pointer = (char*)0xb9001;
+	res = *pointer;
+	return FAIL;
+}
 /* Checkpoint 2 tests */
 
 /* Checkpoint 3 tests */

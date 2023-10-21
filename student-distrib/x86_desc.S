@@ -95,6 +95,7 @@ ldt_bottom:
 .align 4
     .word 0 # Padding
 
+# Replicate desc pointer set up from idt since we use same format for loading gdt in lgdt as we do with idt in lidt
 gdt_desc:
     .word gdt_bottom - gdt - 1
     .long gdt
@@ -113,6 +114,8 @@ _idt:
 
 idt_bottom:
 
+
+# redundant exception wrapper we dont care about this.
 
 .globl diverror_asm, debug_asm, nmi_asm, breakpoint_asm, overflow_asm, boundrange_asm, invalidop_asm, device_na_asm, doublefault_asm
 .globl invalidtss_asm, segment_na_asm, stack_seg_asm, general_protection_asm, page_fault_asm, floating_excep_asm, alignment_check_asm 
