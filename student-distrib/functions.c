@@ -82,11 +82,8 @@ void coprocessor() {
     while(1); 
 }
 
-<<<<<<< Updated upstream
-=======
 
 //enable the irq line 1 on the master to accept keyboard input
->>>>>>> Stashed changes
 void keyboard_init(void){
     
     enable_irq(1);
@@ -98,12 +95,8 @@ void keyboard_init(void){
     int alt_held = 0;
     int capslock_on = 0;
 
-<<<<<<< Updated upstream
-char keymap[128] =
-=======
 //keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char lower_keymap[128] =
->>>>>>> Stashed changes
 {
     0,  
     27, 
@@ -162,9 +155,6 @@ char lower_keymap[128] =
   '*',
   ' ',  
 };
-<<<<<<< Updated upstream
-
-=======
 char upper_keymap[128] =
 {
     0,  
@@ -232,13 +222,9 @@ char upper_keymap[128] =
  * Side Effects: None
  * Coverage: Keyboard I/O
  */
->>>>>>> Stashed changes
 void keyboard_handler(void){
     cli();
     uint8_t key = inb(0x60);
-<<<<<<< Updated upstream
-    if(key & 0x80){
-=======
 
     unsigned char printed_key; 
 
@@ -258,7 +244,6 @@ void keyboard_handler(void){
 
     //if the key is just being released or a backspace, ignore it
     if(key & 0x80 || backspace_held == 1){
->>>>>>> Stashed changes
     }
     else{
         putc(printed_key);

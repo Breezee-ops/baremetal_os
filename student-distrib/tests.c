@@ -76,10 +76,6 @@ int test_debug_exception(){
 
 /* Test suite entry point */
 void launch_tests(){
-<<<<<<< Updated upstream
-	//TEST_OUTPUT("idt_test", idt_test());
-	// launch your tests here
-=======
 	// TEST_OUTPUT("div zero", test_divzero());
 	// TEST_OUTPUT("debug exception", test_debug_exception());
 	// TEST_OUTPUT("paging tests", paging_test());
@@ -88,9 +84,8 @@ void launch_tests(){
 	// TEST_OUTPUT("below video", below_video());
 	//TEST_OUTPUT("above video", above_video());
 	// TEST_OUTPUT("deref null", test_null());
->>>>>>> Stashed changes
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
-	putc('@');
+	//putc('@');
 
 
 }
