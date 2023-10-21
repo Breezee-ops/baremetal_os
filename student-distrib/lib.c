@@ -255,17 +255,7 @@ set_curr_pos(int32_t x, int32_t y)
 		screen_x = x;
 	if (y >= 0 && y <= NUM_ROWS)
 		screen_y = y;
-
-    if (x == 0){
-		y++;
-	}
-	int32_t fullNumber = (y * NUM_COLS) + x;
-	int16_t lowEight = fullNumber & 0xFF;
-	int16_t highEight = (fullNumber >> 8)  & 0xFF;
-	int16_t toOutput = (highEight << 8) + 0x0E;
-	outw(toOutput,0x03D4);
-	toOutput = (lowEight << 8) + 0x0F;
-	outw(toOutput, 0x03D4);
+        
 	return;
 }
 
