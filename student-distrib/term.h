@@ -10,6 +10,9 @@
 
 int terminal_init();
 void uh_oh_backspace();
+void terminal_write();
+//void tabitha();
+void clear_term();
 
 typedef struct termData {
 	int x_pos;

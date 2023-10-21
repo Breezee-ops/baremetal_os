@@ -85,7 +85,6 @@ void coprocessor() {
 
 //enable the irq line 1 on the master to accept keyboard input
 void keyboard_init(void){
-    
     enable_irq(1);
 }
     //initialize all special keys status vars
@@ -94,6 +93,8 @@ void keyboard_init(void){
     int ctrl_held = 0;
     int alt_held = 0;
     int capslock_on = 0;
+    int tab_held;
+
 
 //keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char lower_keymap[128] =
@@ -157,62 +158,62 @@ char lower_keymap[128] =
 };
 char upper_keymap[128] =
 {
-    0,  
-    27, 
-    '1', 
-    '2', 
-    '3', 
-    '4', 
-    '5', 
-    '6', 
-    '7', 
-    '8', 
-    '9', 
-    '0', 
-    '-', 
-    '=', 
-    '\b', 
-    '\t',  
-    'Q', 
-    'W', 
-    'E', 
-    'R', 
-    'T', 
-    'Y', 
-    'U', 
-    'I', 
-    'O', 
-    'P', 
-    '[', 
-    ']', 
+    0,
+    27,
+    '!',     
+    '@',     
+    '#',     
+    '$',    
+    '%',     
+    '^',     
+    '&',    
+    '*',      
+    '(',     
+    ')',    
+    '_',    
+    '+',    
+    '\b',
+    '\t',
+    'Q',
+    'W',
+    'E',
+    'R',
+    'T',
+    'Y',
+    'U',
+    'I',
+    'O',
+    'P',
+    '{',    
+    '}',    
     '\n',
-    0,   
-    'A', 
-    'S', 
-    'D', 
-    'F', 
-    'G', 
-    'H', 
-    'J', 
-    'K', 
-    'L', 
-    ';',
-    '\'',
-    '`',   
-    0,    
-    '\\', 
-    'Z', 
-    'X', 
-    'C', 
-    'V', 
-    'B', 
-    'N',      
-    'M', 
-    ',',
-    '.',
-    '/',
-    '*',
-    ' ',  
+    0,
+    'A',
+    'S',
+    'D',
+    'F',
+    'G',
+    'H',
+    'J',
+    'K',
+    'L',
+    ':',     
+    '\"',    
+    '~',     
+    0,
+    '|',     
+    'Z',
+    'X',
+    'C',
+    'V',
+    'B',
+    'N',
+    'M',
+    '<',     
+    '>',    
+    '?',     
+    '*',     
+    ' ',
 };
 /* keyboard_handler
  * 
@@ -236,6 +237,10 @@ void keyboard_handler(void){
         return;
     }
 
+    if(ctrl_held == 1 && key == 0x26){
+        clear_term();
+    }
+
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
         printed_key = upper_keymap[key];
     }
@@ -245,11 +250,12 @@ void keyboard_handler(void){
     
 
     //if the key is just being released or a backspace, ignore it
-    if(key & 0x80 || backspace_held == 1){
+    if(key & 0x80 || backspace_held == 1 || tab_held == 1 || ctrl_held == 1){
     }
     //otherwise use putc and the keymap to write the ascii character to terminal
     else{
         putc(printed_key);
+        terminal_write();
     }
     //done with interrupt
     send_eoi(1);
@@ -268,10 +274,11 @@ int special_check(int key){
             return 1;
         case L_CTRL_HELD:
             ctrl_held = 1;
+            return 1;
         case BACKSPACE_HELD:
             uh_oh_backspace();
             backspace_held = 1;
-            return 0;
+            return 1;
         case CAPS_HELD:
             if(capslock_on == 0){
                 capslock_on = 1;
@@ -279,6 +286,10 @@ int special_check(int key){
             else{
                 capslock_on = 0;
             }
+        // case TAB_HELD:
+        //     tab_held = 1;
+        //     tabitha();
+        //     return 1;
         case L_SHIFT_RAISE:
             case R_SHIFT_RAISE:
             shift_held = 0;
@@ -292,7 +303,9 @@ int special_check(int key){
         case BACKSPACE_RAISE:
             backspace_held = 0;
             return 1;
-
+        case TAB_RAISE:
+            tab_held = 0;
+            return 1;
     }
     return 0;
 }

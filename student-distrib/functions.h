@@ -11,14 +11,17 @@
 #define CAPS_HELD 0x3A
 #define L_ALT_HELD 0x38
 #define BACKSPACE_HELD 0x0E
-#define BACKSPACE_RAISE 0x8E
+#define TAB_HELD 0x0F
 
+
+#define BACKSPACE_RAISE 0x8E
 #define L_SHIFT_RAISE 0xAA
 #define R_SHIFT_RAISE 0xB6
 #define L_CTRL_RAISE  0x9D
 #define R_CTRL_RAISE  
 #define CAPS_RAISE  0xBA
 #define L_ALT_RAISE 0xB8
+#define TAB_RAISE 0x8F
 
 
 void diverror() ; 
