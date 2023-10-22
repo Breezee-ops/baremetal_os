@@ -8,11 +8,11 @@
 #define NUM_ROWS						25
 #define MAX_BUFFER						128
 
-int terminal_init();
+void term_write(unsigned char* buf, uint32_t nbytes);
 void uh_oh_backspace();
-void terminal_write();
 //void tabitha();
-void clear_term();
+void term_clear();
+int32_t term_read(void* buf, int32_t nbytes);
 
 typedef struct termData {
 	int x_pos;

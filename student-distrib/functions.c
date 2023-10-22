@@ -238,7 +238,7 @@ void keyboard_handler(void){
     }
 
     if(ctrl_held == 1 && key == 0x26){
-        clear_term();
+        term_clear();
     }
 
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
@@ -254,8 +254,7 @@ void keyboard_handler(void){
     }
     //otherwise use putc and the keymap to write the ascii character to terminal
     else{
-        putc(printed_key);
-        terminal_write();
+        term_write(&printed_key, 1);
     }
     //done with interrupt
     send_eoi(1);
