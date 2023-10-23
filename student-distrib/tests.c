@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "fs.h"
 
 #define PASS 1
 #define FAIL 0
@@ -76,59 +77,61 @@ int test_null(){
 	return result;
 }
 
-// Paging test within bounds
+// TESTING
 int paging_test() {
     TEST_HEADER;
     //Used to test dereference locations.
     char result;
     char* pointer = (char*)0x400000;    //Kernel memory
     result = *pointer;
-    
-	pointer = (char*)0x7FFFFF; // bottom of kernel
+
+    pointer = (char*)0xB8000;                    //Video memory address
     result = *pointer;
 
-    pointer = (char*)0xB8000; // top of video
+    pointer = (char*)0x7FFFFF;                 //Bottom of kernel memory
     result = *pointer;
 
-
-    pointer = (char*)0xB8FFF; //Bottom of video
+    pointer = (char*)0xB8FFF;                 //Bottom of video memory
     result = *pointer;
 
-    return PASS;
+    return PASS; // If exception BSODs, we never get here
 }
+//TESTING
 
-int above_kern() {
-	TEST_HEADER;
-	char res;
-	char* pointer = (char*)0x3fffff;
-	res = *pointer;
-	return FAIL;
-}
-
-int below_kern() {
-	TEST_HEADER;
-	char res;
-	char* pointer = (char*)0x800001;
-	res = *pointer;
-	return FAIL;
-}
-
-int below_video() {
-	TEST_HEADER;
-	char res;
-	char* pointer = (char*)0xb7fff;
-	res = *pointer;
-	return FAIL;
-}
-
-int above_video() {
-	TEST_HEADER;
-	char res;
-	char* pointer = (char*)0xb9001;
-	res = *pointer;
-	return FAIL;
-}
 /* Checkpoint 2 tests */
+
+// read small files
+int read_small_file() {
+	TEST_HEADER;
+	int result; 
+
+	dentry_t myDentry = {
+        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
+        .filetype = 0,       // 0 for uint32_t
+        .inode_num = 0,      // 0 for uint32_t
+        .reserved = {0}      // Initializes all elements of the reserved array to 0
+    };
+	
+	dentry_t* dir_entry = &myDentry; 
+	uint8_t fname[32] = "grep";
+
+	if (0 == read_dentry_by_name((uint8_t*)&fname, dir_entry)) {
+		result = PASS; 
+	} else {
+		result = FAIL; 
+	}
+	return result; 
+
+
+	
+}
+
+// read executables
+
+
+// read large files
+
+// directory read reads one file at a time
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -137,14 +140,13 @@ int above_video() {
 
 /* Test suite entry point */
 void launch_tests(){
-	// TEST_OUTPUT("div zero", test_divzero());
-	// TEST_OUTPUT("debug exception", test_debug_exception());
-	// TEST_OUTPUT("paging tests", paging_test());
-	// TEST_OUTPUT("above kern", above_kern());
-	// TEST_OUTPUT("below kern", below_kern());
-	// TEST_OUTPUT("below video", below_video());
-	TEST_OUTPUT("above video", above_video());
-	// TEST_OUTPUT("deref null", test_null());
+	//TEST_OUTPUT("idt_test", idt_test());
+	TEST_OUTPUT("file system test", read_small_file());
+	// launch your tests here
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');
+
+
 }
+
+
