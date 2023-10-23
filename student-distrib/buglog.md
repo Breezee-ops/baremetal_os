@@ -13,4 +13,6 @@ checkpoint 2: the bugman returns
 5) Problems with my x_pos of cursor becoming negative values if certain special keys were hit
 6) Enter key was not properly storing the buffer and allowed additional keypresses to go past the maximum buffer size
 7) If you were to press tab then backspace it would send the cursor to seemingly random locations
-8) printing strings into the write_terminal would cause the buffer to behave abnormally
+8) printing strings into the write_terminal would cause the buffer to behave abnormally\
+9) file system memcopy was acting extremely buggy, caused a page fault. We eventually found that we could fix by initializing an empty dentry object
+10) problems with strncpy, fixing issues with types in comparisons allowed it to work correctly
