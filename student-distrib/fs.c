@@ -10,7 +10,6 @@ void fs_init(uint32_t mod_start) {
 
 uint32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry) {
     int i;
-
     for (i = 0; i < DIR_ENTRIES_LEN; i++) {
         if (strncmp((char*)boot_block->dir_entries[i].filename, (const char*)fname, FILENAME_LEN) == 0) {
             memcpy(dentry, &(boot_block->dir_entries[i]), sizeof(dentry_t));
@@ -40,13 +39,12 @@ uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t l
 
     uint32_t start_block = offset / BLOCK_SIZE;
     uint32_t end_block = (offset + length) / BLOCK_SIZE;
-    for(i = start_block; i < end_block; i++) {
-
+    for(i = start_block; i <= end_block; i++) {
         int l = 0;
         int r = BLOCK_SIZE;
         if(i == start_block) //offset left if at the start of read
             l = offset % BLOCK_SIZE;
-        if(i == end_block - 1) //offset right if at the end of read
+        if(i == end_block ) //offset right if at the end of read
             r = (offset + length) % BLOCK_SIZE;
         
 
@@ -54,6 +52,9 @@ uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t l
             data2cpy = (uint32_t*)(data_blocks + inode2cpy->data_block_num[i] * BLOCK_SIZE + l);
             memcpy(buf + bytes_read,data2cpy,1);
             bytes_read++;
+            if(bytes_read == length) {
+                return bytes_read;
+            }
         }
 
         if(i == inode2cpy->length - 1) {//if reach end of file before length then return 0
@@ -69,21 +70,19 @@ uint32_t file_write(uint8_t file_name) {
     return -1; 
 }
 
-uint32_t file_read(uint32_t f_desc, uint32_t* offset, uint8_t* buf, uint32_t length) {
+uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t length) {
     
     // sanity check on file system init
-    if (boot_block == NULL || buf == NULL) return -1; 
+    if (boot_block == NULL || buf == NULL || offset < 0) return -1; 
 
     // result -> read data function call
-    int32_t ret = read_data(f_desc, *offset, buf, length); 
+    int32_t ret = read_data(f_desc, offset, buf, length); 
 
     // add bytes read to offset
     if (ret < 0) { 
         return -1; 
     } else {
-        *offset += ret; // new offset value to be used in testing
         return ret; 
-
     }    
 }
 
@@ -100,30 +99,27 @@ uint32_t directory_write() {
     return -1; 
 }
 
-uint32_t directory_read(uint32_t* offset, uint8_t* buf, uint32_t length) {
+uint32_t directory_read(uint32_t offset, uint8_t* buf) {
 
     dentry_t* dir_entry; 
-
+    uint32_t len; 
     // sanity check on file system init, offset, index, and buffer
-    if (*offset > DIR_ENTRIES_LEN || boot_block == NULL || buf == NULL || length < 0) {
+    if (offset > DIR_ENTRIES_LEN-1 || boot_block == NULL || buf == NULL) {
         return -1; 
     }
 
     // use passed in offset to retrieve the dentry pointer
-    dir_entry = &(boot_block->dir_entries[*offset]);
+    dir_entry = &(boot_block->dir_entries[offset]);
 
-    // sanity check on length of filename
     // memcopy filename 
-    strncpy((char*)buf, (char*)dir_entry->filename, FILENAME_LEN);
-
-    if (strlen((char*)dir_entry->filename) > FILENAME_LEN) {
-        *offset += 1; // go to the next file
+    strncpy((int8_t*) buf, (int8_t*) dir_entry->filename, FILENAME_LEN);
+    len = strlen((char*)dir_entry->filename); 
+    if (len > FILENAME_LEN) {
         return FILENAME_LEN; 
-    } else if (strlen((char*)dir_entry->filename) > 0){
-        *offset += 1; // go to the next file
-        return strlen((char*)dir_entry->filename); 
+    } else if (len > 0){
+        return len; 
     } else {
-        return 0; 
+        return -1; 
     }
     
 }
@@ -134,5 +130,4 @@ uint32_t directory_open(const uint8_t* file_name) {
 uint32_t directory_close(const uint8_t* file_name) {
     return 0; 
 }
-
 

@@ -103,7 +103,53 @@ int paging_test() {
 // read small files
 int read_small_file() {
 	TEST_HEADER;
-	int result; 
+	int result = PASS; 
+
+	dentry_t myDentry = {
+        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
+        .filetype = 0,       // 0 for uint32_t
+        .inode_num = 0,      // 0 for uint32_t
+        .reserved = {0}      // Initializes all elements of the reserved array to 0
+    };
+	
+	dentry_t* dir_entry = &myDentry; 
+	uint8_t fname[32] = "frame0.txt";
+	uint32_t f_size = 187; 
+    uint8_t buf[187]; 
+    int i;
+	uint32_t test_idx;
+
+    for (i = 0; i < DIR_ENTRIES_LEN; i++) {
+        if (strncmp((char*)boot_block->dir_entries[i].filename, (const char*)fname, FILENAME_LEN) == 0) {
+            test_idx = i;
+        }
+    }
+	
+	if (0 == read_dentry_by_name((uint8_t*)&fname, dir_entry)) {
+		inode_t* test1 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+        if (test1->length != f_size) result = FAIL; 
+		
+		if(read_dentry_by_index(test_idx, dir_entry) == -1) result = FAIL;
+		inode_t* test2 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+		if (test2->length != f_size) result = FAIL;
+		
+        uint32_t read_size = read_data(dir_entry->inode_num, 0, buf, f_size); 
+        if (read_size != f_size) result = FAIL; 
+        for (i=0; i<f_size; i++) {
+            putc(buf[i]); 
+        }
+		
+    } else {
+        result = FAIL; 
+    }
+    return result; 	
+}
+
+
+// read executables
+int read_executables() {
+	TEST_HEADER;
+	int result = PASS; 
 
 	dentry_t myDentry = {
         .filename = "",      // Empty string, initializes all characters to 0 ('\0')
@@ -114,24 +160,134 @@ int read_small_file() {
 	
 	dentry_t* dir_entry = &myDentry; 
 	uint8_t fname[32] = "grep";
+	uint32_t f_size = 6149; 
+    uint8_t buf[6149]; 
+    int i;
+	uint32_t test_idx;
+
+    for (i = 0; i < DIR_ENTRIES_LEN; i++) {
+        if (strncmp((char*)boot_block->dir_entries[i].filename, (const char*)fname, FILENAME_LEN) == 0) {
+            test_idx = i;
+        }
+    }
 
 	if (0 == read_dentry_by_name((uint8_t*)&fname, dir_entry)) {
-		result = PASS; 
-	} else {
-		result = FAIL; 
-	}
-	return result; 
+		inode_t* test1 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+        if (test1->length != f_size) result = FAIL; 
+		
+		if(read_dentry_by_index(test_idx, dir_entry) == -1) result = FAIL;
+		inode_t* test2 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+		if (test2->length != f_size) result = FAIL;
+        uint32_t read_size = file_read(dir_entry->inode_num, 0, buf, f_size); 
+        if (read_size != f_size) result = FAIL;
 
+		printf("First chars: "); 
+		for (i=0; i<10; i++) {
+            printf("%c",buf[i]); 
+        }
 
-	
+		printf(" Mid chars: "); 
+		for (i=3000; i<3010; i++) {
+            printf("%c",buf[i]); 
+        }
+		printf(" Last chars: "); 
+        for (i=f_size-10; i<f_size; i++) {
+            printf("%c",buf[i]); 
+        }
+		printf("\n"); 
+		
+    } else {
+        result = FAIL; 
+    }
+    return result; 	
 }
 
-// read executables
-
-
 // read large files
+int read_large_file() {
+	TEST_HEADER;
+	int result = PASS; 
+
+	dentry_t myDentry = {
+        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
+        .filetype = 0,       // 0 for uint32_t
+        .inode_num = 0,      // 0 for uint32_t
+        .reserved = {0}      // Initializes all elements of the reserved array to 0
+    };
+	
+	dentry_t* dir_entry = &myDentry; 
+	uint8_t fname[32] = "verylargetextwithverylongname.tx";
+	uint32_t f_size = 5277; 
+    uint8_t buf[5277]; 
+    int i;
+	uint32_t test_idx;
+
+    for (i = 0; i < DIR_ENTRIES_LEN; i++) {
+        if (strncmp((char*)boot_block->dir_entries[i].filename, (const char*)fname, FILENAME_LEN) == 0) {
+            test_idx = i;
+        }
+    }
+
+	if (0 == read_dentry_by_name((uint8_t*)&fname, dir_entry)) {
+		inode_t* test1 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+        if (test1->length != f_size) result = FAIL; 
+		
+		if(read_dentry_by_index(test_idx, dir_entry) == -1) result = FAIL;
+		inode_t* test2 = (inode_t*)(inode_blocks + (dir_entry->inode_num));
+		if (test2->length != f_size) result = FAIL;
+
+
+        uint32_t read_size = file_read(dir_entry->inode_num, 0, buf, f_size); 
+        if (read_size != f_size) result = FAIL;
+
+		printf("First chars: "); 
+		for (i=0; i<10; i++) {
+            printf("%c",buf[i]); 
+        }
+
+		printf(" Mid chars: "); 
+		for (i=2500; i<2510; i++) {
+            printf("%c",buf[i]); 
+        }
+		printf(" Last chars: "); 
+        for (i=f_size-10; i<f_size; i++) {
+            printf("%c",buf[i]); 
+        }
+		printf("\n"); 
+		
+    } else {
+        result = FAIL; 
+    }
+    return result; 	
+}
 
 // directory read reads one file at a time
+
+int read_directory_test() {
+	TEST_HEADER;
+	int result = PASS; 
+	uint32_t ret; 
+	uint32_t i; 
+	int j; 
+	uint8_t buf[32]; 
+
+	for (i = 0; i < FILENAME_LEN-1; i++) {
+		ret = directory_read(i, buf); 
+		if (ret > 0 && ret <= FILENAME_LEN) {
+			for (j = 0; j < ret; j++) {
+				putc(buf[j]); 
+			}
+			putc('\n'); 
+		} else {
+			if (i < 15) { // 15 = file size of the directory (read only)
+				result=FAIL; 
+			}
+		}
+	}
+
+	return result; 
+}
+
+	
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -141,7 +297,9 @@ int read_small_file() {
 /* Test suite entry point */
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
-	TEST_OUTPUT("file system test", read_small_file());
+	TEST_OUTPUT("file system test", read_executables());
+	TEST_OUTPUT("file system test", read_large_file());
+	//TEST_OUTPUT("read directory test", read_directory_test());
 	// launch your tests here
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
 	putc('@');
