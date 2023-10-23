@@ -96,7 +96,7 @@ void keyboard_init(void){
     int tab_held;
     int arrow_held = 0;
 
-//keymap to translate PS/2 Scancode (set 1) to ASCII characters
+//lowercase keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char lower_keymap[128] =
 {
     0,  
@@ -156,6 +156,7 @@ char lower_keymap[128] =
   '*',
   ' ',  
 };
+//uppercase keymap when SHIFT and CAPSLOCK
 char upper_keymap[128] =
 {
     0,
@@ -231,28 +232,32 @@ void keyboard_handler(void){
 
     unsigned char printed_key; 
 
+    //check if a key that alters keypress is pressed
     if(special_check(key)){
         send_eoi(1);
         sti();
         return;
     }
 
+    //if CTRL + L is pressed clear terminal
     if(ctrl_held == 1 && key == 0x26){
         term_clear();
     }
 
+    //logic to handle if we should print uppercase letter
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
         printed_key = upper_keymap[key];
     }
+    //logic to handle if we should print lowercase letter
     else if((shift_held == 1 && capslock_on == 1) || (shift_held == 0 && capslock_on == 0)){
         printed_key = lower_keymap[key];
     }
     
 
-    //if the key is just being released or a backspace, ignore it
+    //if the key is just being released, ctrl, an arrow key, or a function key ignore input
     if(key & 0x80 || backspace_held == 1 || tab_held == 1 || ctrl_held == 1 || arrow_held == 1 || ((key  >= 0x3B) && (key <= 0x44)) || (key == 0x57) || (key == 0x58)){
     }
-    //otherwise use putc and the keymap to write the ascii character to terminal
+    //otherwise call term_write to add to buffer and print to screen
     else{
         term_write(&printed_key, 1);
     }
@@ -262,9 +267,17 @@ void keyboard_handler(void){
     sti();
 }
 
+/* special_check
+ * 
+ * checks if key pressed is a special key that alters typing
+ * Inputs: inb from keyboard port 0x60
+ * Outputs: Flag if special key is held
+ * Side Effects: None
+ * Coverage: Keyboard I/O
+ */
 int special_check(int key){
     switch(key){
-        case L_SHIFT_HELD:
+        case L_SHIFT_HELD:                  //same response for shift keys
             case R_SHIFT_HELD:
                 shift_held = 1;
                 return 1;
@@ -274,22 +287,22 @@ int special_check(int key){
         case L_CTRL_HELD:
             ctrl_held = 1;
             return 1;
-        case BACKSPACE_HELD:
+        case BACKSPACE_HELD:                //special case for backspace
             uh_oh_backspace();
             backspace_held = 1;
             return 1;
-        case CAPS_HELD:
+        case CAPS_HELD:                     //if capslock is on, turn off vice versa
             if(capslock_on == 0){
                 capslock_on = 1;
             }
             else{
                 capslock_on = 0;
             }
-        case TAB_HELD:
+        case TAB_HELD:                      //special input for tab
             tabitha();
             tab_held = 1;
             return 1;
-        case L_ARROW_HELD:
+        case L_ARROW_HELD:                  //same response for all arrow keys
             case R_ARROW_HELD:
                 case U_ARROW_HELD:
                     case D_ARROW_HELD:
@@ -297,7 +310,7 @@ int special_check(int key){
                         return 1;
         
 
-        case L_SHIFT_RAISE:
+        case L_SHIFT_RAISE:                 //same response for both shift keys
             case R_SHIFT_RAISE:
             shift_held = 0;
             return 1;
@@ -313,7 +326,7 @@ int special_check(int key){
         case TAB_RAISE:
             tab_held = 0;
             return 1;
-        case L_ARROW_RAISE:
+        case L_ARROW_RAISE:                 //same response for release
             case R_ARROW_RAISE:
                 case U_ARROW_RAISE:
                     case D_ARROW_RAISE:

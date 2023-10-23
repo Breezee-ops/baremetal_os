@@ -1,6 +1,8 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "rtc.h"
+#include "term.h"
 
 #define PASS 1
 #define FAIL 0
@@ -129,6 +131,25 @@ int above_video() {
 	return FAIL;
 }
 /* Checkpoint 2 tests */
+int rtcwriting(int val){
+	int* ptr = &val;
+	rtc_write(0, ptr, 4);
+	while(1){
+		rtc_read(0,ptr,0);
+	}
+}
+
+int rtcopening(){
+	rtc_open(0);
+	while(1){
+		rtc_read(0,0,0);
+	}
+}
+
+int checkKeys(){
+	term_write("Yo, what's good?\n", 18);
+}
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -143,10 +164,12 @@ void launch_tests(){
 	// TEST_OUTPUT("above kern", above_kern());
 	// TEST_OUTPUT("below kern", below_kern());
 	// TEST_OUTPUT("below video", below_video());
-	//TEST_OUTPUT("above video", above_video());
+	// TEST_OUTPUT("above video", above_video());
 	// TEST_OUTPUT("deref null", test_null());
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
+	// TEST_OUTPUT("rtc functionality", rtcwriting(32));
+	// TEST_OUTPUT("rtc functionality", rtcopening());
+	// TEST_OUTPUT("key test", checkKeys());
 	//putc('@');
-
 
 }

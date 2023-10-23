@@ -1,6 +1,8 @@
 #ifndef RTC_H
 #define RTC_H
 
+#include "lib.h"
+
 #define base_freq 1024
 
 extern void init_rtc();
