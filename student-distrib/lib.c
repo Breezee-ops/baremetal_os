@@ -258,7 +258,7 @@ void set_curr_pos(int x, int y)
 }
 
 int* get_curr_pos(){
-    int pos[2];
+    static int pos[2];
     pos[0] = screen_x;
     pos[1] = screen_y;
     return pos;

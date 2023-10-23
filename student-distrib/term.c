@@ -4,7 +4,8 @@
 
 termData term;
 unsigned char line_buf[MAX_BUFFER];
-int buf_count = 0;
+static int buf_count = 0;
+static int the_real_buf_count = 0;
 unsigned char tab_flag;
 
 /* term_init
@@ -16,7 +17,6 @@ unsigned char tab_flag;
  * Coverage: term
  */
 void term_init(){
-	int i;
     term.x_pos = 0;
     term.y_pos = 0;
     clear();
@@ -140,7 +140,8 @@ void uh_oh_backspace(){
 void term_clear(){
 	term.x_pos = 0;
 	term.y_pos = 0;
-	//buf_count=0;
+	the_real_buf_count = buf_count; // we use this for screen swapping
+	buf_count=0;
 	//memset(line_buf, '\0', sizeof(line_buf));
 	set_curr_pos(term.x_pos, term.y_pos);
 	clear();

@@ -294,6 +294,7 @@ int rtcopening(){
 	while(1){
 		rtc_read(0,0,0);
 	}
+	return 0;
 }
 int rtcwriting(int val){
 	int* ptr = &val;
@@ -301,11 +302,13 @@ int rtcwriting(int val){
 	while(1){
 		rtc_read(0,ptr,0);
 	}
+	return 0;
 }
 
 
 int checkKeys(){
-	term_write("Yo, what's good?\n", 18);
+	term_write((unsigned char*)"Yo, what's good?\n", 18);
+	return 0;
 }
 
 /* Checkpoint 2 tests */
@@ -324,8 +327,8 @@ void launch_tests(){
 	// TEST_OUTPUT("below kern", below_kern());
 	// TEST_OUTPUT("below video", below_video());
 	//TEST_OUTPUT("idt_test", idt_test());
-	TEST_OUTPUT("read_executables test", read_executables());
-	TEST_OUTPUT("read_large_file test", read_large_file());
+	// TEST_OUTPUT("read_executables test", read_executables());
+	// TEST_OUTPUT("read_large_file test", read_large_file());
 	//TEST_OUTPUT("read_small_file test", read_small_file());
 	//TEST_OUTPUT("read_directory_test test", read_directory_test());
 	//TEST_OUTPUT("above video", above_video());

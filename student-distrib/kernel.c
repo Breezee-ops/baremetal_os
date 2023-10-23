@@ -167,7 +167,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */
-    term_write("Enabling Interrupts", 20);
+    term_write((unsigned char*)"Enabling Interrupts", 20);
     sti();
 
 #ifdef RUN_TESTS
