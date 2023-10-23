@@ -266,11 +266,48 @@ int read_large_file() {
 
 int read_directory_test() {
 	TEST_HEADER;
-	char res;
-	char* pointer = (char*)0xb9001;
-	res = *pointer;
-	return FAIL;
+	int result = PASS; 
+	uint32_t ret; 
+	uint32_t i; 
+	int j; 
+	uint8_t buf[32]; 
+
+	for (i = 0; i < FILENAME_LEN-1; i++) {
+		ret = directory_read(i, buf); 
+		if (ret > 0 && ret <= FILENAME_LEN) {
+			for (j = 0; j < ret; j++) {
+				putc(buf[j]); 
+			}
+			putc('\n'); 
+		} else {
+			if (i < 15) { // 15 = file size of the directory (read only)
+				result=FAIL; 
+			}
+		}
+	}
+
+	return result; 
 }
+
+int rtcopening(){
+	rtc_open(0);
+	while(1){
+		rtc_read(0,0,0);
+	}
+}
+int rtcwriting(int val){
+	int* ptr = &val;
+	rtc_write(0, ptr, 4);
+	while(1){
+		rtc_read(0,ptr,0);
+	}
+}
+
+
+int checkKeys(){
+	term_write("Yo, what's good?\n", 18);
+}
+
 /* Checkpoint 2 tests */
 
 /* Checkpoint 3 tests */
@@ -286,10 +323,18 @@ void launch_tests(){
 	// TEST_OUTPUT("above kern", above_kern());
 	// TEST_OUTPUT("below kern", below_kern());
 	// TEST_OUTPUT("below video", below_video());
-	TEST_OUTPUT("above video", above_video());
+	//TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("file system test", read_executables());
+	//TEST_OUTPUT("file system test", read_large_file());
+	//TEST_OUTPUT("file system test", read_small_file());
+	//TEST_OUTPUT("read directory test", read_directory_test());
+	//TEST_OUTPUT("above video", above_video());
 	// TEST_OUTPUT("deref null", test_null());
 	// TEST_OUTPUT("test_debug_exception", test_debug_exception());
-	putc('@');
+	//TEST_OUTPUT("rtc functionality", rtcwriting(32));
+	 //TEST_OUTPUT("rtc functionality", rtcopening());
+	 //TEST_OUTPUT("key test", checkKeys());
+	//putc('@');
 }
 
 
