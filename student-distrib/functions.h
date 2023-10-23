@@ -12,6 +12,10 @@
 #define L_ALT_HELD 0x38
 #define BACKSPACE_HELD 0x0E
 #define TAB_HELD 0x0F
+#define L_ARROW_HELD 0x4B
+#define R_ARROW_HELD 0x4D
+#define D_ARROW_HELD 0x50
+#define U_ARROW_HELD 0x48
 
 
 #define BACKSPACE_RAISE 0x8E
@@ -22,6 +26,10 @@
 #define CAPS_RAISE  0xBA
 #define L_ALT_RAISE 0xB8
 #define TAB_RAISE 0x8F
+#define L_ARROW_RAISE 0xCB
+#define R_ARROW_RAISE 0xCD
+#define D_ARROW_RAISE 0xD0
+#define U_ARROW_RAISE 0xC8
 
 
 void diverror() ; 

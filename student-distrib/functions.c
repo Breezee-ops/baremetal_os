@@ -94,7 +94,7 @@ void keyboard_init(void){
     int alt_held = 0;
     int capslock_on = 0;
     int tab_held;
-
+    int arrow_held = 0;
 
 //keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char lower_keymap[128] =
@@ -250,7 +250,7 @@ void keyboard_handler(void){
     
 
     //if the key is just being released or a backspace, ignore it
-    if(key & 0x80 || backspace_held == 1 || tab_held == 1 || ctrl_held == 1){
+    if(key & 0x80 || backspace_held == 1 || tab_held == 1 || ctrl_held == 1 || arrow_held == 1 || ((key  >= 0x3B) && (key <= 0x44)) || (key == 0x57) || (key == 0x58)){
     }
     //otherwise use putc and the keymap to write the ascii character to terminal
     else{
@@ -289,6 +289,14 @@ int special_check(int key){
             tabitha();
             tab_held = 1;
             return 1;
+        case L_ARROW_HELD:
+            case R_ARROW_HELD:
+                case U_ARROW_HELD:
+                    case D_ARROW_HELD:
+                        arrow_held = 1;                      
+                        return 1;
+        
+
         case L_SHIFT_RAISE:
             case R_SHIFT_RAISE:
             shift_held = 0;
@@ -305,6 +313,12 @@ int special_check(int key){
         case TAB_RAISE:
             tab_held = 0;
             return 1;
+        case L_ARROW_RAISE:
+            case R_ARROW_RAISE:
+                case U_ARROW_RAISE:
+                    case D_ARROW_RAISE:
+                        arrow_held = 0;                      
+                        return 1;
     }
     return 0;
 }

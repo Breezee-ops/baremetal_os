@@ -21,6 +21,7 @@ int32_t term_read(void* buf, int32_t nbytes){
 	term.x_pos = 0;
 	term.y_pos++;
 	set_curr_pos(term.x_pos, term.y_pos);
+	return nbytes;
 }
 
 int32_t term_write(unsigned char* buf, uint32_t nbytes){
@@ -49,7 +50,7 @@ int32_t term_write(unsigned char* buf, uint32_t nbytes){
 		}
 		set_curr_pos(term.x_pos, term.y_pos);
 	}
-	return 0;
+	return nbytes;
 }
 
 void uh_oh_backspace(){
@@ -101,8 +102,8 @@ void uh_oh_backspace(){
 void term_clear(){
 	term.x_pos = 0;
 	term.y_pos = 0;
-	buf_count=0;
-	memset(line_buf, '\0', sizeof(line_buf));
+	//buf_count=0;
+	//memset(line_buf, '\0', sizeof(line_buf));
 	set_curr_pos(term.x_pos, term.y_pos);
 	clear();
 	set_curr_pos(term.x_pos, term.y_pos);
