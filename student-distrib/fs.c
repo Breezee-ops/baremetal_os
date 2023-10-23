@@ -1,13 +1,27 @@
 # include "fs.h"
 
-
+/* fs_init
+ * 
+ *  Initialize file system by setting relevent memory addresses
+ * Inputs: mod_start - the starting address of fs memory
+ * Outputs: None
+ * Side Effects: Initializes global pointers to file system data structures
+ * Coverage: Boot block, inodes, and data blocks
+ */
 void fs_init(uint32_t mod_start) {
     boot_block = (boot_block_t*)(mod_start); // start of boot block
     inode_blocks = (inode_t*)(boot_block + 1); // start of inodes
     data_blocks = (data_block_t*)(inode_blocks + boot_block->inode_count); // start of data blocks
 }
 
-
+/* read_dentry_by_name
+ * 
+ *  Find directory entry by name
+ * Inputs: fname - filename we want to search for
+ *         dentry - dentry pointer to store result
+ * Outputs: 0 if the dentry is found, -1 if not found
+ * Side Effects: None
+ */
 uint32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry) {
     int i;
     for (i = 0; i < DIR_ENTRIES_LEN; i++) {
@@ -20,6 +34,14 @@ uint32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry) {
     return -1;
 }
 
+/* read_dentry_by_index
+ * 
+ *  Finds dentry by searching via index
+ * Inputs: index - index we are searching for
+ *         dentry - dentry pointer to store result
+ * Outputs: 0 if the dentry is found, -1 if not found
+ * Side Effects: None
+ */
 uint32_t read_dentry_by_index(uint32_t index, dentry_t* dentry) {
     if(index < 0 || index >= boot_block->dir_count) //flag linked to above
         return -1;
@@ -28,6 +50,16 @@ uint32_t read_dentry_by_index(uint32_t index, dentry_t* dentry) {
     return 0;
 }
 
+/* read_data 
+ * 
+ *  Read data from specifiec offset into buffer
+ * Inputs: inode_idx - index of file inode
+ *         offset - starting offset
+ *         buf - buffer pointer to store the read data
+ *         length - length of data to read
+ * Outputs: The number of bytes read if successful, -1 on error
+ * Side Effects: None
+ */
 uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t length) {
     int i;
     uint32_t bytes_read = 0;
@@ -65,11 +97,28 @@ uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t l
     return bytes_read;// success
 }
 
+/* file_write 
+ * 
+ *      Write to a file
+ * Inputs: file_name - the name of the file
+ * Outputs: -1
+ * Side Effects: None
+ */
 uint32_t file_write(uint8_t file_name) {
     // read only file system
     return -1; 
 }
 
+/* file_read 
+ * 
+ *   Read data from with a specified offset, perform sanity checks 
+ * Inputs: f_desc - the file descriptor
+ *         offset - the starting offset in the file
+ *         buf - a pointer to the buffer to store the read data
+ *         length - the length of data to read
+ * Outputs: The number of bytes read if successful, -1 on error
+ * Side Effects: None
+ */
 uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t length) {
     
     // sanity check on file system init
@@ -78,7 +127,6 @@ uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t leng
     // result -> read data function call
     int32_t ret = read_data(f_desc, offset, buf, length); 
 
-    // add bytes read to offset
     if (ret < 0) { 
         return -1; 
     } else {
@@ -86,19 +134,48 @@ uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t leng
     }    
 }
 
+/* file_open 
+ * 
+ *  Opens a file
+ * Inputs: file_name - the name of the file
+ * Outputs: 0
+ * Side Effects: None
+ */
 uint32_t file_open(const uint8_t* file_name) {
     return 0; 
 }
 
+/* file_close 
+ * 
+ *  Close a file
+ * Inputs: file_name - the name of the file
+ * Outputs: 0
+ * Side Effects: None
+ */
 uint32_t file_close(const uint8_t* file_name) {
     return 0; 
 }
 
+/* directory_write 
+ * 
+ *  Write to the directory
+ * Inputs: None
+ * Outputs: -1
+ * Side Effects: None
+ */
 uint32_t directory_write() {
     //read only file system
     return -1; 
 }
 
+/* directory_read 
+ * 
+ *  Read from directory at offset value and copy into buffer
+ * Inputs: offset -  directory entry offset
+ *         buf - buffer pointer to store the directory entry
+ * Outputs: The number of bytes read if successful, -1 on error
+ * Side Effects: None
+ */
 uint32_t directory_read(uint32_t offset, uint8_t* buf) {
 
     dentry_t* dir_entry; 
@@ -124,9 +201,26 @@ uint32_t directory_read(uint32_t offset, uint8_t* buf) {
     
 }
 
+
+/* directory_open
+ * 
+ *  Opens a directory
+ * Inputs: file_name - the name of the directory
+ * Outputs: 0
+ * Side Effects: None
+ */
 uint32_t directory_open(const uint8_t* file_name) {
     return 0; 
 }
+
+
+/* directory_close
+ * 
+ *   Close a directory
+ * Inputs: file_name - the name of the directory
+ * Outputs: 0
+ * Side Effects: None
+ */
 uint32_t directory_close(const uint8_t* file_name) {
     return 0; 
 }
