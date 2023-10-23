@@ -8,9 +8,9 @@
 #define NUM_ROWS						25
 #define MAX_BUFFER						128
 
-void term_write(unsigned char* buf, uint32_t nbytes);
+int32_t term_write(unsigned char* buf, uint32_t nbytes);
 void uh_oh_backspace();
-//void tabitha();
+void tabitha();
 void term_clear();
 int32_t term_read(void* buf, int32_t nbytes);
 

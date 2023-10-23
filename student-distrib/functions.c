@@ -285,10 +285,10 @@ int special_check(int key){
             else{
                 capslock_on = 0;
             }
-        // case TAB_HELD:
-        //     tab_held = 1;
-        //     tabitha();
-        //     return 1;
+        case TAB_HELD:
+            tabitha();
+            tab_held = 1;
+            return 1;
         case L_SHIFT_RAISE:
             case R_SHIFT_RAISE:
             shift_held = 0;
