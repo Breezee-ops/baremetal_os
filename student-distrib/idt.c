@@ -2,6 +2,7 @@
 #include "x86_desc.h"
 #include "functions.h"
 #include "handler_wrap.h"
+#include "idt_wrap.h"
 #include "rtc.h"
 
 /*  init_idt
@@ -83,4 +84,8 @@ void init_idt(idt_desc_t* idt){
     // the interrupts are assembly linked so that we can preserve our flags when we return after completion of interrupt execution
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
+
+    //untested 
+    SET_IDT_ENTRY(idt[0x80], syscall_handler_asm);
+
 }

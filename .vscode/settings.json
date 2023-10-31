@@ -4,6 +4,7 @@
         "lib.h": "c",
         "x86_desc.h": "c",
         "handler_wrap.h": "c",
-        "*.s": "c"
+        "*.s": "c",
+        "functions.h": "c"
     }
 }
