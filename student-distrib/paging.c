@@ -54,7 +54,6 @@ void init_paging() {
     page_directory[1].not_used = 0;
     page_directory[1].available = 0;
     page_directory[1].PT_addr = 0x1 << 10; //1 * 2^10 * 2^12 = 2^22 = 4MB start of kernel
-
     
     //set page table of first 4 MB
     for(i = 0; i < 1024; i++) {
@@ -109,4 +108,31 @@ void enable_paging() {
     "movl %%eax, %%cr0                 "
 
     : : : "eax", "cc" );
+}
+
+void flush_tlb(){
+    asm (
+    "movl $page_directory, %%eax      ;"
+    "movl %%eax, %%cr3                ;"
+    : : : "eax", "cc" );
+}
+
+void set_exe_page(uint32_t pid){
+    // for 8mb + (processnum*4mb)
+    // 0x2 << 10 + (processnum * 0x1 << 10)
+    page_directory[32].present = 1;
+    page_directory[32].read_write = 1;
+    page_directory[32].user_supervisor = 1;
+    page_directory[32].write_through = 0;
+    page_directory[32].cache_disable = 0;
+    page_directory[32].accessed = 0;
+    page_directory[32].reserved = 0;
+    page_directory[32].page_size = 0;
+    page_directory[32].not_used = 0;
+    page_directory[32].available = 0;
+    page_directory[32].PT_addr = 0x2 << 10 + (pid * 0x1 << 10); //0x2 << 10 + (processnum * 0x1 << 10) start of process memory.
+
+    enable_paging();
+
+    flush_tlb();
 }

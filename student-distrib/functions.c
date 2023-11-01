@@ -2,6 +2,8 @@
 #include "lib.h"
 #include "i8259.h"
 #include "term.h"
+#include "fs.h"
+#include "paging.h"
 
 // define C functions for setting all of the exceptions
 
@@ -155,7 +157,7 @@ char lower_keymap[128] =
   '/', 
   '*',
   ' ',  
-};
+}
 //uppercase keymap when SHIFT and CAPSLOCK
 char upper_keymap[128] =
 {
@@ -215,7 +217,7 @@ char upper_keymap[128] =
     '?',     
     '*',     
     ' ',
-};
+}
 /* keyboard_handler
  * 
  * takes input from keyboard and converts the scancode to an ascii character
@@ -336,3 +338,41 @@ int special_check(int key){
     return 0;
 }
 
+// system calls:
+uint8_t exe_check(dentry_t* dirptr){
+    uint8_t magic_num[4] = {0x7f, 0x45, 0x4c, 0x46};
+    uint8_t buf[4];
+    int i;
+    file_read(dirptr->inode_num, 0, buf, 4);
+    for(i = 0; i < 4; i++){
+       if(buf[i] != magic_num[i]) return -1;
+    }
+    return 0;
+}
+
+// TODO: this function takes a command; change this out
+int32_t execute(const uint8_t* filename){
+    dentry_t dir = {
+        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
+        .filetype = 0,       // 0 for uint32_t
+        .inode_num = 0,      // 0 for uint32_t
+        .reserved = {0}      // Initializes all elements of the reserved array to 0
+    };
+    dentry_t* dirptr = &dir; 
+    if(read_dentry_by_name((uint8_t*)filename, dirptr) != 0) return -1;
+    if(exe_check(dirptr) != 0) return -1;
+    // dereference 8mb - 4kb for shell and 16kb for process and put the pcb struct type obj at the top of these two stacks.
+    file_read(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
+    printf("%x", eip);
+    // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
+    int i, j;
+    for (i = 0; i < 6; i++){
+        if(pcba[i].present == 0){
+            pcba[i].present = 1;
+            set_exe_page(pcba[i].pid);
+            // read the executable into memory
+            read_data(dirptr->inode_num, 0, 0x0804000, 0x300000);
+        }
+    }
+    return 0;
+}

@@ -31,6 +31,30 @@
 #define D_ARROW_RAISE 0xD0
 #define U_ARROW_RAISE 0xC8
 
+typedef struct
+{
+    int32_t (*open)(const uint8_t* filename);
+} file_op;
+
+typedef struct{
+    file_op* file_operations;
+    inode_t* inode;
+    uint32_t file_position;
+    uint32_t flags;
+} fd_t;
+
+typedef struct{
+    fd_t* fda;
+    uint32_t esp;
+    uint32_t ebp;
+    uint32_t pid;
+    uint32_t parent_pid;
+    uint8_t present; // 0 means we can use this pcb
+    char args[128];
+} pcb_t;
+
+// pcb array
+pcb_t pcba[6];
 
 void diverror() ; 
 void debug() ; 
@@ -54,3 +78,4 @@ void coprocessor() ; // added
 void keyboard_init(void);
 void keyboard_handler(void);
 int special_check(int key);
+int32_t execute(const uint8_t* filename);
