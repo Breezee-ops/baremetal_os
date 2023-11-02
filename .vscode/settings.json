@@ -9,6 +9,7 @@
         "ece391sysnum.h": "c",
         "syscall.h": "c",
         "ece391syscall.h": "c",
-        "idt_wrap.h": "c"
+        "idt_wrap.h": "c",
+        "ece391support.h": "c"
     }
 }

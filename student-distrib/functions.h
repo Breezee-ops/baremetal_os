@@ -56,6 +56,6 @@ void coprocessor() ; // added
 void keyboard_init(void);
 void keyboard_handler(void);
 int special_check(int key);
-int32_t execute(const uint8_t* filename);
+// int32_t execute(const uint8_t* filename);
 
 #endif

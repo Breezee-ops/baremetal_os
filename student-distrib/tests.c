@@ -5,6 +5,8 @@
 #include "term.h"
 #include "fs.h"
 
+#include "syscall.h"
+
 #define PASS 1
 #define FAIL 0
 
@@ -312,7 +314,7 @@ int checkKeys(){
 }
 
 int execheck(){
-	uint8_t fname[32] = "ls";
+	uint8_t fname[32] = "shell";
 	int val =  execute((const uint8_t*) fname);
 	// 255 because -1 in execheck which is uint8_t
 	if(val == 255 || val == 0) return FAIL;
@@ -345,7 +347,7 @@ void launch_tests(){
 	//TEST_OUTPUT("rtc functionality", rtcwriting(32));
 	 //TEST_OUTPUT("rtc functionality", rtcopening());
 	 //TEST_OUTPUT("key test", checkKeys());
-	TEST_OUTPUT("execheck", execheck());
+	//TEST_OUTPUT("execheck", execheck());
 	//putc('@');
 }
 

@@ -14,6 +14,7 @@
 #include "paging.h"
 #include "term.h"
 #include "fs.h"
+#include "syscall.h"
 
 #define RUN_TESTS
 
@@ -175,7 +176,9 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-
+    uint32_t num = 1; 
+    execute((const uint8_t*)"shell");
+    //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

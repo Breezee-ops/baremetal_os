@@ -6,14 +6,14 @@
 syscall_handler_asm:
 
     // push all registers
-    pushl %eax
-    pushl %ecx
-    pushl %edx
-    pushl %ebx
-    pushl %esp
-    pushl %ebp
-    pushl %esi
-    pushl %edi
+    // pushl %eax
+    // pushl %ecx
+    // pushl %edx
+    // pushl %ebx
+    // pushl %esp
+    // pushl %ebp
+    // pushl %esi
+    // pushl %edi
 
     // push flags
     pushal
@@ -46,14 +46,14 @@ clean_up:
     popal
 
     // pop registers
-    popl %edi
-    popl %esi
-    popl %ebp
-    popl %esp
-    popl %ebx
-    popl %edx
-    popl %ecx
-    popl %eax
+    // popl %edi
+    // popl %esi
+    // popl %ebp
+    // popl %esp
+    // popl %ebx
+    // popl %edx
+    // popl %ecx
+    // popl %eax
 
 
 .align 4

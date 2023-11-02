@@ -16,7 +16,7 @@ pcb_t* pcb_init(uint32_t pid) {
 
     pcb_t* pcb_ptr = &cur_pcb;
     return pcb_ptr;
-}0
+}
 
 pcb_t* get_pcb_ptr(uint32_t pid) {
     return (pcb_t *)(0x800000 - (pid + 1) * 0x2000);
@@ -26,7 +26,7 @@ uint32_t find_pid() {
     int i;
     uint32_t found;
 
-    for(int i = 0; i < 6; i++) {
+    for(i = 0; i < 6; i++) {
         if(active_processes[i] == 0) {
             active_processes[i] = 1;
             found = i;
@@ -47,3 +47,4 @@ uint32_t free_pid(uint32_t pid) {
         
     return 0;
 }
+
