@@ -3,7 +3,6 @@
 #include "i8259.h"
 #include "term.h"
 
-// define C functions for setting all of the exceptions
 
 void diverror() {
     printf("Divide by zero error"); 
@@ -242,6 +241,11 @@ void keyboard_handler(void){
     //if CTRL + L is pressed clear terminal
     if(ctrl_held == 1 && key == 0x26){
         term_clear();
+    }
+    if(ctrl_held == 1 && key == 0x2E){
+
+        printf("Control C Pressed"); 
+
     }
 
     //logic to handle if we should print uppercase letter

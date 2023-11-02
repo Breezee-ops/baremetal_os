@@ -2,8 +2,8 @@
 #include "x86_desc.h"
 #include "functions.h"
 #include "handler_wrap.h"
-#include "idt_wrap.h"
 #include "rtc.h"
+#include "syscall.h"
 
 /*  init_idt
  * 
