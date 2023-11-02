@@ -1,7 +1,19 @@
 #include "idt.h"
 #include "x86_desc.h"
 #include "functions.h"
+#include "handler_wrap.h"
+#include "rtc.h"
+#include "syscall.h"
 
+/*  init_idt
+ * 
+ * loads the idt with the corresponding function handlers for exceptions and interrupts
+ * Inputs: pointer to idt
+ * Outputs: none
+ * Side Effects: sets the idt with the right function pointers
+ * Coverage: Load IDT
+ * Files: x86_desc.h/S, handler_wrapper.S/h, functions.c/h
+ */
 void init_idt(idt_desc_t* idt){
     int i;
     // these are the exceptions
@@ -17,7 +29,8 @@ void init_idt(idt_desc_t* idt){
         idt[i].present = 1;
     }
     //maskeable interrupts
-    // keyboard interrupt
+
+    // keyboard interrupt, this lives at 0x21 on the idt table
     idt[0x21].seg_selector = KERNEL_CS;
     idt[0x21].reserved4 = 0;
     idt[0x21].reserved3 = 0;
@@ -28,7 +41,7 @@ void init_idt(idt_desc_t* idt){
     idt[0x21].dpl = 0;
     idt[0x21].present = 1;
 
-    // rtc interrupt
+    // rtc interrupt, this lives at 0x28 on the idt table
     idt[0x28].seg_selector = KERNEL_CS;
     idt[0x28].reserved4 = 0;
     idt[0x28].reserved3 = 0;
@@ -45,6 +58,8 @@ void init_idt(idt_desc_t* idt){
     idt[0x80].dpl = 3;
 
     // set idt index and then the function pointer
+    // here we just go through each of the idt locations following the idt structure mentioned in the intel documentation and place the respective handler function inside
+    // from functions.c/h
     SET_IDT_ENTRY(idt[0x0], diverror);
     SET_IDT_ENTRY(idt[0x1], debug);
     SET_IDT_ENTRY(idt[0x2], nmi);
@@ -65,5 +80,12 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0x11], alignment_check);
     SET_IDT_ENTRY(idt[0x12], machine_check);
     SET_IDT_ENTRY(idt[0x13], smd);
-    SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm); //2*16 + 1*1 = 33
+    
+    // the interrupts are assembly linked so that we can preserve our flags when we return after completion of interrupt execution
+    SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
+    SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
+
+    //untested 
+    SET_IDT_ENTRY(idt[0x80], syscall_handler_asm);
+
 }

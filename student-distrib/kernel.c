@@ -10,6 +10,11 @@
 #include "tests.h"
 #include "idt.h"
 #include "functions.h"
+#include "rtc.h"
+#include "paging.h"
+#include "term.h"
+#include "fs.h"
+#include "syscall.h"
 
 #define RUN_TESTS
 
@@ -17,12 +22,14 @@
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
 
+uint32_t FS_ADDR;
+
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
-
+    init_idt(idt);
     /* Clear the screen. */
     clear();
 
@@ -54,6 +61,7 @@ void entry(unsigned long magic, unsigned long addr) {
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
+        FS_ADDR = (uint32_t)mod->mod_start;
         while (mod_count < mbi->mods_count) {
             printf("Module %d loaded at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_start);
             printf("Module %d ends at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_end);
@@ -137,14 +145,20 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
     }
-
+    init_idt(idt);
     /* Init the PIC */
     i8259_init();
 
     keyboard_init();
 
-    init_idt(idt);
+    init_paging();
+    
+    init_rtc(); 
 
+    term_init();
+    
+    fs_init(FS_ADDR);
+    
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
 
@@ -154,7 +168,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */
-    printf("Enabling Interrupts\n");
+    term_write((unsigned char*)"Enabling Interrupts", 20);
     sti();
 
 #ifdef RUN_TESTS
@@ -162,7 +176,11 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-
+    uint32_t num = 1; 
+    execute((const uint8_t*)"shell");
+    //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
+
+

@@ -248,6 +248,23 @@ uint32_t strlen(const int8_t* s) {
     return len;
 }
 
+
+void set_curr_pos(int x, int y) 
+{
+	if (x >= 0 && x <= NUM_COLS)
+		screen_x = x;
+	if (y >= 0 && y <= NUM_ROWS)
+		screen_y = y;
+}
+
+int* get_curr_pos(){
+    static int pos[2];
+    pos[0] = screen_x;
+    pos[1] = screen_y;
+    return pos;
+}
+
+
 /* void* memset(void* s, int32_t c, uint32_t n);
  * Inputs:    void* s = pointer to memory
  *          int32_t c = value to set memory to

@@ -2,6 +2,14 @@
     "files.associations": {
         "tests.h": "c",
         "lib.h": "c",
-        "x86_desc.h": "c"
+        "x86_desc.h": "c",
+        "handler_wrap.h": "c",
+        "*.s": "c",
+        "functions.h": "c",
+        "ece391sysnum.h": "c",
+        "syscall.h": "c",
+        "ece391syscall.h": "c",
+        "idt_wrap.h": "c",
+        "ece391support.h": "c"
     }
 }
