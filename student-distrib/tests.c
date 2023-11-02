@@ -311,6 +311,14 @@ int checkKeys(){
 	return 0;
 }
 
+int execheck(){
+	uint8_t fname[32] = "ls";
+	int val =  execute((const uint8_t*) fname);
+	// 255 because -1 in execheck which is uint8_t
+	if(val == 255 || val == 0) return FAIL;
+	return PASS;
+}
+
 /* Checkpoint 2 tests */
 
 /* Checkpoint 3 tests */
@@ -337,6 +345,7 @@ void launch_tests(){
 	//TEST_OUTPUT("rtc functionality", rtcwriting(32));
 	 //TEST_OUTPUT("rtc functionality", rtcopening());
 	 //TEST_OUTPUT("key test", checkKeys());
+	TEST_OUTPUT("execheck", execheck());
 	//putc('@');
 }
 

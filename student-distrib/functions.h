@@ -1,3 +1,6 @@
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
 #include "types.h"
 #include "i8259.h"
 #include "lib.h"
@@ -31,17 +34,6 @@
 #define D_ARROW_RAISE 0xD0
 #define U_ARROW_RAISE 0xC8
 
-extern void _start_halt(void);
-
-
-int32_t halt_wrap(uint8_t status);
-int32_t execute_wrap(uint8_t status);
-int32_t read_wrap(int8_t status);
-int32_t write_wrap(uint8_t status);
-int32_t open_wrap(uint8_t status);
-int32_t close_wrap(uint8_t status);
-
-
 void diverror() ; 
 void debug() ; 
 void nmi() ; 
@@ -64,3 +56,6 @@ void coprocessor() ; // added
 void keyboard_init(void);
 void keyboard_handler(void);
 int special_check(int key);
+int32_t execute(const uint8_t* filename);
+
+#endif

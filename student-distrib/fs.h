@@ -34,6 +34,7 @@ typedef struct {
 
 typedef uint8_t data_block_t;
 
+uint32_t eip;
 boot_block_t* boot_block;
 inode_t* inode_blocks;
 data_block_t* data_blocks;
