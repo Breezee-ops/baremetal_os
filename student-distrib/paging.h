@@ -47,7 +47,7 @@ page_table_t page_table[1024] __attribute__((aligned(4096)));// 1024 entries ali
 
 void init_paging();
 void enable_paging();
-void set_exe_page(uint32_t pid)
+void set_exe_page(uint32_t pid);
 
 #endif /* ASM */
 

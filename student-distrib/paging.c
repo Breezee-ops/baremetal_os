@@ -70,6 +70,18 @@ void init_paging() {
         page_table[i].P_addr = i;
     }
 
+    page_directory[32].present = 1;
+    page_directory[32].read_write = 1;
+    page_directory[32].user_supervisor = 1;
+    page_directory[32].write_through = 0;
+    page_directory[32].cache_disable = 0;
+    page_directory[32].accessed = 0;
+    page_directory[32].reserved = 0;
+    page_directory[32].page_size = 1;
+    page_directory[32].not_used = 0;
+    page_directory[32].available = 0;
+    page_directory[32].PT_addr = 0x2 << 10; // 8 mb
+
     //set page table index of video memory
     page_table[VIDEO_MEMORY].present = 1;
     page_table[VIDEO_MEMORY].read_write = 1;
@@ -127,12 +139,12 @@ void set_exe_page(uint32_t pid){
     page_directory[32].cache_disable = 0;
     page_directory[32].accessed = 0;
     page_directory[32].reserved = 0;
-    page_directory[32].page_size = 0;
+    page_directory[32].page_size = 1;
     page_directory[32].not_used = 0;
     page_directory[32].available = 0;
     page_directory[32].PT_addr = 0x2 << 10 + (pid * 0x1 << 10); //0x2 << 10 + (processnum * 0x1 << 10) start of process memory.
 
-    enable_paging();
+    //enable_paging();
 
     flush_tlb();
 }

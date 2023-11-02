@@ -312,7 +312,7 @@ int checkKeys(){
 }
 
 int execheck(){
-	uint8_t fname[32] = "frame0.txt";
+	uint8_t fname[32] = "ls";
 	int val =  execute((const uint8_t*) fname);
 	// 255 because -1 in execheck which is uint8_t
 	if(val == 255 || val == 0) return FAIL;

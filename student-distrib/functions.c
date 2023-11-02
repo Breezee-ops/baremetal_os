@@ -4,6 +4,7 @@
 #include "term.h"
 #include "fs.h"
 #include "paging.h"
+#include "pcb.h"
 
 // define C functions for setting all of the exceptions
 
@@ -99,7 +100,7 @@ void keyboard_init(void){
     int arrow_held = 0;
 
 //lowercase keymap to translate PS/2 Scancode (set 1) to ASCII characters
-char lower_keymap[128] =
+char lower_keymap[] =
 {
     0,  
     27, 
@@ -156,10 +157,10 @@ char lower_keymap[128] =
   '.', 
   '/', 
   '*',
-  ' ',  
-}
+  ' '  
+};
 //uppercase keymap when SHIFT and CAPSLOCK
-char upper_keymap[128] =
+char upper_keymap[] =
 {
     0,
     27,
@@ -216,8 +217,8 @@ char upper_keymap[128] =
     '>',    
     '?',     
     '*',     
-    ' ',
-}
+    ' '
+};
 /* keyboard_handler
  * 
  * takes input from keyboard and converts the scancode to an ascii character
@@ -350,29 +351,59 @@ uint8_t exe_check(dentry_t* dirptr){
     return 0;
 }
 
+int context_switch(uint32_t pid){
+    uint32_t user_stack_ptr = 0x800000 - (pid * 8000);
+    tss.esp0 = user_stack_ptr;
+    uint32_t* user_esp = (uint32_t*) 0x7DE2900;
+    asm volatile (" \n\
+    movw %1, %%ds   \n\
+    pushl %1        \n\
+    pushl %3        \n\
+    pushfl          \n\
+    pushl %2        \n\
+    pushl %0        \n\
+    iret            \n\
+    "
+    ::"r" (eip), "r"(USER_DS), "r" (USER_CS), "r"(user_esp) : "cc"
+    );
+}
+
 // TODO: this function takes a command; change this out
-int32_t execute(const uint8_t* filename){
+int32_t execute(const uint8_t* command){
     dentry_t dir = {
         .filename = "",      // Empty string, initializes all characters to 0 ('\0')
         .filetype = 0,       // 0 for uint32_t
         .inode_num = 0,      // 0 for uint32_t
         .reserved = {0}      // Initializes all elements of the reserved array to 0
     };
+    uint8_t filename[FILENAME_LEN] = {0};
+    int ind;
+    for(ind = 0; ind < FILENAME_LEN && command[ind] != " "; ind++){
+        filename[ind] = command[ind];
+    }
     dentry_t* dirptr = &dir; 
     if(read_dentry_by_name((uint8_t*)filename, dirptr) != 0) return -1;
     if(exe_check(dirptr) != 0) return -1;
+    uint8_t buffer[4];
     // dereference 8mb - 4kb for shell and 16kb for process and put the pcb struct type obj at the top of these two stacks.
-    file_read(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
-    printf("%x", eip);
+    read_data(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
     // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
-    int i, j;
-    for (i = 0; i < 6; i++){
-        if(pcba[i].present == 0){
-            pcba[i].present = 1;
-            set_exe_page(pcba[i].pid);
-            // read the executable into memory
-            read_data(dirptr->inode_num, 0, 0x0804000, 0x300000);
-        }
-    }
+    int i;
+    char j;
+
+    uint32_t pid = find_pid();
+    pcb_t* currpcb = pcb_init(pid);
+    set_exe_page(pid);
+    // read the executable into memory
+    read_data(dirptr->inode_num, 0, (uint8_t*)0x08048000, 0x300000);
+    currpcb->parent_pid = pid -1;
+    uint32_t esp, ebp;
+    asm volatile("\n\
+    movl %%esp, %0  \n\
+    movl %%ebp, %1  \n\
+    " : "=r" (esp), "=r" (ebp) : : "cc");
+    currpcb->esp = esp;
+    currpcb->ebp = ebp;
+    context_switch(pid);
     return 0;
 }
