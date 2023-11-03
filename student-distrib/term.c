@@ -19,7 +19,7 @@ unsigned char* video_mem;
  * Coverage: term
  */
 void term_init(){
-	video_mem = (char *)0xB8000;
+	video_mem = (unsigned char*)0xB8000;
     term.x_pos = 0;
     term.y_pos = 0;
     clear();
@@ -43,7 +43,7 @@ int32_t term_close(){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_read(unsigned char* buf, int32_t nbytes){
+int32_t term_read(int32_t fd, unsigned char* buf, int32_t nbytes){
 	int i;
 	term.x_pos = get_curr_pos()[0];					//grab current position on screen
 	term.y_pos = get_curr_pos()[1];
@@ -56,7 +56,7 @@ int32_t term_read(unsigned char* buf, int32_t nbytes){
 	if(nbytes > MAX_BUFFER){
 		nbytes = MAX_BUFFER;
 	}
-	 for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nbytes; i++) {
         if (buf[i] == '\n') {
             term.x_pos = 0;
             term.y_pos++;
@@ -70,11 +70,12 @@ int32_t term_read(unsigned char* buf, int32_t nbytes){
             set_curr_pos(term.x_pos, term.y_pos);
             return i + 1; // Return the number of characters processed
         }
+	}
+	// moved this down 
 	set_curr_pos(term.x_pos, term.y_pos);
-	term_write(buf, nbytes);
+	term_write(1,buf, nbytes);
 	set_curr_pos(term.x_pos, term.y_pos);			//set current position on screen
 	return nbytes;
-	}
 }
 /* term_write
  * 
@@ -84,7 +85,7 @@ int32_t term_read(unsigned char* buf, int32_t nbytes){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_write(unsigned char* buf, uint32_t nbytes){
+int32_t term_write(int32_t fd, const unsigned char* buf, int32_t nbytes){
 	int i;
 	//loop over all characters in buffer
 	for(i = 0; i < nbytes; i++){
@@ -197,7 +198,7 @@ void term_clear(){
 void tabitha(){
 	unsigned char buf[4];
 	memset(buf, ' ', sizeof(buf));
-	term_write(buf, 4);
+	term_write(2,buf, 4);
 }
 
 void one_line_up(){

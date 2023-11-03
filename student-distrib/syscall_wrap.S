@@ -66,4 +66,3 @@ jump_table:
     .long write
     .long open
     .long close
-

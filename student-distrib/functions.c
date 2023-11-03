@@ -84,67 +84,6 @@ void coprocessor() {
     while(1); 
 }
 
-// int32_t read (int32_t fd, void* buf, int32_t nbytes){
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(pcb_ptr->fda[0].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = pcb_ptr->fda[0].file_operations->stdin_read(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(pcb_ptr->fda[1].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = pcb_ptr->fda[fd].file_operations->stdout_write(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t open (const uint8_t* filename){
-//     int i;
-//     if(strlen((char*)filename) == NULL){
-//         return -1;
-//     }
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-//     dentry_t data_entry;
-
-//     for(i = 0; i < 8; i++) {
-//         if(pcb_ptr->fda[i].flags = 1){
-//             pcb_ptr->fda[i].flags = 0;
-//             pcb_ptr->fda[i].inode = data_entry.inode_num;
-//             pcb_ptr->fda[i].file_position = i;
-//             break;
-//         }
-//         return i; 
-//     }
-// }
-
-// int32_t close (int32_t fd){
-//     pcb_t* pcb_ptr = get_curr_pos(find_pid());
-//     if(pcb_ptr->fda[fd].flags == 1){
-//         return -1;
-//     }
-
-//     pcb_ptr->fda[fd].flags = 1;
-//     pcb_ptr->fda[fd].file_position = 0;
-//     pcb_ptr->fda[fd].inode = -1;
-//     free_pid(find_pid());
-
-//     return pcb_ptr->fda[fd].file_operations->stdout_close(fd);
-// }
-
-
-
 //enable the irq line 1 on the master to accept keyboard input
 void keyboard_init(void){
     enable_irq(1);
@@ -326,7 +265,7 @@ void keyboard_handler(void){
     }
     //otherwise call term_write to add to buffer and print to screen
     else{
-        term_read(&printed_key, 1);
+        term_read(0, &printed_key, 1);
     }
     //done with interrupt
     send_eoi(1);

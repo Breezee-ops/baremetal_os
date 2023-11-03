@@ -317,7 +317,7 @@ int rtcwriting(int val){
 
 
 int checkKeys(){
-	term_write((unsigned char*)"Yo, what's good?\n", 18);
+	term_write(2,(unsigned char*)"Yo, what's good?\n", 18);
 	return 0;
 }
 
