@@ -259,7 +259,9 @@ void keyboard_handler(void){
         printf("Control C Pressed"); 
 
     }
-    if(key == '\n') ente = 1;
+    if(key == 28) {
+        ente = 1;
+    }
     //logic to handle if we should print uppercase letter
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
         printed_key = upper_keymap[key];

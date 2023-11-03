@@ -16,3 +16,5 @@ checkpoint 2: the bugman returns
 8) printing strings into the write_terminal would cause the buffer to behave abnormally\
 9) file system memcopy was acting extremely buggy, caused a page fault. We eventually found that we could fix by initializing an empty dentry object
 10) problems with strncpy, fixing issues with types in comparisons allowed it to work correctly
+
+fix the issue with the stack being messed up when returning from a interrupt

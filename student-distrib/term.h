@@ -9,11 +9,15 @@
 #define MAX_BUFFER						128
 
 void term_init();
-int32_t term_write(unsigned char* buf, uint32_t nbytes);
+int32_t term_write(int32_t fd, const unsigned char* buf, int32_t nbytes);
 void uh_oh_backspace();
 void tabitha();
 void term_clear();
-int32_t term_read(char* buf, int32_t nbytes);
+int32_t term_open();
+int32_t term_close();
+int32_t term_read(int32_t fd, unsigned char* buf, int32_t nbytes);
+void one_line_up();
+
 
 typedef struct termData {
 	int x_pos;
