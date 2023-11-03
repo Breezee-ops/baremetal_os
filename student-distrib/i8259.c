@@ -29,6 +29,7 @@
 #define SLAVE_OFFSET			0x70
 
 #define PIC_EOI					0x60		/* End-of-interrupt command code */
+#define PIC_EOI					0x60		/* End-of-interrupt command code */
 
 
 /* Interrupt masks to determine which interrupts are enabled and disabled */
@@ -40,6 +41,7 @@ static inline void io_wait(void)
     outb(0x80, 0);
 }
 
+/* Initialize the 8259 PIC */
 /* Initialize the 8259 PIC */
 /* Taken largely from OSdevwiki */
 void i8259_init(void) {

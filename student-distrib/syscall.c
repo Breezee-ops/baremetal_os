@@ -16,7 +16,7 @@ int32_t halt (uint8_t status) {
 int context_switch(uint32_t pid){
     uint32_t user_stack_ptr = 0x7A1200 - (pid * 8000);
     tss.esp0 = user_stack_ptr;
-    uint32_t* user_esp = (uint32_t*) 0x7DE2900 - 4;
+    uint32_t* user_esp = (uint32_t*) 0x7DE2900 - 0x4;
     asm volatile (" \n\
     movw %1, %%ds   \n\
     pushl %1        \n\
