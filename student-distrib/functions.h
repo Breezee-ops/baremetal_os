@@ -34,6 +34,9 @@
 #define D_ARROW_RAISE 0xD0
 #define U_ARROW_RAISE 0xC8
 
+int get_flag();
+void set_flag();
+
 void diverror() ; 
 void debug() ; 
 void nmi() ; 

@@ -94,8 +94,6 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
 
-    SET_IDT_ENTRY(idt[0x79], page_fault_asm);
-
 
     //untested 
     SET_IDT_ENTRY(idt[0x80], syscall_handler_asm);

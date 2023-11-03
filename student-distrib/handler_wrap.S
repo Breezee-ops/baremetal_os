@@ -31,8 +31,4 @@ keyboard_handler_asm:
 .globl general_prot_asm
 general_prot_asm:
 
-
-.globl page_fault_asm
-page_fault_asm:
-
     

@@ -6,15 +6,15 @@
 #include "x86_desc.h"
 
 typedef struct {
+	int32_t (*read)(int32_t f_desc, int32_t offset, void* buf, int32_t length);
+	int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
     int32_t (*open)(const uint8_t* filename);
 	int32_t (*close)(int32_t fd);
-	int32_t (*read)(int32_t fd, unsigned char* buf, int32_t nbytes);
-	int32_t (*write)(int32_t fd, const unsigned char* buf, int32_t nbytes);
 } file_operation_t;
 
 typedef struct {
     file_operation_t* file_operations;
-    inode_t* inode;
+    int32_t inode_num;
     uint32_t file_position;
     uint32_t flags;
 } fd_t;
@@ -45,5 +45,6 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes);
 int32_t open(const uint8_t* filename); 
 int32_t close (int32_t fd);  
 int find_fda_idx();
+int latest_pid();
 #endif
 

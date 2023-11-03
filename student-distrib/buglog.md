@@ -13,6 +13,17 @@ checkpoint 2: the bugman returns
 5) Problems with my x_pos of cursor becoming negative values if certain special keys were hit
 6) Enter key was not properly storing the buffer and allowed additional keypresses to go past the maximum buffer size
 7) If you were to press tab then backspace it would send the cursor to seemingly random locations
-8) printing strings into the write_terminal would cause the buffer to behave abnormally\
+8) printing strings into the write_terminal would cause the buffer to behave abnormally
 9) file system memcopy was acting extremely buggy, caused a page fault. We eventually found that we could fix by initializing an empty dentry object
 10) problems with strncpy, fixing issues with types in comparisons allowed it to work correctly
+
+checkpoint 3: the bugman evolves into a creature I no longer understand
+1) The terminal read and write functions were not utilizing the buffer properly
+2) Enter key not triggering the buffer to be loaded within term_read
+3) Problems with how the pointer structer in pcb.c was being utilized across system calls
+4) Problems with assembly linkage for system calls particularly with passing parameters via stack
+5) Fixing scrolling from checkpoint 2 was causing problems in the video memory space
+6) Problems calling c functions from assembly using assembly linkage and vice versa
+7) Problems fixing the format of the inline assembly
+8) Problems with keyboard handler not mingling correctly with system calls to terminal read
+9) Problem compiling execute system call without errors.

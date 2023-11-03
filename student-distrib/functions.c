@@ -4,8 +4,17 @@
 #include "term.h"
 #include "fs.h"
 #include "paging.h"
-#include "pcb.h"
 
+
+static volatile int enter_flag = 0;
+
+int get_flag(){
+    return enter_flag;
+}
+
+void set_flag(int flag){
+    enter_flag = flag;
+}
 
 void diverror() {
     printf("Divide by zero error"); 
@@ -230,7 +239,7 @@ void keyboard_handler(void){
     cli();
     //read pressed key from keyboard
     uint8_t key = inb(0x60);
-
+    enter_flag = 0;
     unsigned char printed_key; 
 
     //check if a key that alters keypress is pressed
@@ -249,7 +258,9 @@ void keyboard_handler(void){
         printf("Control C Pressed"); 
 
     }
-
+    if(key == 28){
+        enter_flag = 1;
+    }
     //logic to handle if we should print uppercase letter
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
         printed_key = upper_keymap[key];
@@ -265,7 +276,7 @@ void keyboard_handler(void){
     }
     //otherwise call term_write to add to buffer and print to screen
     else{
-        term_read(0, &printed_key, 1);
+        keyboard_read(&printed_key);
     }
     //done with interrupt
     send_eoi(1);
