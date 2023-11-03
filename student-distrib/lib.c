@@ -2,6 +2,7 @@
  * vim:ts=4 noexpandtab */
 
 #include "lib.h"
+#include "term.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -247,7 +248,6 @@ uint32_t strlen(const int8_t* s) {
         len++;
     return len;
 }
-
 
 void set_curr_pos(int x, int y) 
 {

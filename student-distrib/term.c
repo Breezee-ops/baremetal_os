@@ -1,12 +1,14 @@
 #include "term.h"
 #include "lib.h"
 
+#define ATTRIB      0x7
 
 termData term;
 unsigned char line_buf[MAX_BUFFER];
 static int buf_count = 0;
 static int the_real_buf_count = 0;
 unsigned char tab_flag;
+unsigned char* video_mem;
 
 /* term_init
  * 
@@ -17,10 +19,20 @@ unsigned char tab_flag;
  * Coverage: term
  */
 void term_init(){
+	video_mem = (char *)0xB8000;
     term.x_pos = 0;
     term.y_pos = 0;
     clear();
     set_curr_pos(0, 0);
+}
+
+int32_t term_open(){
+	return 0;
+}
+
+int32_t term_close(){
+	term_clear();
+	return 0;
 }
 
 /* term_read
@@ -31,13 +43,38 @@ void term_init(){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_read(void* buf, int32_t nbytes){
+int32_t term_read(unsigned char* buf, int32_t nbytes){
+	int i;
 	term.x_pos = get_curr_pos()[0];					//grab current position on screen
 	term.y_pos = get_curr_pos()[1];
-	term.x_pos = 0;
-	term.y_pos++;
+	if(buf == NULL){
+		return -1;
+	}
+	if(nbytes <= 0){
+		return 0;
+	}
+	if(nbytes > MAX_BUFFER){
+		nbytes = MAX_BUFFER;
+	}
+	 for (i = 0; i < nbytes; i++) {
+        if (buf[i] == '\n') {
+            term.x_pos = 0;
+            term.y_pos++;
+            if (term.y_pos >= NUM_ROWS - 1) {
+                term.y_pos--;
+                one_line_up();
+            }
+            memset(line_buf, '\0', sizeof(line_buf));
+            buf_count = 0;
+            printf("\n");
+            set_curr_pos(term.x_pos, term.y_pos);
+            return i + 1; // Return the number of characters processed
+        }
+	set_curr_pos(term.x_pos, term.y_pos);
+	term_write(buf, nbytes);
 	set_curr_pos(term.x_pos, term.y_pos);			//set current position on screen
 	return nbytes;
+	}
 }
 /* term_write
  * 
@@ -54,14 +91,15 @@ int32_t term_write(unsigned char* buf, uint32_t nbytes){
 		term.x_pos = get_curr_pos()[0];					// get current postiion
 		term.y_pos = get_curr_pos()[1];
 		set_curr_pos(term.x_pos, term.y_pos);			//update current position
-		if(buf[i] == '\n'){								//if enter is pressed reset buffer and call term_read
-			term_read(line_buf, sizeof(line_buf));
-		 	memset(line_buf, '\0', sizeof(line_buf));
-		 	buf_count = 0;
-		}
+		
 		if((term.x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
 			term.x_pos = 0;
-			term.y_pos++;
+			if(term.y_pos < NUM_ROWS - 1){
+				term.y_pos++;
+			}
+			else{
+				one_line_up();
+			}
 		}
 		if(buf_count < MAX_BUFFER){						//if we have not reached buffer limit
 			set_curr_pos(term.x_pos, term.y_pos);		//update current position
@@ -160,4 +198,19 @@ void tabitha(){
 	unsigned char buf[4];
 	memset(buf, ' ', sizeof(buf));
 	term_write(buf, 4);
+}
+
+void one_line_up(){
+	int i;
+	int vid_offset = NUM_COLS * 2;
+	unsigned char* dest = video_mem;
+    unsigned char* src = video_mem + vid_offset;
+	unsigned char * bottom = video_mem + (NUM_ROWS - 1) * (vid_offset);
+    unsigned int size = vid_offset * (NUM_ROWS - 1);
+    memmove(dest, src, size);
+
+	for(i = 0; i < NUM_COLS; i++){
+		bottom[i*2] = ' ';
+		bottom[i*2 + 1] = ATTRIB;
+	}
 }
