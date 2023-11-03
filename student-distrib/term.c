@@ -1,5 +1,6 @@
 #include "term.h"
 #include "lib.h"
+#include "functions.h"
 
 
 termData term;
@@ -7,7 +8,7 @@ unsigned char line_buf[MAX_BUFFER];
 static int buf_count = 0;
 static int the_real_buf_count = 0;
 unsigned char tab_flag;
-
+static volatile int flag = 0;
 /* term_init
  * 
  * takes clears and initializes terminal by setting cursor position to the top left
@@ -31,13 +32,19 @@ void term_init(){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_read(void* buf, int32_t nbytes){
+int32_t term_read(char* buf, int32_t nbytes){
 	term.x_pos = get_curr_pos()[0];					//grab current position on screen
 	term.y_pos = get_curr_pos()[1];
 	term.x_pos = 0;
 	term.y_pos++;
+	while(!flag){ flag = get_ente(); }
+	set_ente(0);
+	int32_t numbytes;
+	for(numbytes = 0; numbytes < 128; numbytes ++){
+		if(line_buf[numbytes] == '\0') break;
+	}
 	set_curr_pos(term.x_pos, term.y_pos);			//set current position on screen
-	return nbytes;
+	return numbytes;
 }
 /* term_write
  * 

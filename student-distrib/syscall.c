@@ -9,7 +9,27 @@
 
 
 int32_t halt (uint8_t status) {
-    printf("reached halt");
+    uint32_t currpid;
+    currpid = (uint32_t)latest_pid();
+    pcb_t* currpcb = get_pcb_ptr(currpid);
+    tss.esp0 = 8388608 - (currpcb->parent_pid * 8192) - 4;
+    set_exe_page(currpcb->parent_pid);
+    free_pid(currpid);
+    if(currpcb->parent_pid == 0){
+        execute((const uint8_t*) "shell");
+    }
+    else{
+        uint32_t ebp = currpcb->ebp;
+        asm volatile ("\n\
+        mov %%edx, %%ebp \n\
+        mov %%ecx, %%eax \n\
+        leave          \n\
+        ret            \n\
+        "
+        ::"d"(ebp), "c"(status)
+        );
+    }
+
     return 0; 
 }
 
@@ -84,12 +104,11 @@ int32_t execute(const uint8_t* command){
 
 
 int32_t read (uint32_t fd, void* buf, uint32_t nbytes) {
-    printf("reached read");
-    return 0;
+    return term_read(buf, nbytes);
 }
 
 int32_t write (uint32_t fd, const void* buf, uint32_t nbytes) {
-    printf("reached write");
+    term_write(buf, nbytes);
     return 0;
 }
 

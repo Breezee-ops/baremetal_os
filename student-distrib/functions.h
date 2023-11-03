@@ -34,6 +34,9 @@
 #define D_ARROW_RAISE 0xD0
 #define U_ARROW_RAISE 0xC8
 
+
+int get_ente();
+void set_ente(int flag);
 void diverror() ; 
 void debug() ; 
 void nmi() ; 
