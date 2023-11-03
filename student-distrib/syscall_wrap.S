@@ -7,16 +7,16 @@ syscall_handler_asm:
 
     // push all registers
     // pushl %eax
-    // pushl %ecx
-    // pushl %edx
-    // pushl %ebx
-    // pushl %esp
-    // pushl %ebp
-    // pushl %esi
-    // pushl %edi
+    pushl %ecx
+    pushl %edx
+    pushl %ebx
+    pushl %esp
+    pushl %ebp
+    pushl %esi
+    pushl %edi
 
     // push flags
-    pushal
+    // pushal
     pushfl
 
     // push arguments
@@ -43,17 +43,18 @@ clean_up:
 
     // pop flags
     popfl
-    popal
+    // popal
 
     // pop registers
-    // popl %edi
-    // popl %esi
-    // popl %ebp
-    // popl %esp
-    // popl %ebx
-    // popl %edx
-    // popl %ecx
+    popl %edi
+    popl %esi
+    popl %ebp
+    popl %esp
+    popl %ebx
+    popl %edx
+    popl %ecx
     // popl %eax
+    iret
 
 
 .align 4
@@ -65,5 +66,4 @@ jump_table:
     .long write
     .long open
     .long close
-
 
