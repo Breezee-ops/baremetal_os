@@ -31,11 +31,12 @@ typedef struct {
     //... fill in as needed
 } pcb_t;
 
+int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes);
+int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 pcb_t* pcb_init(uint32_t pid);
 pcb_t* get_pcb_ptr(uint32_t pid);
 uint32_t find_pid();
 uint32_t free_pid(uint32_t pid);
-
 #endif /* ASM */
 
 #endif /* _PCB_H */
