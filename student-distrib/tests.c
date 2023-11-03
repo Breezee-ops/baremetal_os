@@ -102,6 +102,14 @@ int paging_test() {
 }
 //TESTING
 
+int paging_exec(){
+	TEST_HEADER;
+	uint32_t result;
+	uint32_t* ptr = (uint32_t*) 138412028;
+	result = *ptr;
+	return PASS;
+}
+
 /* Checkpoint 2 tests */
 
 // read small files
@@ -348,6 +356,7 @@ void launch_tests(){
 	 //TEST_OUTPUT("rtc functionality", rtcopening());
 	 //TEST_OUTPUT("key test", checkKeys());
 	//TEST_OUTPUT("execheck", execheck());
+	//TEST_OUTPUT("execheck", paging_exec());
 	//putc('@');
 }
 

@@ -53,9 +53,15 @@ void init_idt(idt_desc_t* idt){
     idt[0x28].present = 1;
     
     // TODO: fix this for the system calls, typically start at 0x80 (correct in doc)
+    idt[0x80].seg_selector = KERNEL_CS;
+    idt[0x80].reserved4 = 0;
     idt[0x80].reserved3 = 1;
-    idt[0x80].present = 1;
+    idt[0x80].reserved2 = 1;
+    idt[0x80].reserved1 = 1;
+    idt[0x80].reserved0 = 0;
+    idt[0x80].size = 1;
     idt[0x80].dpl = 3;
+    idt[0x80].present = 1;
 
     // set idt index and then the function pointer
     // here we just go through each of the idt locations following the idt structure mentioned in the intel documentation and place the respective handler function inside

@@ -28,7 +28,7 @@ keyboard_handler_asm:
     iret
 
     
-
-
+.globl general_prot_asm
+general_prot_asm:
 
     
