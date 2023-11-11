@@ -40,7 +40,7 @@ int32_t halt (uint8_t status) {
     cur_pcb_ptr = get_pcb_ptr(cur_pcb_ptr->parent_pid);
     set_exe_page(cur_pcb_ptr->pid);
     free_pid(cur_pcb_ptr->pid);
-    if(cur_pcb_ptr->pid == 0){
+    if(currpid == 0){
         free_pid(cur_pcb_ptr->pid);
         execute((const uint8_t*) "shell");
     }
