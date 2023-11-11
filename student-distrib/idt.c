@@ -81,6 +81,9 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0xc], stack_seg);
     SET_IDT_ENTRY(idt[0xd], general_protection);
     SET_IDT_ENTRY(idt[0xe], page_fault);
+
+
+
     // f is reserved
     SET_IDT_ENTRY(idt[0x10], floating_excep);
     SET_IDT_ENTRY(idt[0x11], alignment_check);
@@ -90,6 +93,7 @@ void init_idt(idt_desc_t* idt){
     // the interrupts are assembly linked so that we can preserve our flags when we return after completion of interrupt execution
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
+
 
     //untested 
     SET_IDT_ENTRY(idt[0x80], syscall_handler_asm);

@@ -96,7 +96,8 @@ int32_t rtc_open(const uint8_t* filename){
  * Coverage: creates rtc functionality
  * Files: i8259.c/h
  */
-int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
+
+int32_t rtc_read(int32_t f_desc, int32_t offset, void* buf, int32_t length){
     return_flag_read = 0;
     while(!return_flag_read){};
     test_interrupts();

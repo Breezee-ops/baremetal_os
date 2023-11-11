@@ -10,7 +10,6 @@ syscall_handler_asm:
     pushl %ecx
     pushl %edx
     pushl %ebx
-    pushl %esp
     pushl %ebp
     pushl %esi
     pushl %edi
@@ -49,7 +48,6 @@ clean_up:
     popl %edi
     popl %esi
     popl %ebp
-    popl %esp
     popl %ebx
     popl %edx
     popl %ecx
@@ -66,4 +64,3 @@ jump_table:
     .long write
     .long open
     .long close
-

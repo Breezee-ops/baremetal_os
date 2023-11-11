@@ -142,7 +142,7 @@ void set_exe_page(uint32_t pid){
     page_directory[32].page_size = 1;
     page_directory[32].not_used = 0;
     page_directory[32].available = 0;
-    page_directory[32].PT_addr = pid + 2; //0x2 << 10 + (processnum * 0x1 << 10) start of process memory.
+    page_directory[32].PT_addr = 2 + (pid); //0x2 << 10 + (processnum * 0x1 << 10) start of process memory.
 
     //enable_paging();
 
