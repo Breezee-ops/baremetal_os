@@ -161,7 +161,13 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes) {
         case 1: return -1;
         default: 
             bytes = cur_pcb_ptr->fda[fd].file_operations->read(cur_pcb_ptr->fda[fd].inode_num, cur_pcb_ptr->fda[fd].file_position, buf, nbytes);
-            cur_pcb_ptr->fda[fd].file_position += bytes;
+            if(cur_pcb_ptr->fda[fd].){
+                cur_pcb_ptr->fda[fd].file_position += 1;
+            }
+            else{
+                cur_pcb_ptr->fda[fd].file_position += bytes;
+            }
+            cur_pcb_ptr->fda[fd].inode_num++;
     }
     return bytes;
 }
@@ -228,40 +234,6 @@ int32_t close (int32_t fd) {
 }
 
 int32_t vidmap (uint8_t** screen_start){
-    // if (screen_start == NULL)
-    //     return -1;
-
-    // int addr = (uint32_t)screen_start;
-    // if (addr < 0x08000000 || addr > (USER_MEM + PAGE_4MB))
-    //     return -1;
-
-    // page_directory[32].present = 1;
-    // page_directory[32].read_write = 1;
-    // page_directory[32].user_supervisor = 1;
-    // page_directory[32].write_through = 0;
-    // page_directory[32].cache_disable = 0;
-    // page_directory[32].accessed = 0;
-    // page_directory[32].reserved = 0;
-    // page_directory[32].page_size = 1;
-    // page_directory[32].not_used = 0;
-    // page_directory[32].available = 0;
-    // page_directory[32].PT_addr = VIDEO_INDEX << 10; // assuming VIDEO_INDEX is the appropriate index
-
-    // page_table[VIDEO_MEMORY].present = 1;
-    // page_table[VIDEO_MEMORY].read_write = 1;
-    // page_table[VIDEO_MEMORY].user_supervisor = 1;
-    // page_table[VIDEO_MEMORY].write_through = 0;
-    // page_table[VIDEO_MEMORY].cache_disable = 0;
-    // page_table[VIDEO_MEMORY].accessed = 0;
-    // page_table[VIDEO_MEMORY].dirty = 0;
-    // page_table[VIDEO_MEMORY].reserved = 0;
-    // page_table[VIDEO_MEMORY].global = 0;
-    // page_table[VIDEO_MEMORY].available = 0;
-    // page_table[VIDEO_MEMORY].P_addr = VIDMEM_ADDR >> 12; // assuming VIDMEM_ADDR is the appropriate physical address
-
-    // flush_tlb();
-
-    // *screen_start = (uint32_t*)(VM_VIDEO);
     return 0;
 }
 
