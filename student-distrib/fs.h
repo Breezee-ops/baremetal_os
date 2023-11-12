@@ -49,11 +49,11 @@ uint32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry);
 uint32_t read_dentry_by_index(uint32_t index, dentry_t* dentry);
 uint32_t read_data(int32_t f_desc, int32_t offset, void* buf, int32_t length);
 int32_t file_write(int32_t fd, const void* buf, int32_t nbytes); 
-int32_t file_read(int32_t f_desc, int32_t offset, void* buf, int32_t length);
+int32_t file_read(int32_t fd, int32_t* offset, void* buf, int32_t length);
 int32_t file_open(const uint8_t* file_name);
 int32_t file_close(int32_t fd);
 int32_t directory_write(int32_t fd, const void* buf, int32_t nbytes);
-int32_t directory_read(int32_t f_desc, int32_t offset, void* buf, int32_t length); 
+int32_t directory_read(int32_t fd, int32_t* offset, void* buf, int32_t length); 
 int32_t directory_open(const uint8_t* file_name); 
 int32_t directory_close(int32_t fd); 
 

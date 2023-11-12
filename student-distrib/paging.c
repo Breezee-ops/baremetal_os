@@ -113,12 +113,6 @@ void enable_paging() {
     "movl %%eax, %%cr0                 "
     : : : "eax", "cc" );
 }
-void flush_tlb(){
-    asm (
-    "movl $page_directory, %%eax      ;"
-    "movl %%eax, %%cr3                ;"
-    : : : "eax", "cc" );
-}
 
 void flush_tlb(){
     asm (

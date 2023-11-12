@@ -42,11 +42,12 @@ int32_t term_close(int32_t fd){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_read(int32_t f_desc, uint32_t offset, uint8_t* buf, int32_t length){
+int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	int i;
+	uint8_t* char_buf = (uint8_t*)buf;
 	term.x_pos = get_curr_pos()[0];					//grab current position on screen
 	term.y_pos = get_curr_pos()[1];
-	if(buf == NULL){
+	if(char_buf == NULL){
 		return -1;
 	}
 	if(length <= 0){
@@ -58,9 +59,9 @@ int32_t term_read(int32_t f_desc, uint32_t offset, uint8_t* buf, int32_t length)
 	while(buf_count == 0 || line_buf[buf_count - 1] != '\n');
 	// here
 	for(i = 0; i < length && line_buf[i] != '\0'; i++){
-		buf[i] = line_buf[i];
+		char_buf[i] = line_buf[i];
 	}
-	buf[i] = '\n';
+	char_buf[i] = '\n';
 	memset(line_buf, '\0', sizeof(line_buf));
 	buf_count = 0;
 	// for (i = 0; i < nbytes; i++) {
@@ -170,7 +171,7 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 			}
 			printf("%c", '\n');
 		set_curr_pos(term.x_pos, term.y_pos);
-	}	
+		}	
 		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
 	}
 }

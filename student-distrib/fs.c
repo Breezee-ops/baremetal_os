@@ -113,20 +113,23 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes) {
 /* file_read 
  * 
  *   Read data from with a specified offset, perform sanity checks 
- * Inputs: f_desc - the file descriptor
+ * Inputs: fd - the file descriptor
  *         offset - the starting offset in the file
  *         buf - a pointer to the buffer to store the read data
  *         length - the length of data to read
  * Outputs: The number of bytes read if successful, -1 on error
  * Side Effects: None
  */
-int32_t file_read(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
+int32_t file_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
     
     // sanity check on file system init
     if (boot_block == NULL || buf == NULL || offset < 0) return -1; 
 
     // result -> read data function call
-    int32_t ret = read_data(f_desc, offset, buf, length); 
+    int32_t ret = read_data(fd, *offset, buf, length); 
+
+    int32_t temp = *offset + ret;
+    *offset = temp;
 
     if (ret < 0) { 
         return -1; 
@@ -177,21 +180,29 @@ int32_t directory_write(int32_t fd, const void* buf, int32_t nbytes) {
  * Outputs: The number of bytes read if successful, -1 on error
  * Side Effects: None
  */
-int32_t directory_read(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
+int32_t directory_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 
     dentry_t* dir_entry; 
-    uint32_t len; 
+    uint32_t len;
     // sanity check on file system init, offset, index, and buffer
-    if (offset > DIR_ENTRIES_LEN-1 || boot_block == NULL || buf == NULL) {
+    if (*offset > DIR_ENTRIES_LEN-1 || boot_block == NULL || buf == NULL) {
         return -1; 
     }
 
     // use passed in offset to retrieve the dentry pointer
-    dir_entry = &(boot_block->dir_entries[offset]);
+    dir_entry = &(boot_block->dir_entries[*offset]);
 
     // strncpy filename 
     strncpy((int8_t*) buf, (int8_t*) dir_entry->filename, FILENAME_LEN);
-    len = strlen((char*)dir_entry->filename); 
+    len = strlen((char*)dir_entry->filename);
+
+    if (len == 0) {
+        return 0;
+    } else {
+        int32_t temp = *offset + 1;
+        *offset = temp;
+    }
+
     if (len > FILENAME_LEN) {
         return FILENAME_LEN; 
     } else if (len > 0){
@@ -199,7 +210,6 @@ int32_t directory_read(int32_t f_desc, int32_t offset, void* buf, int32_t length
     } else {
         return -1; 
     }
-    
 }
 
 
