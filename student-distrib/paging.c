@@ -2,7 +2,6 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "paging.h"
-
 /* init_paging - Example
  * 
  * goes through the paging directory and sets all accesible addresses to available. Also initializes each entry in page directory
@@ -13,7 +12,6 @@
  */
 void init_paging() {
     int i;
-
     // set page directory to not present 4MB chunks
     for(i = 0; i < 1024; i++) {
         page_directory[i].present = 0;
@@ -28,7 +26,6 @@ void init_paging() {
         page_directory[i].available = 0;
         page_directory[i].PT_addr = i << 10;
     }
-
     //set first 4MB to "not present" chunks of 4kB
     page_directory[0].present = 1;
     page_directory[0].read_write = 1;
@@ -41,7 +38,6 @@ void init_paging() {
     page_directory[0].not_used = 0;
     page_directory[0].available = 0;
     page_directory[0].PT_addr = (unsigned int)page_table >> 12; // flag
-
     //set next 4 MB to kernel
     page_directory[1].present = 1;
     page_directory[1].read_write = 1;
@@ -94,7 +90,6 @@ void init_paging() {
     page_table[VIDEO_MEMORY].global = 0;
     page_table[VIDEO_MEMORY].available = 0;
     page_table[VIDEO_MEMORY].P_addr = VIDEO_MEMORY;
-
     enable_paging();
 }
 /* enable_paging
@@ -110,15 +105,18 @@ void enable_paging() {
     asm (
     "movl $page_directory, %%eax      ;"
     "movl %%eax, %%cr3                ;"
-
     "movl %%cr4, %%eax                ;"
     "orl $0x00000010, %%eax           ;"
     "movl %%eax, %%cr4                ;"
-
     "movl %%cr0, %%eax                ;"
     "orl $0x80000000, %%eax           ;"
     "movl %%eax, %%cr0                 "
-
+    : : : "eax", "cc" );
+}
+void flush_tlb(){
+    asm (
+    "movl $page_directory, %%eax      ;"
+    "movl %%eax, %%cr3                ;"
     : : : "eax", "cc" );
 }
 

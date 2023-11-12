@@ -60,4 +60,3 @@ int32_t directory_close(int32_t fd);
 #endif /* ASM */
 
 #endif /* _FS_H */
-

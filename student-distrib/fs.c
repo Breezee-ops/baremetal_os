@@ -225,5 +225,3 @@ int32_t directory_open(const uint8_t* file_name) {
 int32_t directory_close(int32_t fd) {
     return 0; 
 }
-
-

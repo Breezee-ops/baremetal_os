@@ -4,13 +4,10 @@
 #define ATTRIB      0x7
 
 termData term;
-static unsigned char line_buf[MAX_BUFFER];
-static int buf_count = 0;
-static int the_real_buf_count = 0;
+unsigned char line_buf[MAX_BUFFER];
+int buf_count = 0;
 unsigned char tab_flag;
 unsigned char* video_mem;
-
-static volatile int flag;
 
 /* term_init
  * 
@@ -163,6 +160,17 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 				term.x_pos++;
 			}
 		}
+
+		if (buf[i] == '\n') {
+			term.x_pos = 0;
+			term.y_pos++;
+			if (term.y_pos >= NUM_ROWS - 1) {
+				term.y_pos--;
+				one_line_up();
+			}
+			printf("%c", '\n');
+		set_curr_pos(term.x_pos, term.y_pos);
+	}	
 		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
 	}
 }
@@ -175,8 +183,6 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
  * Coverage:
  */
 int32_t term_write(int32_t fd, const void* buf, int32_t nbytes) {
-
-	int i;
 	term_keyboard_write(buf, nbytes);
 	//loop over all characters in buffer
 	// for(i = 0; i < nbytes; i++){
@@ -228,7 +234,8 @@ void uh_oh_backspace(){
 		else{return;}
 	}
 	else{ // if there's characters behind us we go back.
-		term.x_pos--;
+		if(buf_count > 0)
+			term.x_pos--;
 	}
 
 

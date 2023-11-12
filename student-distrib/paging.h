@@ -1,12 +1,8 @@
 #include "types.h"
-
 #ifndef _PAGING_H
 #define _PAGING_H
-
 #ifndef ASM
-
 #define VIDEO_MEMORY 0xb8
-
 typedef union page_directory_t {
     uint32_t val;
     struct {
@@ -24,7 +20,6 @@ typedef union page_directory_t {
     } __attribute__ ((packed));
    
 } page_directory_t;
-
 typedef union page_table_t {
     uint32_t val;
     struct {
@@ -41,14 +36,11 @@ typedef union page_table_t {
         uint32_t P_addr : 20;
     } __attribute__ ((packed));
 } page_table_t;
-
 page_directory_t page_directory[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
 page_table_t page_table[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
-
 void init_paging();
 void enable_paging();
 void set_exe_page(uint32_t pid);
 
 #endif /* ASM */
-
 #endif /* _PAGING_H */

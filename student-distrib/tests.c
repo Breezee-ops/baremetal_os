@@ -364,5 +364,3 @@ void launch_tests(){
 	TEST_OUTPUT("execheck", cat_check());
 	//putc('@');
 }
-
-
