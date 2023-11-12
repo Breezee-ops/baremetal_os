@@ -143,8 +143,35 @@ int32_t execute(const uint8_t* command){
     " : "=r" (esp), "=r" (ebp) : : "cc");
     cur_pcb_ptr->esp = esp;
     cur_pcb_ptr->ebp = ebp;
+    int it;
+    for(it = 0; it < 32; it++){
+        if(command[ind] != ' '){
+            cur_pcb_ptr->args[it] = command[ind];
+        }
+        ind++;
+    }
     // 
     context_switch(pid);
+    return 0;
+}
+
+int32_t getargs(uint8_t* buf, int32_t nbytes){
+    if(buf == NULL) return -1;
+    int it;
+    int bc = 0;
+    int ccount;
+    int bufc = 0;
+    for(it = 0; it < 128; it++){
+        if(cur_pcb_ptr->args[it] != ' ' || cur_pcb_ptr->args[it] != '\0' || cur_pcb_ptr->args[it] != '\n') ccount++;
+    }
+    if(ccount == 0) return -1;
+    it = (nbytes > 128) ? 128 : nbytes;
+    while(cur_pcb_ptr->args[bc] == '\0' || cur_pcb_ptr->args[bc] == '\n' || cur_pcb_ptr->args[bc] == ' ') bc++;
+    while(cur_pcb_ptr->args[bc] != '\0' && cur_pcb_ptr->args[bc] != '\n'){
+        buf[bufc] = cur_pcb_ptr->args[bc];
+        bufc++;
+        bc++;
+    }
     return 0;
 }
 

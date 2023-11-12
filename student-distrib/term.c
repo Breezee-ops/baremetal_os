@@ -305,19 +305,3 @@ void one_line_up(){
 		bottom[i*2 + 1] = ATTRIB;
 	}
 }
-
-void one_line_up(){
-	int i;
-	int vid_offset = NUM_COLS * 2;
-	unsigned char* dest = video_mem;
-    unsigned char* src = video_mem + vid_offset;
-	unsigned char * bottom = video_mem + (NUM_ROWS - 1) * (vid_offset);
-    unsigned int size = vid_offset * (NUM_ROWS - 1);
-    memmove(dest, src, size);
-
-	for(i = 0; i < NUM_COLS; i++){
-		bottom[i*2] = ' ';
-		bottom[i*2 + 1] = ATTRIB;
-	}
-}
-

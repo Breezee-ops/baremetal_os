@@ -333,6 +333,10 @@ static inline void assertion_failure(){
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
+int cat_check(){
+	execute("cat frame0.txt");
+	return 0;
+}
 /* Checkpoint 5 tests */
 
 
@@ -357,6 +361,7 @@ void launch_tests(){
 	 //TEST_OUTPUT("key test", checkKeys());
 	//TEST_OUTPUT("execheck", execheck());
 	//TEST_OUTPUT("execheck", paging_exec());
+	TEST_OUTPUT("execheck", cat_check());
 	//putc('@');
 }
 

@@ -26,7 +26,7 @@ syscall_handler_asm:
     // value checking 
     cmpl $0, %eax
     jl bad_command
-    cmpl $6, %eax
+    cmpl $7, %eax
     jg bad_command
 
     // jump table here
@@ -64,3 +64,4 @@ jump_table:
     .long write
     .long open
     .long close
+    .long getargs
