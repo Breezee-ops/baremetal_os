@@ -278,7 +278,7 @@ void keyboard_handler(void){
     //otherwise call term_write to add to buffer and print to screen
     else{
         if(key == 0x39){
-            printed_key = " ";
+            printed_key = ' ';
         }
         keyboard_read(&printed_key);
     }

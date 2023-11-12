@@ -134,6 +134,14 @@ int32_t execute(const uint8_t* command){
     cur_pid = pid;
     pcb_t* currpcb = pcb_init(pid);
     cur_pcb_ptr = currpcb;
+    
+    int it;
+    for(it = 0; it < 32; it++){
+        if(command[ind] != ' '){
+            cur_pcb_ptr->args[it] = command[ind];
+        }
+        ind++;
+    }
 
     set_exe_page(pid);
     // read the executable into memory
@@ -146,13 +154,6 @@ int32_t execute(const uint8_t* command){
     " : "=r" (esp), "=r" (ebp) : : "cc");
     cur_pcb_ptr->esp = esp;
     cur_pcb_ptr->ebp = ebp;
-    int it;
-    for(it = 0; it < 32; it++){
-        if(command[ind] != ' '){
-            cur_pcb_ptr->args[it] = command[ind];
-        }
-        ind++;
-    }
     // 
     context_switch(pid);
     return 0;
@@ -342,6 +343,19 @@ pcb_t* pcb_init(uint32_t pid){
 }
 
 int32_t vidmap (uint8_t** screen_start){
+
+    if(screen_start == NULL){
+        return -1;
+    }
+
+    if((int)screen_start < 0x8000000 || (int)screen_start >= 0x8000000 + 0x400000){
+        return -1;
+    }
+
+    uint32_t pid = find_pid();
+
+    flush_tlb();
+    *screen_start = (uint8_t*)(0x8800000);
     return 0;
 }
 
