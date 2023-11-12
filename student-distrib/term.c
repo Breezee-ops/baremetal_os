@@ -4,10 +4,13 @@
 #define ATTRIB      0x7
 
 termData term;
-unsigned char line_buf[MAX_BUFFER];
-int buf_count = 0;
+static unsigned char line_buf[MAX_BUFFER];
+static int buf_count = 0;
+static int the_real_buf_count = 0;
 unsigned char tab_flag;
 unsigned char* video_mem;
+
+static volatile int flag;
 
 /* term_init
  * 
@@ -18,18 +21,18 @@ unsigned char* video_mem;
  * Coverage: term
  */
 void term_init(){
-	video_mem = (char *)0xB8000;
+	video_mem = (unsigned char*)0xB8000;
     term.x_pos = 0;
     term.y_pos = 0;
     clear();
     set_curr_pos(0, 0);
 }
 
-int32_t term_open(){
+int32_t term_open(const uint8_t* file_name){
 	return 0;
 }
 
-int32_t term_close(){
+int32_t term_close(int32_t fd){
 	term_clear();
 	return 0;
 }
@@ -42,48 +45,68 @@ int32_t term_close(){
  * Side Effects: None
  * Coverage:
  */
-int32_t term_read(unsigned char* buf, int32_t nbytes){
+int32_t term_read(int32_t f_desc, uint32_t offset, uint8_t* buf, int32_t length){
 	int i;
 	term.x_pos = get_curr_pos()[0];					//grab current position on screen
 	term.y_pos = get_curr_pos()[1];
 	if(buf == NULL){
 		return -1;
 	}
-	if(nbytes <= 0){
+	if(length <= 0){
 		return 0;
 	}
-	if(nbytes > MAX_BUFFER){
-		nbytes = MAX_BUFFER;
+	if(length > MAX_BUFFER){
+		length = MAX_BUFFER;
 	}
-	 for (i = 0; i < nbytes; i++) {
-        if (buf[i] == '\n') {
-            term.x_pos = 0;
-            term.y_pos++;
-            if (term.y_pos >= NUM_ROWS - 1) {
-                term.y_pos--;
-                one_line_up();
-            }
-            memset(line_buf, '\0', sizeof(line_buf));
-            buf_count = 0;
-            printf("\n");
-            set_curr_pos(term.x_pos, term.y_pos);
-            return i + 1; // Return the number of characters processed
-        }
-	set_curr_pos(term.x_pos, term.y_pos);
-	term_write(buf, nbytes);
-	set_curr_pos(term.x_pos, term.y_pos);			//set current position on screen
-	return nbytes;
+	while(buf_count == 0 || line_buf[buf_count - 1] != '\n');
+	// here
+	for(i = 0; i < length && line_buf[i] != '\0'; i++){
+		buf[i] = line_buf[i];
 	}
+	buf[i] = '\n';
+	memset(line_buf, '\0', sizeof(line_buf));
+	buf_count = 0;
+	// for (i = 0; i < nbytes; i++) {
+    //     if (buf[i] == '\n') {
+    //         term.x_pos = 0;
+    //         term.y_pos++;
+    //         if (term.y_pos >= NUM_ROWS - 1) {
+    //             term.y_pos--;
+    //             one_line_up();
+    //         }
+    //         memset(line_buf, '\0', sizeof(line_buf));
+    //         buf_count = 0;
+    //         printf("%c",'\n');
+    //         set_curr_pos(term.x_pos, term.y_pos);
+    //         return i + 1; // Return the number of characters processed
+    //     }
+	// }
+	// // moved this down 
+	// set_curr_pos(term.x_pos, term.y_pos);
+	// term_write(1,buf, nbytes);
+	// set_curr_pos(term.x_pos, term.y_pos);			//set current position on screen
+	return i;
 }
-/* term_write
- * 
- * writes buffer to terminal from RTC, Keyboard, or File System
- * Inputs: buffer , number bytes in buffer
- * Outputs: number of bytes
- * Side Effects: None
- * Coverage:
- */
-int32_t term_write(unsigned char* buf, uint32_t nbytes){
+
+void keyboard_read(unsigned char* buf){
+	term.x_pos = get_curr_pos()[0];					//grab current position on screen
+	term.y_pos = get_curr_pos()[1];
+
+	if (buf[0] == '\n') {
+		term.x_pos = 0;
+		term.y_pos++;
+		if (term.y_pos >= NUM_ROWS - 1) {
+			term.y_pos--;
+			one_line_up();
+		}
+		printf("%c", '\n');
+		set_curr_pos(term.x_pos, term.y_pos);
+	}
+	set_curr_pos(term.x_pos, term.y_pos);
+	keyboard_write(buf, 1);
+	set_curr_pos(term.x_pos, term.y_pos);
+}
+void keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
 	for(i = 0; i < nbytes; i++){
@@ -111,6 +134,85 @@ int32_t term_write(unsigned char* buf, uint32_t nbytes){
 		}
 		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
 	}
+}
+
+
+void term_keyboard_write(const unsigned char* buf, int nbytes){
+	int i;
+	//loop over all characters in buffer
+	for(i = 0; i < nbytes; i++){
+		term.x_pos = get_curr_pos()[0];					// get current postiion
+		term.y_pos = get_curr_pos()[1];
+		set_curr_pos(term.x_pos, term.y_pos);			//update current position
+		
+		if((term.x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
+			term.x_pos = 0;
+			if(term.y_pos < NUM_ROWS - 1){
+				term.y_pos++;
+			}
+			else{
+				one_line_up();
+			}
+		}
+		if(buf_count < MAX_BUFFER){						//if we have not reached buffer limit
+			set_curr_pos(term.x_pos, term.y_pos);		//update current position
+			putc(buf[i]);								//print char to screen
+			//line_buf[buf_count] = buf[i];				//add char to buffer
+			//buf_count++;								//increase count
+			if(term.x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+				term.x_pos++;
+			}
+		}
+
+		if (buf[i] == '\n') {
+			term.x_pos = 0;
+			term.y_pos++;
+			if (term.y_pos >= NUM_ROWS - 1) {
+				term.y_pos--;
+				one_line_up();
+			}
+			printf("%c", '\n');
+		set_curr_pos(term.x_pos, term.y_pos);
+	}	
+		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
+	}
+}
+/* term_write
+ * 
+ * writes buffer to terminal from RTC, Keyboard, or File System
+ * Inputs: buffer , number bytes in buffer
+ * Outputs: number of bytes
+ * Side Effects: None
+ * Coverage:
+ */
+int32_t term_write(int32_t fd, const void* buf, int32_t nbytes) {
+	term_keyboard_write(buf, nbytes);
+	//loop over all characters in buffer
+	// for(i = 0; i < nbytes; i++){
+	// 	term.x_pos = get_curr_pos()[0];					// get current postiion
+	// 	term.y_pos = get_curr_pos()[1];
+	// 	set_curr_pos(term.x_pos, term.y_pos);			//update current position
+		
+	// 	if((term.x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
+	// 		term.x_pos = 0;
+	// 		if(term.y_pos < NUM_ROWS - 1){
+	// 			term.y_pos++;
+	// 		}
+	// 		else{
+	// 			one_line_up();
+	// 		}
+	// 	}
+	// 	if(buf_count < MAX_BUFFER){						//if we have not reached buffer limit
+	// 		set_curr_pos(term.x_pos, term.y_pos);		//update current position
+	// 		putc(buf[i]);								//print char to screen
+	// 		line_buf[buf_count] = buf[i];				//add char to buffer
+	// 		buf_count++;								//increase count
+	// 		if(term.x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+	// 			term.x_pos++;
+	// 		}
+	// 	}
+	// 	set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
+	// }
 	return nbytes;
 }
 
@@ -135,7 +237,8 @@ void uh_oh_backspace(){
 		else{return;}
 	}
 	else{ // if there's characters behind us we go back.
-		term.x_pos--;
+		if(buf_count > 0)
+			term.x_pos--;
 	}
 
 
@@ -195,7 +298,7 @@ void term_clear(){
 void tabitha(){
 	unsigned char buf[4];
 	memset(buf, ' ', sizeof(buf));
-	term_write(buf, 4);
+	term_write(2,buf, 4);
 }
 
 void one_line_up(){

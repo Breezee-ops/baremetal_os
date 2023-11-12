@@ -60,8 +60,9 @@ uint32_t read_dentry_by_index(uint32_t index, dentry_t* dentry) {
  * Outputs: The number of bytes read if successful, -1 on error
  * Side Effects: None
  */
-uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t length) {
+uint32_t read_data(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
     int i;
+    uint32_t inode_idx = (uint32_t)f_desc;
     uint32_t bytes_read = 0;
     uint32_t* data2cpy;
     inode_t* inode2cpy = (inode_t*)(inode_blocks + inode_idx);
@@ -82,7 +83,7 @@ uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t l
 
         for(l = l; l < r; l++) {
             data2cpy = (uint32_t*)(data_blocks + inode2cpy->data_block_num[i] * BLOCK_SIZE + l);
-            memcpy(buf + bytes_read,data2cpy,1);
+            memcpy((uint8_t*)buf + bytes_read,data2cpy,1);
             bytes_read++;
             if(bytes_read == length) {
                 return bytes_read;
@@ -104,7 +105,7 @@ uint32_t read_data(uint32_t inode_idx, uint32_t offset, uint8_t* buf, uint32_t l
  * Outputs: -1
  * Side Effects: None
  */
-uint32_t file_write(uint8_t file_name) {
+int32_t file_write(int32_t fd, const void* buf, int32_t nbytes) {
     // read only file system
     return -1; 
 }
@@ -119,7 +120,7 @@ uint32_t file_write(uint8_t file_name) {
  * Outputs: The number of bytes read if successful, -1 on error
  * Side Effects: None
  */
-uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t length) {
+int32_t file_read(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
     
     // sanity check on file system init
     if (boot_block == NULL || buf == NULL || offset < 0) return -1; 
@@ -141,7 +142,7 @@ uint32_t file_read(uint32_t f_desc, uint32_t offset, uint8_t* buf, uint32_t leng
  * Outputs: 0
  * Side Effects: None
  */
-uint32_t file_open(const uint8_t* file_name) {
+int32_t file_open(const uint8_t* file_name) {
     return 0; 
 }
 
@@ -152,7 +153,7 @@ uint32_t file_open(const uint8_t* file_name) {
  * Outputs: 0
  * Side Effects: None
  */
-uint32_t file_close(const uint8_t* file_name) {
+int32_t file_close(int32_t fd) {
     return 0; 
 }
 
@@ -163,7 +164,7 @@ uint32_t file_close(const uint8_t* file_name) {
  * Outputs: -1
  * Side Effects: None
  */
-uint32_t directory_write() {
+int32_t directory_write(int32_t fd, const void* buf, int32_t nbytes) {
     //read only file system
     return -1; 
 }
@@ -176,7 +177,7 @@ uint32_t directory_write() {
  * Outputs: The number of bytes read if successful, -1 on error
  * Side Effects: None
  */
-uint32_t directory_read(uint32_t offset, uint8_t* buf) {
+int32_t directory_read(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
 
     dentry_t* dir_entry; 
     uint32_t len; 
@@ -209,7 +210,7 @@ uint32_t directory_read(uint32_t offset, uint8_t* buf) {
  * Outputs: 0
  * Side Effects: None
  */
-uint32_t directory_open(const uint8_t* file_name) {
+int32_t directory_open(const uint8_t* file_name) {
     return 0; 
 }
 
@@ -221,8 +222,6 @@ uint32_t directory_open(const uint8_t* file_name) {
  * Outputs: 0
  * Side Effects: None
  */
-uint32_t directory_close(const uint8_t* file_name) {
+int32_t directory_close(int32_t fd) {
     return 0; 
 }
-
-

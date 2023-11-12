@@ -2,8 +2,19 @@
 #include "lib.h"
 #include "i8259.h"
 #include "term.h"
+#include "fs.h"
+#include "paging.h"
 
-// define C functions for setting all of the exceptions
+
+static volatile int enter_flag = 0;
+
+int get_flag(){
+    return enter_flag;
+}
+
+void set_flag(int flag){
+    enter_flag = flag;
+}
 
 void diverror() {
     printf("Divide by zero error"); 
@@ -82,67 +93,6 @@ void coprocessor() {
     while(1); 
 }
 
-// int32_t read (int32_t fd, void* buf, int32_t nbytes){
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(pcb_ptr->fda[0].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = pcb_ptr->fda[0].file_operations->stdin_read(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(pcb_ptr->fda[1].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = pcb_ptr->fda[fd].file_operations->stdout_write(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t open (const uint8_t* filename){
-//     int i;
-//     if(strlen((char*)filename) == NULL){
-//         return -1;
-//     }
-//     pcb_t* pcb_ptr = get_pcb_ptr(find_pid());
-//     dentry_t data_entry;
-
-//     for(i = 0; i < 8; i++) {
-//         if(pcb_ptr->fda[i].flags = 1){
-//             pcb_ptr->fda[i].flags = 0;
-//             pcb_ptr->fda[i].inode = data_entry.inode_num;
-//             pcb_ptr->fda[i].file_position = i;
-//             break;
-//         }
-//         return i; 
-//     }
-// }
-
-// int32_t close (int32_t fd){
-//     pcb_t* pcb_ptr = get_curr_pos(find_pid());
-//     if(pcb_ptr->fda[fd].flags == 1){
-//         return -1;
-//     }
-
-//     pcb_ptr->fda[fd].flags = 1;
-//     pcb_ptr->fda[fd].file_position = 0;
-//     pcb_ptr->fda[fd].inode = -1;
-//     free_pid(find_pid());
-
-//     return pcb_ptr->fda[fd].file_operations->stdout_close(fd);
-// }
-
-
-
 //enable the irq line 1 on the master to accept keyboard input
 void keyboard_init(void){
     enable_irq(1);
@@ -157,7 +107,7 @@ void keyboard_init(void){
     int arrow_held = 0;
 
 //lowercase keymap to translate PS/2 Scancode (set 1) to ASCII characters
-char lower_keymap[128] =
+char lower_keymap[] =
 {
     0,  
     27, 
@@ -214,10 +164,10 @@ char lower_keymap[128] =
   '.', 
   '/', 
   '*',
-  ' ',  
+  ' '  
 };
 //uppercase keymap when SHIFT and CAPSLOCK
-char upper_keymap[128] =
+char upper_keymap[] =
 {
     0,
     27,
@@ -274,7 +224,7 @@ char upper_keymap[128] =
     '>',    
     '?',     
     '*',     
-    ' ',
+    ' '
 };
 /* keyboard_handler
  * 
@@ -289,7 +239,7 @@ void keyboard_handler(void){
     cli();
     //read pressed key from keyboard
     uint8_t key = inb(0x60);
-
+    enter_flag = 0;
     unsigned char printed_key; 
 
     //check if a key that alters keypress is pressed
@@ -303,7 +253,14 @@ void keyboard_handler(void){
     if(ctrl_held == 1 && key == 0x26){
         term_clear();
     }
+    if(ctrl_held == 1 && key == 0x2E){
 
+        printf("Control C Pressed"); 
+
+    }
+    if(key == 28){
+        enter_flag = 1;
+    }
     //logic to handle if we should print uppercase letter
     if((shift_held == 1 && capslock_on == 0) || (shift_held == 0 && capslock_on == 1)){
         printed_key = upper_keymap[key];
@@ -319,7 +276,7 @@ void keyboard_handler(void){
     }
     //otherwise call term_write to add to buffer and print to screen
     else{
-        term_read(&printed_key, 1);
+        keyboard_read(&printed_key);
     }
     //done with interrupt
     send_eoi(1);
@@ -395,4 +352,3 @@ int special_check(int key){
     }
     return 0;
 }
-

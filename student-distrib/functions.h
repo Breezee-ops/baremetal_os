@@ -1,3 +1,6 @@
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
 #include "types.h"
 #include "i8259.h"
 #include "lib.h"
@@ -31,6 +34,8 @@
 #define D_ARROW_RAISE 0xD0
 #define U_ARROW_RAISE 0xC8
 
+int get_flag();
+void set_flag();
 
 void diverror() ; 
 void debug() ; 
@@ -54,3 +59,6 @@ void coprocessor() ; // added
 void keyboard_init(void);
 void keyboard_handler(void);
 int special_check(int key);
+// int32_t execute(const uint8_t* filename);
+
+#endif
