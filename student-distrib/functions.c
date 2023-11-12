@@ -105,6 +105,7 @@ void keyboard_init(void){
     int capslock_on = 0;
     int tab_held;
     int arrow_held = 0;
+    int space = 0;
 
 //lowercase keymap to translate PS/2 Scancode (set 1) to ASCII characters
 char lower_keymap[] =
@@ -276,6 +277,9 @@ void keyboard_handler(void){
     }
     //otherwise call term_write to add to buffer and print to screen
     else{
+        if(key == 0x39){
+            printed_key = " ";
+        }
         keyboard_read(&printed_key);
     }
     //done with interrupt
