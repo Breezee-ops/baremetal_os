@@ -176,6 +176,7 @@ int32_t getargs(uint8_t* buf, int32_t nbytes){
         bufc++;
         bc++;
     }
+    buf[bufc] = '\0';
     return 0;
 }
 
