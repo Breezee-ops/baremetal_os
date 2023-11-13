@@ -17,9 +17,6 @@ checkpoint 2: the bugman returns
 9) file system memcopy was acting extremely buggy, caused a page fault. We eventually found that we could fix by initializing an empty dentry object
 10) problems with strncpy, fixing issues with types in comparisons allowed it to work correctly
 
-<<<<<<< HEAD
-fix the issue with the stack being messed up when returning from a interrupt
-=======
 checkpoint 3: the bugman evolves into a creature I no longer understand
 1) The terminal read and write functions were not utilizing the buffer properly
 2) Enter key not triggering the buffer to be loaded within term_read
@@ -30,4 +27,15 @@ checkpoint 3: the bugman evolves into a creature I no longer understand
 7) Problems fixing the format of the inline assembly
 8) Problems with keyboard handler not mingling correctly with system calls to terminal read
 9) Problem compiling execute system call without errors.
->>>>>>> mp3_zach
+
+checkpoint 4
+1) ls hitting directory read fail due to improper updating of file_position/inode_num in fd
+2) ls printing all but last file due to updating file_position every time regardless of success or fail
+3) read syscall not working for different filetypes due to pointer issues
+4) cat leaving program abnormally. adding endline at end of getargs.
+5) enter key prints next line of shell one space off, due to code treating enter key as a character that requires space on screen
+6) pingpong error caused by updating screen x and screen y values improperly
+7) syserror causes page fault due to poor edge case handling in file open
+8) fish not working. vidmap paging structure inaccurate.
+9) getargs not parsing arguments in whole. had a problems with terminal read and write
+10) pingpong output incorrect. had a test interrupts call in read for some reason.

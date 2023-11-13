@@ -64,18 +64,6 @@ void init_paging() {
         page_table[i].global = 0;
         page_table[i].available = 0;
         page_table[i].P_addr = i;
-
-        page_vidmap[i].present = 0;
-        page_vidmap[i].read_write = 1;
-        page_vidmap[i].user_supervisor = 0;
-        page_vidmap[i].write_through = 0;
-        page_vidmap[i].cache_disable = 0;
-        page_vidmap[i].accessed = 0;
-        page_vidmap[i].dirty = 0;
-        page_vidmap[i].reserved = 0;
-        page_vidmap[i].global = 0;
-        page_vidmap[i].available = 0;
-        page_vidmap[i].P_addr = i;
     }
 
     page_directory[32].present = 1;
@@ -93,7 +81,7 @@ void init_paging() {
     //set page table index of video memory
     page_table[VIDEO_MEMORY].present = 1;
     page_table[VIDEO_MEMORY].read_write = 1;
-    page_table[VIDEO_MEMORY].user_supervisor = 0;
+    page_table[VIDEO_MEMORY].user_supervisor = 0;//testing
     page_table[VIDEO_MEMORY].write_through = 0;
     page_table[VIDEO_MEMORY].cache_disable = 0;
     page_table[VIDEO_MEMORY].accessed = 0;
@@ -102,6 +90,43 @@ void init_paging() {
     page_table[VIDEO_MEMORY].global = 0;
     page_table[VIDEO_MEMORY].available = 0;
     page_table[VIDEO_MEMORY].P_addr = VIDEO_MEMORY;
+
+    page_directory[33].present = 1;
+    page_directory[33].read_write = 1;
+    page_directory[33].user_supervisor = 1;
+    page_directory[33].write_through = 0;
+    page_directory[33].cache_disable = 0;
+    page_directory[33].accessed = 0;
+    page_directory[33].reserved = 0;
+    page_directory[33].page_size = 0;
+    page_directory[33].not_used = 0;
+    page_directory[33].available = 0;
+    page_directory[33].PT_addr = ((unsigned int)page_vidmap) >> 12; // 8 mb
+
+    for(i = 0; i < 1024; i++) {
+        page_vidmap[i].present = 0;
+        page_vidmap[i].read_write = 1;
+        page_vidmap[i].user_supervisor = 1;
+        page_vidmap[i].write_through = 0;
+        page_vidmap[i].cache_disable = 0;
+        page_vidmap[i].accessed = 0;
+        page_vidmap[i].dirty = 0;
+        page_vidmap[i].reserved = 0;
+        page_vidmap[i].global = 0;
+        page_vidmap[i].available = 0;
+        page_vidmap[i].P_addr = i;
+    }
+    page_vidmap[0].present = 1;
+    page_vidmap[0].read_write = 1;
+    page_vidmap[0].user_supervisor = 1;
+    page_vidmap[0].write_through = 0;
+    page_vidmap[0].cache_disable = 0;
+    page_vidmap[0].accessed = 0;
+    page_vidmap[0].dirty = 0;
+    page_vidmap[0].reserved = 0;
+    page_vidmap[0].global = 0;
+    page_vidmap[0].available = 0;
+    page_vidmap[0].P_addr = VIDEO_MEMORY;
 
     enable_paging();
 }

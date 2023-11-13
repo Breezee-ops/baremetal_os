@@ -25,7 +25,7 @@ syscall_handler_asm:
 
     // value checking 
     cmpl $0, %eax
-    jl bad_command
+    jle bad_command
     cmpl $8, %eax
     jg bad_command
 

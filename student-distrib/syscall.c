@@ -188,6 +188,7 @@ int32_t getargs(uint8_t* buf, int32_t nbytes){
 int32_t read (int32_t fd, void* buf, int32_t nbytes) {
     int bytes;
     int32_t* file_position_ptr;
+    if(fd < 0) return -1;
     if(fd > 1 && cur_pcb_ptr->fda[fd].flags == 0) return -1;
     switch(fd){
         case 0: return term_read(0, 0, buf, nbytes);
@@ -209,6 +210,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes) {
  */
 int32_t write (int32_t fd, const void* buf, int32_t nbytes) {
     int bytes;
+    if(fd < 0) return -1;
     if(fd > 1 && cur_pcb_ptr->fda[fd].flags == 0) return -1;
     switch(fd){
         case 0: return -1;
@@ -226,6 +228,9 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes) {
  * Outputs: file descriptor
  */
 int32_t open(const uint8_t* filename) {
+    if (strlen((char*)filename)==NULL || strlen((char*)filename)==0 || (char*) filename=="") {
+        return -1; 
+    }
     dentry_t pos;
     if(read_dentry_by_name(filename, &pos)) return -1;
     int i;
@@ -258,6 +263,7 @@ int32_t open(const uint8_t* filename) {
  * Outputs: success or fail
  */
 int32_t close (int32_t fd) {
+    if(fd < 0) return -1;
     if(cur_pcb_ptr->fda[fd].flags == 0) return -1;
     cur_pcb_ptr->fda[fd].inode_num = 0;//flag
     cur_pcb_ptr->fda[fd].file_position = 0;
@@ -350,23 +356,12 @@ int32_t vidmap (uint8_t** screen_start){
     if(screen_start == NULL){
         return -1;
     }
-    if((int)screen_start < 0x8000000 || (int)screen_start >= 0x8000000 + 0x400000){
+    if((int)screen_start < 0x8000000 || (int)screen_start >= (0x8000000 + 0x400000)){
         return -1;
     }
     
     // initialize parameters in new vidmap page
-    page_vidmap[0].present = 1; 
-    page_vidmap[0].user_supervisor = 1;
-    page_vidmap[0].P_addr = (0xB800000); 
-
-    page_directory[34].present = 1; 
-    page_directory[34].page_size = 0; 
-    page_directory[34].user_supervisor = 1; 
-    page_directory[34].PT_addr = ((int)page_vidmap)/4096; 
-
-    
-    flush_tlb();
-    *screen_start = (uint32_t*)(0x8800000);
+    *screen_start = (uint8_t*)(138412032);
 
     return 0;
 }
