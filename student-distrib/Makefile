@@ -4,10 +4,8 @@
 
 
 # Flags to use when compiling, preprocessing, assembling, and linking
-CFLAGS+=-Wall -fno-builtin -fno-stack-protector -nostdlib
-ASFLAGS+=
-LDFLAGS+=-nostdlib -static
-CC=gcc
+CFLAGS+= -g -Wall -fno-builtin -fno-stack-protector -nostdlib
+LDFLAGS+= -g -nostdlib -static
 
 #If you have any .h files in another directory, add -I<dir> to this line
 CPPFLAGS+=-nostdinc -g

@@ -350,15 +350,24 @@ int32_t vidmap (uint8_t** screen_start){
     if(screen_start == NULL){
         return -1;
     }
-
     if((int)screen_start < 0x8000000 || (int)screen_start >= 0x8000000 + 0x400000){
         return -1;
     }
+    
+    // initialize parameters in new vidmap page
+    page_vidmap[0].present = 1; 
+    page_vidmap[0].user_supervisor = 1;
+    page_vidmap[0].P_addr = (0xB800000); 
 
-    uint32_t pid = find_pid();
+    page_directory[34].present = 1; 
+    page_directory[34].page_size = 0; 
+    page_directory[34].user_supervisor = 1; 
+    page_directory[34].PT_addr = ((int)page_vidmap)/4096; 
 
+    
     flush_tlb();
-    *screen_start = (uint8_t*)(0x8800000);
+    *screen_start = (uint32_t*)(0x8800000);
+
     return 0;
 }
 

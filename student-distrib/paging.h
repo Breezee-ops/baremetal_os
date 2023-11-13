@@ -38,9 +38,12 @@ typedef union page_table_t {
 } page_table_t;
 page_directory_t page_directory[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
 page_table_t page_table[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
+page_table_t page_vidmap[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
+
 void init_paging();
 void enable_paging();
 void set_exe_page(uint32_t pid);
+void flush_tlb(); 
 
 #endif /* ASM */
 #endif /* _PAGING_H */
