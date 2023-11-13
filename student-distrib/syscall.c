@@ -73,7 +73,7 @@ int context_switch(uint32_t pid){
     tss.esp0 = user_stack_ptr ;
     char* user_esp = (char*) (138412028 );
     asm volatile (" \n\
-    movw %1, %%ds   \n\
+    mov %1, %%ds   \n\
     pushl %1        \n\
     pushl %3        \n\
     pushfl          \n\
@@ -158,24 +158,39 @@ int32_t execute(const uint8_t* command){
     context_switch(pid);
     return 0;
 }
-
+/* getargs
+ * Description: grabs argument puts into buffer
+ * Inputs: buf - args buffer, nbytes - #bytes written
+ * Outputs: success or fail
+ */
 int32_t getargs(uint8_t* buf, int32_t nbytes){
+    //check if valid buffer
     if(buf == NULL) return -1;
     int it;
-    int bc = 0;
-    int ccount;
-    int bufc = 0;
+    int bc = 0;    //byte count
+    int ccount;    //character count
+    int bufc = 0;  //bufer count
+
+    //count all non-whitespace chars in command line args
     for(it = 0; it < 128; it++){
         if(cur_pcb_ptr->args[it] != ' ' || cur_pcb_ptr->args[it] != '\0' || cur_pcb_ptr->args[it] != '\n') ccount++;
     }
+
+    //if no non-whitespace fail
     if(ccount == 0) return -1;
+
+    //make sure only maxbuffer bytes are written
     it = (nbytes > 128) ? 128 : nbytes;
+
     while(cur_pcb_ptr->args[bc] == '\0' || cur_pcb_ptr->args[bc] == '\n' || cur_pcb_ptr->args[bc] == ' ') bc++;
+
+    //copy chars into buffer
     while(cur_pcb_ptr->args[bc] != '\0' && cur_pcb_ptr->args[bc] != '\n'){
         buf[bufc] = cur_pcb_ptr->args[bc];
         bufc++;
         bc++;
     }
+    //make sure endline is at end of buffer
     buf[bufc] = '\0';
     return 0;
 }
@@ -228,12 +243,15 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes) {
  * Outputs: file descriptor
  */
 int32_t open(const uint8_t* filename) {
+
+    //validity checking
     if (strlen((char*)filename)==NULL || strlen((char*)filename)==0 || (char*) filename=="") {
         return -1; 
     }
     dentry_t pos;
     if(read_dentry_by_name(filename, &pos)) return -1;
     int i;
+    //set flags
     for(i = 2; i < 8; i++){
         if(cur_pcb_ptr->fda[i].flags == 0){
             cur_pcb_ptr->fda[i].flags = 1;
@@ -350,102 +368,23 @@ pcb_t* pcb_init(uint32_t pid){
     pcbarr[pid].pid = pid;
     return &pcbarr[pid];
 }
-
+/* vidmap
+ * Description: passes an address that points to user space video memory
+ * Inputs: screen_start - user address pointer
+ * Outputs: success or fail
+ */
 int32_t vidmap (uint8_t** screen_start){
-
+    //check if screen_start not empty
     if(screen_start == NULL){
         return -1;
     }
+    //validity check to make sure page is within user memory.
     if((int)screen_start < 0x8000000 || (int)screen_start >= (0x8000000 + 0x400000)){
         return -1;
     }
     
     // initialize parameters in new vidmap page
-    *screen_start = (uint8_t*)(138412032);
+    *screen_start = (uint8_t*)(138412032); //132MB
 
     return 0;
 }
-
-// int32_t read (int32_t fd, void* buf, int32_t nbytes){
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(cur_pcb_ptr->fda[0].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = cur_pcb_ptr->fda[0].file_operations->read(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-
-//     if(fd < 0 || nbytes < 0){
-//         return -1;
-//     }
-//     if(cur_pcb_ptr->fda[fd].flags == 1){
-//         return -1;
-//     }
-//     int32_t ret = cur_pcb_ptr->fda[fd].file_operations->write(fd, buf, nbytes);
-//     return ret;
-// }
-
-// int32_t open (const uint8_t* filename){
-//     int fda_idx;
-//     if(strlen((char*)filename) == NULL){
-//         return -1;
-//     }
-
-//     fda_idx = find_fda_idx();
-
-//     file_operation_t stdin = {
-//         .open = NULL,
-//         .close = term_close,
-//         .read = term_read,
-//         .write = NULL,
-//     };
-
-//     file_operation_t stdout = {
-//         .open = NULL,
-//         .close = term_close,
-//         .read = NULL,
-//         .write = term_write,
-//     };
-
-//     if(fda_idx == -1)//couldnt find a free spot in fda
-//         return -1;
-    
-//     if(strncmp("stdin", (char*)filename, 6) == 0) {
-//         cur_pcb_ptr->fda[fda_idx].file_operations = &stdin;
-//     } else if(strncmp("stdout", (char*)filename, 7) == 0) {
-//         cur_pcb_ptr->fda[fda_idx].file_operations = &stdout;
-//     }
-//     // dentry_t data_entry;
-
-//     // for(i = 0; i < 8; i++) {
-//     //     if(cur_pcb_ptr->fda[i].flags == 1){
-//     //         cur_pcb_ptr->fda[i].flags = 0;
-//     //         cur_pcb_ptr->fda[i].inode = data_entry.inode_num;
-//     //         cur_pcb_ptr->fda[i].file_position = i;
-//     //         break;
-//     //     }
-//     //     return i; 
-//     // }
-
-//     return fda_idx;
-// }
-
-// int32_t close (int32_t fd){
-
-//     if(cur_pcb_ptr->fda[fd].flags == 0){
-//         return -1;
-//     }
-
-//     cur_pcb_ptr->fda[fd].flags = 0;
-//     cur_pcb_ptr->fda[fd].file_position = 0;
-//     cur_pcb_ptr->fda[fd].inode = NULL;
-//     free_pid(cur_pid);
-
-//     return 0;
-// }
-

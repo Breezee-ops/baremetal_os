@@ -4,6 +4,7 @@
 #include "term.h"
 #include "fs.h"
 #include "paging.h"
+#include "syscall.h"
 
 
 static volatile int enter_flag = 0;
@@ -256,7 +257,7 @@ void keyboard_handler(void){
     }
     if(ctrl_held == 1 && key == 0x2E){
 
-        printf("Control C Pressed"); 
+        halt(255); 
 
     }
     if(key == 28){

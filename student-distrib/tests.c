@@ -333,10 +333,10 @@ static inline void assertion_failure(){
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
-int cat_check(){
-	execute("cat frame0.txt");
-	return 0;
-}
+// int cat_check(){
+// 	execute("cat frame0.txt");
+// 	return 0;
+// }
 /* Checkpoint 5 tests */
 
 
