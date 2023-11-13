@@ -258,6 +258,8 @@ int32_t open(const uint8_t* filename) {
  */
 int32_t close (int32_t fd) {
     if(cur_pcb_ptr->fda[fd].flags == 0) return -1;
+    cur_pcb_ptr->fda[fd].inode_num = 0;//flag
+    cur_pcb_ptr->fda[fd].file_position = 0;
     cur_pcb_ptr->fda[fd].flags = 0;
     return cur_pcb_ptr->fda[fd].file_operations->close(fd);
 }

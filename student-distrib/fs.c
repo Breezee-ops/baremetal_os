@@ -66,9 +66,10 @@ uint32_t read_data(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
     uint32_t bytes_read = 0;
     uint32_t* data2cpy;
     inode_t* inode2cpy = (inode_t*)(inode_blocks + inode_idx);
-
-    if(offset > inode2cpy->length || inode_idx < 0 || inode_idx >= boot_block->inode_count)
+    if(inode_idx < 0 || inode_idx >= boot_block->inode_count)
         return -1;
+
+    if(offset >= inode2cpy->length) return 0;
 
     uint32_t start_block = offset / BLOCK_SIZE;
     uint32_t end_block = (offset + length) / BLOCK_SIZE;
@@ -85,7 +86,7 @@ uint32_t read_data(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
             data2cpy = (uint32_t*)(data_blocks + inode2cpy->data_block_num[i] * BLOCK_SIZE + l);
             memcpy((uint8_t*)buf + bytes_read,data2cpy,1);
             bytes_read++;
-            if(bytes_read == length || l >= inode2cpy->length-1) {
+            if(bytes_read == length || l >= inode2cpy->length) {
                 // if(f_desc == 38) {
                 //     return 187;
                 // } else {

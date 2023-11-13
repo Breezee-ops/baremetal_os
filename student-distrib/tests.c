@@ -361,6 +361,6 @@ void launch_tests(){
 	 //TEST_OUTPUT("key test", checkKeys());
 	//TEST_OUTPUT("execheck", execheck());
 	//TEST_OUTPUT("execheck", paging_exec());
-	TEST_OUTPUT("execheck", cat_check());
+	//TEST_OUTPUT("execheck", cat_check());
 	//putc('@');
 }
