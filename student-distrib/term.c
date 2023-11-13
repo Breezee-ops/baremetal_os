@@ -126,7 +126,7 @@ void keyboard_write(const unsigned char* buf, int nbytes){
 			putc(buf[i]);								//print char to screen
 			line_buf[buf_count] = buf[i];				//add char to buffer
 			buf_count++;								//increase count
-			if(term.x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+			if(term.x_pos < NUM_COLS - 1 && buf[i] != '\n'){				//if we have not reached the edge of screen increase position by 1
 				term.x_pos++;
 			}
 		}
@@ -143,7 +143,7 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 		term.y_pos = get_curr_pos()[1];
 		set_curr_pos(term.x_pos, term.y_pos);			//update current position
 		
-		if((term.x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
+		if((term.x_pos == NUM_COLS)){				//if x position is at edge of screen, move down a line
 			term.x_pos = 0;
 			if(term.y_pos < NUM_ROWS - 1){
 				term.y_pos++;
@@ -169,7 +169,7 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 				term.y_pos--;
 				one_line_up();
 			}
-			printf("%c", '\n');
+			//printf("%c", '\n');
 		set_curr_pos(term.x_pos, term.y_pos);
 		}	
 		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
