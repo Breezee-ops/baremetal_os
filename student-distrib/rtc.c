@@ -99,7 +99,7 @@ int32_t rtc_open(const uint8_t* filename){
 int32_t rtc_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
     return_flag_read = 0;
     while(!return_flag_read){};
-    test_interrupts();
+    //test_interrupts();
     return 0;
 }
 
