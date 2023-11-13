@@ -85,8 +85,12 @@ uint32_t read_data(int32_t f_desc, int32_t offset, void* buf, int32_t length) {
             data2cpy = (uint32_t*)(data_blocks + inode2cpy->data_block_num[i] * BLOCK_SIZE + l);
             memcpy((uint8_t*)buf + bytes_read,data2cpy,1);
             bytes_read++;
-            if(bytes_read == length) {
+            if(bytes_read == length || l >= inode2cpy->length-1) {
+                // if(f_desc == 38) {
+                //     return 187;
+                // } else {
                 return bytes_read;
+                // }
             }
         }
 

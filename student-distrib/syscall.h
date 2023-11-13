@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "fs.h"
+#include "paging.h"
 #include "x86_desc.h"
 
 typedef struct {

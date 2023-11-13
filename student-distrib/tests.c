@@ -351,7 +351,7 @@ void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	//TEST_OUTPUT("read_executables test", read_executables());
 	//TEST_OUTPUT("read_large_file test", read_large_file());
-	//TEST_OUTPUT("read_small_file test", read_small_file());
+	// TEST_OUTPUT("read_small_file test", read_small_file());
 	//TEST_OUTPUT("read_directory_test test", read_directory_test());
 	//TEST_OUTPUT("above video", above_video());
 	// TEST_OUTPUT("deref null", test_null());
