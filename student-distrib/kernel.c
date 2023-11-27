@@ -149,9 +149,9 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the PIC */
     i8259_init();
 
-    keyboard_init();
-
     init_paging();
+
+    keyboard_init();
     
     init_rtc(); 
 
@@ -176,7 +176,11 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    execute((const uint8_t*)"shell");
+    int i;
+    for(i = 0; i < 3; i++){
+        shell_execute();
+    }
+    // execute((const uint8_t*)"shell");
     //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

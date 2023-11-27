@@ -3,6 +3,7 @@
 
 #include "lib.h"
 #include "term.h"
+#include "paging.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -11,8 +12,8 @@
 
 static int screen_x;
 static int screen_y;
-static char* video_mem = (char *)VIDEO;
-
+// static char* curmem = (char *)VIDEO;
+char* curmem;
 /* void clear(void);
  * Inputs: void
  * Return Value: none
@@ -20,8 +21,8 @@ static char* video_mem = (char *)VIDEO;
 void clear(void) {
     int32_t i;
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        *(uint8_t *)(video_mem + (i << 1)) = ' ';
-        *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+        *(uint8_t *)(curmem + (i << 1)) = ' ';
+        *(uint8_t *)(curmem + (i << 1) + 1) = ATTRIB;
     }
 }
 
@@ -173,8 +174,8 @@ void putc(uint8_t c) {
         screen_y++;
         screen_x = 0;
     } else {
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        *(uint8_t *)(curmem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        *(uint8_t *)(curmem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
@@ -488,6 +489,6 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
 void test_interrupts(void) {
     int32_t i;
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
+        curmem[i << 1]++;
     }
 }

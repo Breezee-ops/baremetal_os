@@ -1,5 +1,6 @@
 #include "term.h"
 #include "lib.h"
+#include "paging.h"
 
 #define ATTRIB      0x7
 

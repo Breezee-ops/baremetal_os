@@ -32,7 +32,8 @@ typedef struct {
 
 // int32_t terminal_read(int32_t fd, unsigned char* buf, int32_t nbytes);
 // int32_t terminal_write(int32_t fd, const unsigned char* buf, int32_t nbytes);
-pcb_t* pcb_init(uint32_t pid);
+int32_t shell_execute();
+pcb_t* pcb_init(uint32_t pid, uint32_t parent_pid);
 pcb_t* get_pcb_ptr(uint32_t pid);
 uint32_t find_pid();
 uint32_t free_pid(uint32_t pid);

@@ -6,7 +6,6 @@
 #include "paging.h"
 #include "syscall.h"
 
-
 static volatile int enter_flag = 0;
 
 int get_flag(){
@@ -249,6 +248,22 @@ void keyboard_handler(void){
         send_eoi(1);
         sti();
         return;
+    }
+
+    //if ctrl held and fn num pressed switch to that terminal
+    if(ctrl_held == 1 && key == 0x03){
+        to_buf(1);
+        from_buf(2);
+        set_exe_page(2);
+    }
+
+    if(ctrl_held == 1 && key == 0x02){
+        to_buf(2);
+        from_buf(1);
+    }
+
+    if(shift_held == 1 && key == 0x03){
+        write_to_buf(2);
     }
 
     //if CTRL + L is pressed clear terminal

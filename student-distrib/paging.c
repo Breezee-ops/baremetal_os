@@ -10,6 +10,7 @@
  * Side Effects: changes values in page_directory and page_table
  * Coverage: page_directory and page_table def.
  */
+char* curmem;
 void init_paging() {
     int i;
     // set page directory to not present 4MB chunks
@@ -79,18 +80,19 @@ void init_paging() {
     page_directory[32].PT_addr = 0x2 << 10; // 8 mb
 
     //set page table index of video memory
-    page_table[VIDEO_MEMORY].present = 1;
-    page_table[VIDEO_MEMORY].read_write = 1;
-    page_table[VIDEO_MEMORY].user_supervisor = 0;//testing
-    page_table[VIDEO_MEMORY].write_through = 0;
-    page_table[VIDEO_MEMORY].cache_disable = 0;
-    page_table[VIDEO_MEMORY].accessed = 0;
-    page_table[VIDEO_MEMORY].dirty = 0;
-    page_table[VIDEO_MEMORY].reserved = 0;
-    page_table[VIDEO_MEMORY].global = 0;
-    page_table[VIDEO_MEMORY].available = 0;
-    page_table[VIDEO_MEMORY].P_addr = VIDEO_MEMORY;
-
+    for(i = 0; i < 3; i ++){
+        page_table[VIDEO_MEMORY + i].present = 1;
+        page_table[VIDEO_MEMORY + i].read_write = 1;
+        page_table[VIDEO_MEMORY + i].user_supervisor = 0;//testing
+        page_table[VIDEO_MEMORY + i].write_through = 0;
+        page_table[VIDEO_MEMORY + i].cache_disable = 0;
+        page_table[VIDEO_MEMORY + i].accessed = 0;
+        page_table[VIDEO_MEMORY + i].dirty = 0;
+        page_table[VIDEO_MEMORY + i].reserved = 0;
+        page_table[VIDEO_MEMORY + i].global = 0;
+        page_table[VIDEO_MEMORY + i].available = 0;
+        page_table[VIDEO_MEMORY + i].P_addr = VIDEO_MEMORY + i;
+    }
     page_directory[33].present = 1;
     page_directory[33].read_write = 1;
     page_directory[33].user_supervisor = 1;
@@ -127,6 +129,8 @@ void init_paging() {
     page_vidmap[0].global = 0;
     page_vidmap[0].available = 0;
     page_vidmap[0].P_addr = VIDEO_MEMORY;
+
+    curmem = 0xB8000;
 
     enable_paging();
 }
@@ -175,6 +179,27 @@ void set_exe_page(uint32_t pid){
     page_directory[32].PT_addr = (2 + (pid)) << 10; //0x2 << 10 + (processnum * 0x1 << 10) start of process memory.
 
     //enable_paging();
+
+    flush_tlb();
+}
+
+void to_buf(int term){
+    memcpy((unsigned char*)((VIDEO_MEMORY + term)<<12), (VIDEO_MEMORY<<12), 4096);
+}
+
+void write_to_buf(int term){
+    curmem = (unsigned char*)((VIDEO_MEMORY + term)<<12);
+}
+
+void from_buf(int term){
+    memcpy((VIDEO_MEMORY<<12), (unsigned char*)((VIDEO_MEMORY + term)<<12), 4096);
+}
+
+// zero index terminals
+void mod_vidmem(int term){
+    uint32_t mem = VIDEO_MEMORY + term;
+    page_table[VIDEO_MEMORY].P_addr = (char*) mem;
+    // curmem = (char*)(mem << 12);
 
     flush_tlb();
 }

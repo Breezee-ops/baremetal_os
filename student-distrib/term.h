@@ -8,6 +8,8 @@
 #define NUM_ROWS						25
 #define MAX_BUFFER						128
 
+// TODO update this number inside term_read / write
+
 void term_init();
 void uh_oh_backspace();
 void tabitha();
