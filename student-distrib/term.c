@@ -1,6 +1,9 @@
 #include "term.h"
 #include "lib.h"
 #include "paging.h"
+#include "syscall.h"
+#include "functions.h"
+#include "queue.h"
 
 #define ATTRIB      0x7
 
@@ -57,7 +60,11 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	if(length > MAX_BUFFER){
 		length = MAX_BUFFER;
 	}
-	while(buf_count == 0 || line_buf[buf_count - 1] != '\n');
+	while(buf_count == 0 || line_buf[buf_count - 1] != '\n'){
+		if(dequeue() != -1){
+			shell_execute();
+		}
+	};
 	// here
 	for(i = 0; i < length && line_buf[i] != '\0'; i++){
 		char_buf[i] = line_buf[i];

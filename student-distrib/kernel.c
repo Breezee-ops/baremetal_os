@@ -15,6 +15,7 @@
 #include "term.h"
 #include "fs.h"
 #include "syscall.h"
+#include "queue.h"
 
 #define RUN_TESTS
 
@@ -149,6 +150,8 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the PIC */
     i8259_init();
 
+    create_queue();
+
     init_paging();
 
     keyboard_init();
@@ -176,11 +179,8 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    int i;
-    for(i = 0; i < 3; i++){
-        shell_execute();
-    }
-    // execute((const uint8_t*)"shell");
+
+    execute((const uint8_t*)"shell");
     //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

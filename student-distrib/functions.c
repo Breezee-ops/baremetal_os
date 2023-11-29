@@ -3,8 +3,8 @@
 #include "i8259.h"
 #include "term.h"
 #include "fs.h"
-#include "paging.h"
 #include "syscall.h"
+#include "queue.h"
 
 static volatile int enter_flag = 0;
 
@@ -235,6 +235,7 @@ char upper_keymap[] =
  * Side Effects: None
  * Coverage: Keyboard I/O
  */
+int call;
 void keyboard_handler(void){
     //begin critical section stop all interrupts
     cli();
@@ -254,12 +255,23 @@ void keyboard_handler(void){
     if(ctrl_held == 1 && key == 0x03){
         to_buf(1);
         from_buf(2);
-        set_exe_page(2);
+        if(call == 0){
+            call = 1;
+            //done with interrupt
+            enqueue(0);
+        }
+        else{
+            set_exe_page(1);
+            context_switch(1);
+        }
+        
     }
 
     if(ctrl_held == 1 && key == 0x02){
         to_buf(2);
         from_buf(1);
+        set_exe_page(0);
+        context_switch(0);
     }
 
     if(shift_held == 1 && key == 0x03){
