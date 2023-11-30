@@ -22,8 +22,14 @@ uint32_t cur_pid = 0;
  * Inputs: none
  * Outputs: cur_pid
  */
-int latest_pid(){
-    return cur_pid;
+// int latest_pid(){
+//     return cur_pid;
+// }
+pcb_t* get_curpcbptr(){
+    return cur_pcb_ptr;
+}
+void set_pcbptr(pcb_t* ptr){
+    cur_pcb_ptr = ptr;
 }
 
 /* halt

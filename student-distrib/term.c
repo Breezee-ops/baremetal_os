@@ -64,6 +64,14 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 		if(dequeue() != -1){
 			shell_execute();
 		}
+		if(call == 2){
+			set_exe_page(0);
+			call = 1;
+		}
+		if(call == 3){
+			set_exe_page(1);
+			call = 1;
+		}
 	};
 	// here
 	for(i = 0; i < length && line_buf[i] != '\0'; i++){

@@ -40,7 +40,8 @@ uint32_t free_pid(uint32_t pid);
 
 extern void syscall_handler_asm();
 
-
+void set_pcbptr(pcb_t* ptr);
+pcb_t* get_curpcbptr();
 int context_switch(uint32_t pid);
 int32_t halt (uint8_t status);
 int32_t execute (const uint8_t* command);

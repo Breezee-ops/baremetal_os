@@ -235,7 +235,6 @@ char upper_keymap[] =
  * Side Effects: None
  * Coverage: Keyboard I/O
  */
-int call;
 void keyboard_handler(void){
     //begin critical section stop all interrupts
     cli();
@@ -256,22 +255,24 @@ void keyboard_handler(void){
         to_buf(1);
         from_buf(2);
         if(call == 0){
-            call = 1;
+            call = 1; // 1 means spawn a new shell
             //done with interrupt
+            term1.status = 1;
             enqueue(0);
         }
         else{
-            set_exe_page(1);
-            context_switch(1);
+            call = 3; // 3 means context switch to pid 1
         }
-        
+        term0.term_pcb = get_curpcbptr();
+        set_pcbptr(term1.term_pcb);
     }
 
     if(ctrl_held == 1 && key == 0x02){
         to_buf(2);
         from_buf(1);
-        set_exe_page(0);
-        context_switch(0);
+        call = 2; // 2 means context switch to pid 0
+        term1.term_pcb = get_curpcbptr();
+        set_pcbptr(term0.term_pcb);
     }
 
     if(shift_held == 1 && key == 0x03){

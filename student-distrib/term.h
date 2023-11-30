@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "functions.h"
+#include "syscall.h"
 
 #define NUM_COLS						80
 #define NUM_ROWS						25
@@ -21,10 +22,13 @@ int32_t term_write(int32_t fd, const void* buf, int32_t nbytes);
 void keyboard_read(unsigned char* buf);
 void keyboard_write(const unsigned char* buf, int nbytes);
 void one_line_up();
-	
 typedef struct termData {
 	int x_pos;
 	int y_pos;
+	char status;
+	pcb_t* term_pcb;
 } termData;
+
+termData term0, term1;
 
 #endif
