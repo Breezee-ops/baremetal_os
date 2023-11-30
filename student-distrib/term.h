@@ -27,8 +27,12 @@ typedef struct termData {
 	int y_pos;
 	char status;
 	pcb_t* term_pcb;
+	unsigned char line_buf[MAX_BUFFER];
+	int buf_count;
+	unsigned char tab_flag;
 } termData;
 
-termData term0, term1;
+int termIdx;
+termData curr_term[3];
 
 #endif

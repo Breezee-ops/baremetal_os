@@ -252,27 +252,31 @@ void keyboard_handler(void){
 
     //if ctrl held and fn num pressed switch to that terminal
     if(ctrl_held == 1 && key == 0x03){
-        to_buf(1);
+        to_buf(termIdx + 1);
         from_buf(2);
         if(call == 0){
             call = 1; // 1 means spawn a new shell
             //done with interrupt
-            term1.status = 1;
+            curr_term[1].status = 1;
             enqueue(0);
         }
         else{
             call = 3; // 3 means context switch to pid 1
         }
-        term0.term_pcb = get_curpcbptr();
-        set_pcbptr(term1.term_pcb);
+        curr_term[termIdx].term_pcb = get_curpcbptr();
+        set_pcbptr(curr_term[1].term_pcb);
+        termIdx = 1;
+        set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
     }
 
     if(ctrl_held == 1 && key == 0x02){
-        to_buf(2);
+        to_buf(termIdx + 1);
         from_buf(1);
         call = 2; // 2 means context switch to pid 0
-        term1.term_pcb = get_curpcbptr();
-        set_pcbptr(term0.term_pcb);
+        curr_term[termIdx].term_pcb = get_curpcbptr();
+        set_pcbptr(curr_term[0].term_pcb);
+        termIdx = 0;
+        set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
     }
 
     if(shift_held == 1 && key == 0x03){

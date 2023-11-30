@@ -80,7 +80,7 @@ void init_paging() {
     page_directory[32].PT_addr = 0x2 << 10; // 8 mb
 
     //set page table index of video memory
-    for(i = 0; i < 3; i ++){
+    for(i = 0; i < 4; i ++){
         page_table[VIDEO_MEMORY + i].present = 1;
         page_table[VIDEO_MEMORY + i].read_write = 1;
         page_table[VIDEO_MEMORY + i].user_supervisor = 0;//testing

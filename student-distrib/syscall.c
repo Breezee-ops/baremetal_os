@@ -153,7 +153,7 @@ int32_t execute(const uint8_t* command){
     set_exe_page(pid);
     // read the executable into memory
     read_data(dirptr->inode_num, 0, (uint8_t*)0x08048000, 0x300000);
-    cur_pcb_ptr->parent_pid = (pid == 0) ? 0 : (pid -1);
+    // cur_pcb_ptr->parent_pid = (pid == 0) ? 0 : (pid -1);
     uint32_t esp, ebp;
     asm volatile("\n\
     movl %%esp, %0  \n\

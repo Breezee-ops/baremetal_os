@@ -8,11 +8,8 @@
 #define ATTRIB      0x7
 
 termData term;
-unsigned char line_buf[MAX_BUFFER];
-int buf_count = 0;
-unsigned char tab_flag;
 unsigned char* video_mem;
-
+// int termIdx = 0;
 /* term_init
  * 
  * takes clears and initializes terminal by setting cursor position to the top left
@@ -22,11 +19,15 @@ unsigned char* video_mem;
  * Coverage: term
  */
 void term_init(){
+	int i = 0;
 	video_mem = (unsigned char*)0xB8000;
-    term.x_pos = 0;
-    term.y_pos = 0;
-    clear();
-    set_curr_pos(0, 0);
+	for(i = 0; i < 3; i++){
+		curr_term[i].buf_count = 0;
+		curr_term[i].x_pos = 0;
+		curr_term[i].y_pos = 0;
+		clear();
+		set_curr_pos(0, 0);
+	}
 }
 
 int32_t term_open(const uint8_t* file_name){
@@ -49,8 +50,8 @@ int32_t term_close(int32_t fd){
 int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	int i;
 	uint8_t* char_buf = (uint8_t*)buf;
-	term.x_pos = get_curr_pos()[0];					//grab current position on screen
-	term.y_pos = get_curr_pos()[1];
+	curr_term[termIdx].x_pos = get_curr_pos()[0];					//grab current position on screen
+	curr_term[termIdx].y_pos = get_curr_pos()[1];
 	if(char_buf == NULL){
 		return -1;
 	}
@@ -60,26 +61,27 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	if(length > MAX_BUFFER){
 		length = MAX_BUFFER;
 	}
-	while(buf_count == 0 || line_buf[buf_count - 1] != '\n'){
+	while(curr_term[termIdx].buf_count == 0 || curr_term[termIdx].line_buf[curr_term[termIdx].buf_count - 1] != '\n'){
 		if(dequeue() != -1){
 			shell_execute();
 		}
 		if(call == 2){
-			set_exe_page(0);
+			// TODO fix monkeying with pid
+			set_exe_page(curr_term[termIdx].term_pcb->pid);
 			call = 1;
 		}
 		if(call == 3){
-			set_exe_page(1);
+			set_exe_page(curr_term[termIdx].term_pcb->pid);
 			call = 1;
 		}
 	};
 	// here
-	for(i = 0; i < length && line_buf[i] != '\0'; i++){
-		char_buf[i] = line_buf[i];
+	for(i = 0; i < length && curr_term[termIdx].line_buf[i] != '\0'; i++){
+		char_buf[i] = curr_term[termIdx].line_buf[i];
 	}
 	char_buf[i] = '\n';
-	memset(line_buf, '\0', sizeof(line_buf));
-	buf_count = 0;
+	memset(curr_term[termIdx].line_buf, '\0', sizeof(curr_term[termIdx].line_buf));
+	curr_term[termIdx].buf_count = 0;
 	// for (i = 0; i < nbytes; i++) {
     //     if (buf[i] == '\n') {
     //         term.x_pos = 0;
@@ -103,50 +105,50 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 }
 
 void keyboard_read(unsigned char* buf){
-	term.x_pos = get_curr_pos()[0];					//grab current position on screen
-	term.y_pos = get_curr_pos()[1];
+	curr_term[termIdx].x_pos = get_curr_pos()[0];					//grab current position on screen
+	curr_term[termIdx].y_pos = get_curr_pos()[1];
 
 	if (buf[0] == '\n') {
-		term.x_pos = 0;
-		term.y_pos++;
-		if (term.y_pos >= NUM_ROWS - 1) {
-			term.y_pos--;
+		curr_term[termIdx].x_pos = 0;
+		curr_term[termIdx].y_pos++;
+		if (curr_term[termIdx].y_pos >= NUM_ROWS - 1) {
+			curr_term[termIdx].y_pos--;
 			one_line_up();
 		}
 		printf("%c", '\n');
-		set_curr_pos(term.x_pos, term.y_pos);
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	}
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	keyboard_write(buf, 1);
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 }
 void keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
 	for(i = 0; i < nbytes; i++){
-		term.x_pos = get_curr_pos()[0];					// get current postiion
-		term.y_pos = get_curr_pos()[1];
-		set_curr_pos(term.x_pos, term.y_pos);			//update current position
+		curr_term[termIdx].x_pos = get_curr_pos()[0];					// get current postiion
+		curr_term[termIdx].y_pos = get_curr_pos()[1];
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current position
 		
-		if((term.x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
-			term.x_pos = 0;
-			if(term.y_pos < NUM_ROWS - 1){
-				term.y_pos++;
+		if((curr_term[termIdx].x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
+			curr_term[termIdx].x_pos = 0;
+			if(curr_term[termIdx].y_pos < NUM_ROWS - 1){
+				curr_term[termIdx].y_pos++;
 			}
 			else{
 				one_line_up();
 			}
 		}
-		if(buf_count < MAX_BUFFER){						//if we have not reached buffer limit
-			set_curr_pos(term.x_pos, term.y_pos);		//update current position
+		if(curr_term[termIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
+			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);		//update current position
 			putc(buf[i]);								//print char to screen
-			line_buf[buf_count] = buf[i];				//add char to buffer
-			buf_count++;								//increase count
-			if(term.x_pos < NUM_COLS - 1 && buf[i] != '\n'){				//if we have not reached the edge of screen increase position by 1
-				term.x_pos++;
+			curr_term[termIdx].line_buf[curr_term[termIdx].buf_count] = buf[i];				//add char to buffer
+			curr_term[termIdx].buf_count++;								//increase count
+			if(curr_term[termIdx].x_pos < NUM_COLS - 1 && buf[i] != '\n'){				//if we have not reached the edge of screen increase position by 1
+				curr_term[termIdx].x_pos++;
 			}
 		}
-		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current posiion
 	}
 }
 
@@ -155,40 +157,40 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
 	for(i = 0; i < nbytes; i++){
-		term.x_pos = get_curr_pos()[0];					// get current postiion
-		term.y_pos = get_curr_pos()[1];
-		set_curr_pos(term.x_pos, term.y_pos);			//update current position
+		curr_term[termIdx].x_pos = get_curr_pos()[0];					// get current postiion
+		curr_term[termIdx].y_pos = get_curr_pos()[1];
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current position
 		
-		if((term.x_pos == NUM_COLS)){				//if x position is at edge of screen, move down a line
-			term.x_pos = 0;
-			if(term.y_pos < NUM_ROWS - 1){
-				term.y_pos++;
+		if((curr_term[termIdx].x_pos == NUM_COLS)){				//if x position is at edge of screen, move down a line
+			curr_term[termIdx].x_pos = 0;
+			if(curr_term[termIdx].y_pos < NUM_ROWS - 1){
+				curr_term[termIdx].y_pos++;
 			}
 			else{
 				one_line_up();
 			}
 		}
-		if(buf_count < MAX_BUFFER){						//if we have not reached buffer limit
-			set_curr_pos(term.x_pos, term.y_pos);		//update current position
+		if(curr_term[termIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
+			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);		//update current position
 			putc(buf[i]);								//print char to screen
 			//line_buf[buf_count] = buf[i];				//add char to buffer
 			//buf_count++;								//increase count
-			if(term.x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
-				term.x_pos++;
+			if(curr_term[termIdx].x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+				curr_term[termIdx].x_pos++;
 			}
 		}
 
 		if (buf[i] == '\n') {
-			term.x_pos = 0;
-			term.y_pos++;
-			if (term.y_pos >= NUM_ROWS - 1) {
-				term.y_pos--;
+			curr_term[termIdx].x_pos = 0;
+			curr_term[termIdx].y_pos++;
+			if (curr_term[termIdx].y_pos >= NUM_ROWS - 1) {
+				curr_term[termIdx].y_pos--;
 				one_line_up();
 			}
 			//printf("%c", '\n');
-		set_curr_pos(term.x_pos, term.y_pos);
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 		}	
-		set_curr_pos(term.x_pos, term.y_pos);			//update current posiion
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current posiion
 	}
 }
 /* term_write
@@ -240,47 +242,47 @@ int32_t term_write(int32_t fd, const void* buf, int32_t nbytes) {
  */
 void uh_oh_backspace(){
 
-	term.x_pos = get_curr_pos()[0]; // get current screen x and y
-	term.y_pos = get_curr_pos()[1];
+	curr_term[termIdx].x_pos = get_curr_pos()[0]; // get current screen x and y
+	curr_term[termIdx].y_pos = get_curr_pos()[1];
 
-	if(term.x_pos == 0){ // if we're at the left most end and we press backspace we go to the previous line. if no previous line, we end
-		if(term.y_pos > 0){
-			term.y_pos--;
-			term.x_pos = NUM_COLS - 1;
+	if(curr_term[termIdx].x_pos == 0){ // if we're at the left most end and we press backspace we go to the previous line. if no previous line, we end
+		if(curr_term[termIdx].y_pos > 0){
+			curr_term[termIdx].y_pos--;
+			curr_term[termIdx].x_pos = NUM_COLS - 1;
 		}
 		else{return;}
 	}
 	else{ // if there's characters behind us we go back.
-		if(buf_count > 0)
-			term.x_pos--;
+		if(curr_term[termIdx].buf_count > 0)
+			curr_term[termIdx].x_pos--;
 	}
 
 
-	if(buf_count > 0){  // non empty buffer
+	if(curr_term[termIdx].buf_count > 0){  // non empty buffer
 	// 	line_buf[buf_count - 1] = '\0';
 		int i;
 		for(i = 1; i < 5; i++){ // check the last four charecters to the cursor and see if they are 4 spaces. if they are then we have a tab character
-			if(line_buf[buf_count - i] != ' '){
-				tab_flag = 0;
+			if(curr_term[termIdx].line_buf[curr_term[termIdx].buf_count - i] != ' '){
+				curr_term[termIdx].tab_flag = 0;
 				break;
 			}
-			tab_flag = 1; // set the flag
+			curr_term[termIdx].tab_flag = 1; // set the flag
 		}
-		if(tab_flag){
-			buf_count-=4;
-			int id = buf_count;
-			term.x_pos = id % NUM_COLS; // calculate the x and y position of the cursor in the buffer using our id
-			term.y_pos = id / NUM_COLS;
-			set_curr_pos(term.x_pos, term.y_pos);
-			tab_flag = 0;
+		if(curr_term[termIdx].tab_flag){
+			curr_term[termIdx].buf_count-=4;
+			int id = curr_term[termIdx].buf_count;
+			curr_term[termIdx].x_pos = id % NUM_COLS; // calculate the x and y position of the cursor in the buffer using our id
+			curr_term[termIdx].y_pos = id / NUM_COLS;
+			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+			curr_term[termIdx].tab_flag = 0;
 			return;
 		}
-		buf_count--;
+		curr_term[termIdx].buf_count--;
 	}
 	// backspace fills the buffer location with a space
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	putc(' ');
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 
 }
 /* term_clear
@@ -292,13 +294,13 @@ void uh_oh_backspace(){
  * Coverage:
  */
 void term_clear(){
-	term.x_pos = 0;
-	term.y_pos = 0;
+	curr_term[termIdx].x_pos = 0;
+	curr_term[termIdx].y_pos = 0;
 	//buf_count=0;
 	//memset(line_buf, '\0', sizeof(line_buf));
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	clear();
-	set_curr_pos(term.x_pos, term.y_pos);
+	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 }
 
 /* tabitha
