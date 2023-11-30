@@ -62,18 +62,18 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 		length = MAX_BUFFER;
 	}
 	while(curr_term[termIdx].buf_count == 0 || curr_term[termIdx].line_buf[curr_term[termIdx].buf_count - 1] != '\n'){
-		if(dequeue() != -1){
-			shell_execute();
-		}
-		if(call == 2){
-			// TODO fix monkeying with pid
-			set_exe_page(curr_term[termIdx].term_pcb->pid);
-			call = 1;
-		}
-		if(call == 3){
-			set_exe_page(curr_term[termIdx].term_pcb->pid);
-			call = 1;
-		}
+		// if(dequeue() != -1){
+		// 	shell_execute();
+		// }
+		// if(call == 2){
+		// 	// TODO fix monkeying with pid
+		// 	set_exe_page(curr_term[termIdx].term_pcb->pid);
+		// 	call = 1;
+		// }
+		// if(call == 3){
+		// 	set_exe_page(curr_term[termIdx].term_pcb->pid);
+		// 	call = 1;
+		// }
 	};
 	// here
 	for(i = 0; i < length && curr_term[termIdx].line_buf[i] != '\0'; i++){

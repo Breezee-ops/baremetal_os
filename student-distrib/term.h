@@ -32,7 +32,7 @@ typedef struct termData {
 	unsigned char tab_flag;
 } termData;
 
-int termIdx;
-termData curr_term[3];
+volatile int termIdx;
+volatile termData curr_term[3];
 
 #endif
