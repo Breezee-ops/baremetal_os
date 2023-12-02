@@ -24,11 +24,14 @@ typedef struct {
     fd_t fda[8];//file descriptor array
     uint32_t esp;
     uint32_t ebp;
+    uint32_t eip;
     uint32_t pid;
     uint32_t parent_pid;
     char args[128];
     //... fill in as needed
 } pcb_t;
+
+volatile pcb_t* cur_pcb_ptr;
 
 // int32_t terminal_read(int32_t fd, unsigned char* buf, int32_t nbytes);
 // int32_t terminal_write(int32_t fd, const unsigned char* buf, int32_t nbytes);
@@ -40,8 +43,6 @@ uint32_t free_pid(uint32_t pid);
 
 extern void syscall_handler_asm();
 
-void set_pcbptr(pcb_t* ptr);
-pcb_t* get_curpcbptr();
 int context_switch(uint32_t pid);
 int32_t halt (uint8_t status);
 int32_t execute (const uint8_t* command);
@@ -51,8 +52,10 @@ int32_t open(const uint8_t* filename);
 int32_t close (int32_t fd);  
 int32_t vidmap (uint8_t** screen_start);
 int32_t getargs(uint8_t* buf, int32_t nbytes);
+void user_context_switch();
 int find_fda_idx();
 int latest_pid();
+void save_stack();
 
 #endif
 

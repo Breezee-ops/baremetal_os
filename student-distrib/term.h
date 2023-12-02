@@ -26,7 +26,7 @@ typedef struct termData {
 	int x_pos;
 	int y_pos;
 	char status;
-	pcb_t* term_pcb;
+	pcb_t term_pcb;
 	unsigned char line_buf[MAX_BUFFER];
 	int buf_count;
 	unsigned char tab_flag;

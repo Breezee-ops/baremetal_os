@@ -27,6 +27,17 @@ keyboard_handler_asm:
     popal
     iret
 
+//handles assembly linkage to the pit_handler_asm
+pit_handler: 
+//save flags
+    pushal
+    pushfl
+    call pit_handler
+//restore flags
+    popfl
+    popal
+    iret
+
     
 .globl general_prot_asm
 general_prot_asm:

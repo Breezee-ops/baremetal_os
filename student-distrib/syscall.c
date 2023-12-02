@@ -14,22 +14,22 @@ file_operation_t dir = {&directory_read, &directory_write, &directory_open, &dir
 
 uint8_t active_processes[6] = {0,0,0,0,0,0};
 pcb_t pcbarr[6];
-pcb_t* cur_pcb_ptr = NULL;
 uint32_t cur_pid = 0;
+
 
 /*  latest_pid
  * Description: returns current pid
  * Inputs: none
  * Outputs: cur_pid
  */
-// int latest_pid(){
-//     return cur_pid;
-// }
-pcb_t* get_curpcbptr(){
-    return cur_pcb_ptr;
-}
-void set_pcbptr(pcb_t* ptr){
-    cur_pcb_ptr = ptr;
+void save_stack(){
+    uint32_t esp, ebp;
+    asm volatile("\n\
+    movl %%esp, %0  \n\
+    movl %%ebp, %1  \n\
+    " : "=r" (esp), "=r" (ebp) : : "cc");
+    cur_pcb_ptr->esp = esp;
+    cur_pcb_ptr->ebp = ebp;
 }
 
 /* halt
@@ -67,6 +67,21 @@ int32_t halt (uint8_t status) {
     }
 
     return 0; 
+}
+
+void user_context_switch(){
+    // tss.ss0 = KERNEL_DS;
+    tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+    uint32_t esp = cur_pcb_ptr->esp;
+    uint32_t ebp = cur_pcb_ptr->ebp;
+    asm volatile ("\n\
+    mov %%edx, %%ebp \n\
+    mov %%ebx, %%esp \n\
+    leave          \n\
+    ret            \n\
+    "
+    ::"d"(ebp), "b"(esp)
+    );
 }
 
 /* context_switch

@@ -254,6 +254,7 @@ void keyboard_handler(void){
     if(ctrl_held == 1 && key == 0x03){
         to_buf(termIdx + 1);
         from_buf(2);
+        save_stack();
         set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
         if(curr_term[1].status == 0){
             // 1 means spawn a new shell
@@ -261,27 +262,55 @@ void keyboard_handler(void){
             curr_term[1].status = 1;
             send_eoi(1);
             sti();
-            curr_term[termIdx].term_pcb = get_curpcbptr();
+            curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+            *cur_pcb_ptr = curr_term[1].term_pcb;
             termIdx = 1;
             shell_execute();
         }
         else{
-            set_exe_page(curr_term[termIdx].term_pcb->pid);
+            set_exe_page(curr_term[1].term_pcb.pid);
         }
-        curr_term[termIdx].term_pcb = get_curpcbptr();
-        set_pcbptr(curr_term[1].term_pcb);
+        curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+        *cur_pcb_ptr = curr_term[1].term_pcb;
+        tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+        uint32_t esp = cur_pcb_ptr->esp;
+        uint32_t ebp = cur_pcb_ptr->ebp;
         termIdx = 1;
+        send_eoi(1);
+        sti();
+        asm volatile ("\n\
+        mov %%edx, %%ebp \n\
+        mov %%ebx, %%esp \n\
+        leave          \n\
+        ret            \n\
+        "
+        ::"d"(ebp), "b"(esp)
+        );
         // set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
     }
 
     if(ctrl_held == 1 && key == 0x02){
         to_buf(termIdx + 1);
         from_buf(1);
-        curr_term[termIdx].term_pcb = get_curpcbptr();
-        set_pcbptr(curr_term[0].term_pcb);
+        save_stack();
+        curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+        *cur_pcb_ptr = curr_term[0].term_pcb;
         termIdx = 0;
-        set_exe_page(curr_term[termIdx].term_pcb->pid);
+        set_exe_page(curr_term[termIdx].term_pcb.pid);
         set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+        tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+        uint32_t esp = cur_pcb_ptr->esp;
+        uint32_t ebp = cur_pcb_ptr->ebp;
+        send_eoi(1);
+        sti();
+        asm volatile ("\n\
+        mov %%edx, %%ebp \n\
+        mov %%ebx, %%esp \n\
+        leave          \n\
+        ret            \n\
+        "
+        ::"d"(ebp), "b"(esp)
+        );
     }
 
     if(shift_held == 1 && key == 0x03){
