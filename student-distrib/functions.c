@@ -254,7 +254,14 @@ void keyboard_handler(void){
     if(ctrl_held == 1 && key == 0x03){
         to_buf(termIdx + 1);
         from_buf(2);
-        save_stack();
+        uint32_t esp, ebp;
+        asm volatile("\n\
+        movl %%esp, %0  \n\
+        movl %%ebp, %1  \n\
+        " : "=r" (esp), "=r" (ebp) : : "cc");
+        cur_pcb_ptr->esp = esp;
+        cur_pcb_ptr->ebp = ebp;
+        pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
         set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
 
         curr_term[0].term_pcb = *get_pcb_ptr(curr_term[0].term_pcb.pid);
@@ -284,8 +291,8 @@ void keyboard_handler(void){
             return;
         }
         else {
-            uint32_t ebp = cur_pcb_ptr->ebp;
-            uint32_t esp = cur_pcb_ptr->esp;
+            ebp = cur_pcb_ptr->ebp;
+            esp = cur_pcb_ptr->esp;
             tss.ss0 = KERNEL_DS;
             tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
             asm volatile ("\n\
@@ -301,7 +308,14 @@ void keyboard_handler(void){
     if(ctrl_held == 1 && key == 0x02){
         to_buf(termIdx + 1);
         from_buf(1);
-        save_stack();
+        uint32_t esp, ebp;
+        asm volatile("\n\
+        movl %%esp, %0  \n\
+        movl %%ebp, %1  \n\
+        " : "=r" (esp), "=r" (ebp) : : "cc");
+        cur_pcb_ptr->esp = esp;
+        cur_pcb_ptr->ebp = ebp;
+        pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
         set_curr_pos(curr_term[0].x_pos, curr_term[0].y_pos);
 
         curr_term[1].term_pcb = *get_pcb_ptr(curr_term[1].term_pcb.pid);
@@ -322,7 +336,7 @@ void keyboard_handler(void){
         // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
         // set_exe_page(new_ptr->pid);
 
-        termIdx = 1;
+        termIdx = 0;
         send_eoi(1);
         sti();
         if(curr_term[0].status == 0){
@@ -331,8 +345,8 @@ void keyboard_handler(void){
             return;
         }
         else {
-            uint32_t ebp = cur_pcb_ptr->ebp;
-            uint32_t esp = cur_pcb_ptr->esp;
+            ebp = cur_pcb_ptr->ebp;
+            esp = cur_pcb_ptr->esp;
             tss.ss0 = KERNEL_DS;
             tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
             asm volatile ("\n\

@@ -32,6 +32,7 @@ typedef struct {
 } pcb_t;
 
 volatile pcb_t* cur_pcb_ptr;
+volatile pcb_t pcbarr[6];
 
 // int32_t terminal_read(int32_t fd, unsigned char* buf, int32_t nbytes);
 // int32_t terminal_write(int32_t fd, const unsigned char* buf, int32_t nbytes);

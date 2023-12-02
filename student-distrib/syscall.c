@@ -13,7 +13,6 @@ file_operation_t term = {&term_read, &term_write, &term_open, &term_close};
 file_operation_t dir = {&directory_read, &directory_write, &directory_open, &directory_close};
 
 uint8_t active_processes[6] = {0,0,0,0,0,0};
-volatile pcb_t pcbarr[6];
 uint32_t cur_pid = 0;
 
 
