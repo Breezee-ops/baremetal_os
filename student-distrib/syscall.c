@@ -13,7 +13,7 @@ file_operation_t term = {&term_read, &term_write, &term_open, &term_close};
 file_operation_t dir = {&directory_read, &directory_write, &directory_open, &directory_close};
 
 uint8_t active_processes[6] = {0,0,0,0,0,0};
-pcb_t pcbarr[6];
+volatile pcb_t pcbarr[6];
 uint32_t cur_pid = 0;
 
 
@@ -30,6 +30,7 @@ void save_stack(){
     " : "=r" (esp), "=r" (ebp) : : "cc");
     cur_pcb_ptr->esp = esp;
     cur_pcb_ptr->ebp = ebp;
+    pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
 }
 
 /* halt
@@ -176,6 +177,8 @@ int32_t execute(const uint8_t* command){
     " : "=r" (esp), "=r" (ebp) : : "cc");
     cur_pcb_ptr->esp = esp;
     cur_pcb_ptr->ebp = ebp;
+
+    pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
     // 
     context_switch(pid);
     return 0;
@@ -226,7 +229,20 @@ int32_t shell_execute(){
     cur_pcb_ptr->esp = esp;
     cur_pcb_ptr->ebp = ebp;
     // 
-    context_switch(pid);
+    uint32_t user_stack_ptr = 8388608 - (pid * 8192);
+    tss.esp0 = user_stack_ptr ;
+    char* user_esp = (char*) (138412028 );
+    asm volatile (" \n\
+    mov %1, %%ds   \n\
+    pushl %1        \n\
+    pushl %3        \n\
+    pushfl          \n\
+    pushl %2        \n\
+    pushl %0        \n\
+    iret            \n\
+    "
+    ::"r" (eip), "r"(USER_DS), "r" (USER_CS), "r"(user_esp) : "cc"
+    );
     return 0;
 }
 /* getargs

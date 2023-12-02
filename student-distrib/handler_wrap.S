@@ -19,12 +19,12 @@ rtc_handler_asm:
 //handles assembly linkage to the keyboard_handler_asm
 keyboard_handler_asm: 
 //save flags
-    pushal
     pushfl
+    pushal
     call keyboard_handler
 //restore flags
-    popfl
     popal
+    popfl
     iret
 
 //handles assembly linkage to the pit_handler_asm

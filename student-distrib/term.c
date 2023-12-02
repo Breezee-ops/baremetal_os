@@ -28,6 +28,7 @@ void term_init(){
 		clear();
 		set_curr_pos(0, 0);
 	}
+	curr_term[0].status = 1;
 }
 
 int32_t term_open(const uint8_t* file_name){
