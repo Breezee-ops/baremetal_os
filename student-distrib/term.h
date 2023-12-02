@@ -30,6 +30,8 @@ typedef struct termData {
 	unsigned char line_buf[MAX_BUFFER];
 	int buf_count;
 	unsigned char tab_flag;
+	uint32_t esp;
+	uint32_t ebp;
 } termData;
 
 volatile int termIdx;
