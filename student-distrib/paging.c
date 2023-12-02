@@ -10,7 +10,7 @@
  * Side Effects: changes values in page_directory and page_table
  * Coverage: page_directory and page_table def.
  */
-char* curmem;
+// char* curmem;
 void init_paging() {
     int i;
     // set page directory to not present 4MB chunks

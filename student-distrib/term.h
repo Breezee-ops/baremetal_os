@@ -35,6 +35,7 @@ typedef struct termData {
 } termData;
 
 volatile int termIdx;
+volatile int scheduleIdx; 
 volatile termData curr_term[3];
 
 #endif

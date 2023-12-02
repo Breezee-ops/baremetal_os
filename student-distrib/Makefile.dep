@@ -1,0 +1,23 @@
+boot.o: boot.S multiboot.h x86_desc.h types.h
+handler_wrap.o: handler_wrap.S handler_wrap.h
+syscall_wrap.o: syscall_wrap.S x86_desc.h types.h
+x86_desc.o: x86_desc.S x86_desc.h types.h
+fs.o: fs.c fs.h types.h lib.h
+functions.o: functions.c functions.h types.h i8259.h lib.h term.h \
+  syscall.h fs.h paging.h x86_desc.h queue.h
+i8259.o: i8259.c i8259.h types.h lib.h
+idt.o: idt.c idt.h x86_desc.h types.h functions.h i8259.h lib.h \
+  handler_wrap.h rtc.h syscall.h fs.h paging.h
+kernel.o: kernel.c multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
+  tests.h idt.h functions.h rtc.h paging.h term.h syscall.h fs.h queue.h
+lib.o: lib.c lib.h types.h term.h functions.h i8259.h syscall.h fs.h \
+  paging.h x86_desc.h
+paging.o: paging.c types.h x86_desc.h lib.h paging.h
+queue.o: queue.c queue.h
+rtc.o: rtc.c rtc.h lib.h types.h i8259.h
+syscall.o: syscall.c syscall.h types.h fs.h lib.h paging.h x86_desc.h \
+  functions.h i8259.h term.h rtc.h
+term.o: term.c term.h types.h functions.h i8259.h lib.h syscall.h fs.h \
+  paging.h x86_desc.h queue.h
+tests.o: tests.c tests.h x86_desc.h types.h lib.h rtc.h term.h \
+  functions.h i8259.h syscall.h fs.h paging.h

@@ -13,7 +13,7 @@
 static int screen_x;
 static int screen_y;
 // static char* curmem = (char *)VIDEO;
-char* curmem;
+// char* curmem;
 /* void clear(void);
  * Inputs: void
  * Return Value: none

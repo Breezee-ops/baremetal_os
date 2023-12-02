@@ -91,6 +91,7 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0x13], smd);
     
     // the interrupts are assembly linked so that we can preserve our flags when we return after completion of interrupt execution
+    SET_IDT_ENTRY(idt[0x20], pit_handler_asm)
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
 
