@@ -258,96 +258,134 @@ void keyboard_handler(void){
     //if ctrl held and fn num pressed switch to that terminal
     // 2 pressed
     if(ctrl_held == 1 && key == 0x03){
-        
-        // save the current terminal 1
         to_buf(termIdx + 1);
-        // replace video mem with terminal 2
         from_buf(2);
+        curr_term[termIdx].esp = esp;
+        curr_term[termIdx].ebp = ebp;
+        pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
+        curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+        set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
 
-        // // save current user program stack
-        // curr_term[0].esp = esp;
-        // curr_term[0].ebp = ebp;
+        cur_pcb_ptr = get_pcb_ptr(curr_term[1].term_pcb.pid);
 
-        // // store the current pcb info 
-        // pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-        // curr_term[termIdx].term_pcb = *cur_pcb_ptr;
-        
-        // // change curr terminal cursor
-        // set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
-        // // change curr terminal pcb pointer and idx
-        // cur_pcb_ptr = get_pcb_ptr(curr_term[1].term_pcb.pid);
+        // uint32_t ebp = cur_pcb_ptr->ebp;
+        // uint32_t esp = cur_pcb_ptr->esp;
+        // pcb_t* old_ptr;
+        // // // uint32_t currpid;
+        // // // currpid = curr_term[1].term_pcb.pid;
+        // // // *cur_pcb_ptr = curr_term[1].term_pcb;
+
+        // // // uint32_t ebp = cur_pcb_ptr->ebp;
+        // // // uint32_t esp = cur_pcb_ptr->esp;
+
+        // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
+        // set_exe_page(new_ptr->pid);
+
         termIdx = 1;
-        // send_eoi(1);
-        // sti();
-
-        // if(curr_term[1].status == 0){
-        //     curr_term[1].status = 1; 
-        //     execute((const uint8_t*) "shell");
-        //     return;
-        // }
-        // else {
-        //     // set new ebp and esp for user execution
-        //     ebp = curr_term[1].ebp;
-        //     esp = curr_term[1].esp;
-        //     set_exe_page(cur_pcb_ptr->pid);
-        //     tss.ss0 = KERNEL_DS;
-        //     tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-        //     asm volatile ("\n\
-        //     mov %%edx, %%ebp \n\
-        //     mov %%ebx, %%esp \n\
-        //     "
-        //     ::"d"(ebp), "b"(esp) : "memory"
-        //     );
-        //     return;
-        // }
+        send_eoi(1);
+        sti();
+        if(curr_term[1].status == 0){
+            curr_term[1].status = 1; 
+            execute((const uint8_t*) "shell");
+            return;
+        }
+        else {
+            ebp = curr_term[1].ebp;
+            esp = curr_term[1].esp;
+            set_exe_page(cur_pcb_ptr->pid);
+            tss.ss0 = KERNEL_DS;
+            tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+            asm volatile ("\n\
+            mov %%edx, %%ebp \n\
+            mov %%ebx, %%esp \n\
+            "
+            ::"d"(ebp), "b"(esp) : "memory"
+            );
+            return;
+        }
     }
 
     if(ctrl_held == 1 && key == 0x02){
         to_buf(termIdx + 1);
         from_buf(1);
-        // curr_term[1].esp = esp;
-        // curr_term[1].ebp = ebp;
-        // pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-        // curr_term[termIdx].term_pcb = *cur_pcb_ptr;
-        // set_curr_pos(curr_term[0].x_pos, curr_term[0].y_pos);
+        curr_term[termIdx].esp = esp;
+        curr_term[termIdx].ebp = ebp;
+        pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
+        curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+        set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 
-        // cur_pcb_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
+        cur_pcb_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
 
-        // // uint32_t ebp = cur_pcb_ptr->ebp;
-        // // uint32_t esp = cur_pcb_ptr->esp;
-        // // pcb_t* old_ptr;
-        // // // // uint32_t currpid;
-        // // // // currpid = curr_term[1].term_pcb.pid;
-        // // // // *cur_pcb_ptr = curr_term[1].term_pcb;
+        // uint32_t ebp = cur_pcb_ptr->ebp;
+        // uint32_t esp = cur_pcb_ptr->esp;
+        // pcb_t* old_ptr;
+        // // // uint32_t currpid;
+        // // // currpid = curr_term[1].term_pcb.pid;
+        // // // *cur_pcb_ptr = curr_term[1].term_pcb;
 
-        // // // // uint32_t ebp = cur_pcb_ptr->ebp;
-        // // // // uint32_t esp = cur_pcb_ptr->esp;
+        // // // uint32_t ebp = cur_pcb_ptr->ebp;
+        // // // uint32_t esp = cur_pcb_ptr->esp;
 
-        // // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
-        // // set_exe_page(new_ptr->pid);
+        // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
+        // set_exe_page(new_ptr->pid);
 
         termIdx = 0;
-        // send_eoi(1);
-        // sti();
-        // if(curr_term[0].status == 0){
-        //     curr_term[0].status = 1; 
-        //     execute((const uint8_t*) "shell");
-        //     return;
-        // }
-        // else {
-        //     ebp = curr_term[0].ebp;
-        //     esp = curr_term[0].esp;
-        //     set_exe_page(cur_pcb_ptr->pid);
-        //     tss.ss0 = KERNEL_DS;
-        //     tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-        //     asm volatile ("\n\
-        //     mov %%edx, %%ebp \n\
-        //     mov %%ebx, %%esp \n\
-        //     "
-        //     ::"d"(ebp), "b"(esp) : "memory"
-        //     );
-        //     return;
-        // }
+        send_eoi(1);
+        sti();
+        if(curr_term[0].status == 0){
+            curr_term[0].status = 1; 
+            execute((const uint8_t*) "shell");
+            return;
+        }
+        else {
+            ebp = curr_term[0].ebp;
+            esp = curr_term[0].esp;
+            set_exe_page(cur_pcb_ptr->pid);
+            tss.ss0 = KERNEL_DS;
+            tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+            asm volatile ("\n\
+            mov %%edx, %%ebp \n\
+            mov %%ebx, %%esp \n\
+            "
+            ::"d"(ebp), "b"(esp) : "memory"
+            );
+            return;
+        }
+    }
+
+    if(ctrl_held == 1 && key == 0x04){
+        to_buf(termIdx + 1);
+        from_buf(3);
+        curr_term[termIdx].esp = esp;
+        curr_term[termIdx].ebp = ebp;
+        pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
+        curr_term[termIdx].term_pcb = *cur_pcb_ptr;
+        set_curr_pos(curr_term[2].x_pos, curr_term[2].y_pos);
+
+        cur_pcb_ptr = get_pcb_ptr(curr_term[2].term_pcb.pid);
+
+        termIdx = 2;
+        send_eoi(1);
+        sti();
+        if(curr_term[2].status == 0){
+            curr_term[2].status = 1; 
+            execute((const uint8_t*) "shell");
+            return;
+        }
+        else {
+            ebp = curr_term[2].ebp;
+            esp = curr_term[2].esp;
+            set_exe_page(cur_pcb_ptr->pid);
+            tss.ss0 = KERNEL_DS;
+            tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
+            asm volatile ("\n\
+            mov %%edx, %%ebp \n\
+            mov %%ebx, %%esp \n\
+            "
+            ::"d"(ebp), "b"(esp) : "memory"
+            );
+            return;
+        }
     }
 
     if(shift_held == 1 && key == 0x03){

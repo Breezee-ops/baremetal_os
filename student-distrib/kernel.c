@@ -185,7 +185,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     execute((const uint8_t*)"shell");
 
-    pit_init();
+    //pit_init();
     //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
