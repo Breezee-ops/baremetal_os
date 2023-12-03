@@ -85,7 +85,7 @@ void pit_handler() {
         curr_term[scheduleIdx].status = 1; 
         send_eoi(0);
         sti();
-        execute((const uint8_t*) "shell");
+        shell_exec();
         return;
     }
     else {

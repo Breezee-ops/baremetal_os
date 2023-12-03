@@ -15,7 +15,6 @@
 #include "term.h"
 #include "fs.h"
 #include "syscall.h"
-#include "queue.h"
 #include "pit.h"
 
 #define RUN_TESTS
@@ -150,8 +149,6 @@ void entry(unsigned long magic, unsigned long addr) {
     init_idt(idt);
     /* Init the PIC */
     i8259_init();
-
-    create_queue();
 
     init_paging();
 

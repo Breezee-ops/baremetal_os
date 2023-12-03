@@ -4,7 +4,6 @@
 #include "term.h"
 #include "fs.h"
 #include "syscall.h"
-#include "queue.h"
 
 static volatile int enter_flag = 0;
 

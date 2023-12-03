@@ -3,7 +3,6 @@
 #include "paging.h"
 #include "syscall.h"
 #include "functions.h"
-#include "queue.h"
 
 #define ATTRIB      0x7
 

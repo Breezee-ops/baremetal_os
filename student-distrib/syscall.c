@@ -154,11 +154,68 @@ int32_t execute(const uint8_t* command){
     // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
     int32_t pid = find_pid();
     if(pid == -1){
-        term_write(0, "No available program ID\n", 25);
+        term_write(0, "No available program ID\n", 24);
         return 0;
     }
     cur_pid = pid;
     int parent_pid = (cur_pcb_ptr == NULL) ? 0 : cur_pcb_ptr->pid;
+    pcb_t* currpcb = pcb_init(pid, parent_pid);
+    cur_pcb_ptr = currpcb;
+    
+    int it;
+    for(it = 0; it < 32; it++){
+        if(command[ind] != ' '){
+            cur_pcb_ptr->args[it] = command[ind];
+        }
+        ind++;
+    }
+
+    set_exe_page(pid);
+    // read the executable into memory
+    read_data(dirptr->inode_num, 0, (uint8_t*)0x08048000, 0x300000);
+    // cur_pcb_ptr->parent_pid = (pid == 0) ? 0 : (pid -1);
+    uint32_t esp, ebp;
+    asm volatile("\n\
+    movl %%esp, %0  \n\
+    movl %%ebp, %1  \n\
+    " : "=r" (esp), "=r" (ebp) : : "cc");
+    cur_pcb_ptr->esp = esp;
+    cur_pcb_ptr->ebp = ebp;
+
+    pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
+    //
+    sti();
+    context_switch(pid);
+    return 0;
+}
+
+void shell_exec(){
+    cli();
+    uint8_t* command = (uint8_t*)"shell";
+    dentry_t dir = {
+        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
+        .filetype = 0,       // 0 for uint32_t
+        .inode_num = 0,      // 0 for uint32_t
+        .reserved = {0}      // Initializes all elements of the reserved array to 0
+    };
+    uint8_t filename[FILENAME_LEN] = {0};
+    int ind;
+    for(ind = 0; ind < FILENAME_LEN && command[ind] != ' ' && command[ind] != '\0'; ind++){
+        filename[ind] = command[ind];
+    }
+    dentry_t* dirptr = &dir; 
+    if(read_dentry_by_name((uint8_t*)filename, dirptr) != 0) return -1;
+    if(exe_check(dirptr) != 0) return -1;
+    // dereference 8mb kb for shell and 16kb for process and put the pcb struct type obj at the top of these two stacks.
+    read_data(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
+    // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
+    int32_t pid = find_pid();
+    if(pid == -1){
+        term_write(0, "No available program ID\n", 24);
+        return 0;
+    }
+    cur_pid = pid;
+    int parent_pid = 0;
     pcb_t* currpcb = pcb_init(pid, parent_pid);
     cur_pcb_ptr = currpcb;
     
