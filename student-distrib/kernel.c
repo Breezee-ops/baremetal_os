@@ -16,6 +16,7 @@
 #include "fs.h"
 #include "syscall.h"
 #include "queue.h"
+#include "pit.h"
 
 #define RUN_TESTS
 
@@ -154,6 +155,8 @@ void entry(unsigned long magic, unsigned long addr) {
 
     init_paging();
 
+    
+
     keyboard_init();
     
     init_rtc(); 
@@ -161,7 +164,7 @@ void entry(unsigned long magic, unsigned long addr) {
     term_init();
     
     fs_init(FS_ADDR);
-    
+ 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
 
@@ -181,6 +184,8 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
 
     execute((const uint8_t*)"shell");
+
+    pit_init();
     //ece391_fdputs(1, (uint8_t*)"Hello, if this ran, the program was correct. Yay!\n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

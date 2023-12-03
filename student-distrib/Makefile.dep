@@ -9,10 +9,13 @@ i8259.o: i8259.c i8259.h types.h lib.h
 idt.o: idt.c idt.h x86_desc.h types.h functions.h i8259.h lib.h \
   handler_wrap.h rtc.h syscall.h fs.h paging.h
 kernel.o: kernel.c multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
-  tests.h idt.h functions.h rtc.h paging.h term.h syscall.h fs.h queue.h
+  tests.h idt.h functions.h rtc.h paging.h term.h syscall.h fs.h queue.h \
+  pit.h
 lib.o: lib.c lib.h types.h term.h functions.h i8259.h syscall.h fs.h \
   paging.h x86_desc.h
 paging.o: paging.c types.h x86_desc.h lib.h paging.h
+pit.o: pit.c pit.h types.h x86_desc.h lib.h term.h functions.h i8259.h \
+  syscall.h fs.h paging.h
 queue.o: queue.c queue.h
 rtc.o: rtc.c rtc.h lib.h types.h i8259.h
 syscall.o: syscall.c syscall.h types.h fs.h lib.h paging.h x86_desc.h \

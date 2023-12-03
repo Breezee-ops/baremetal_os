@@ -134,6 +134,7 @@ uint8_t exe_check(dentry_t* dirptr){
  * Outputs: switches to new process
  */
 int32_t execute(const uint8_t* command){
+    cli();
     dentry_t dir = {
         .filename = "",      // Empty string, initializes all characters to 0 ('\0')
         .filetype = 0,       // 0 for uint32_t
@@ -178,72 +179,12 @@ int32_t execute(const uint8_t* command){
     cur_pcb_ptr->ebp = ebp;
 
     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-    // 
+    //
+    sti();
     context_switch(pid);
     return 0;
 }
 
-int32_t shell_execute(){
-    uint8_t* command = "shell";
-    dentry_t dir = {
-        .filename = "",      // Empty string, initializes all characters to 0 ('\0')
-        .filetype = 0,       // 0 for uint32_t
-        .inode_num = 0,      // 0 for uint32_t
-        .reserved = {0}      // Initializes all elements of the reserved array to 0
-    };
-    uint8_t filename[FILENAME_LEN] = {0};
-    int ind;
-    for(ind = 0; ind < FILENAME_LEN && command[ind] != ' ' && command[ind] != '\0'; ind++){
-        filename[ind] = command[ind];
-    }
-    dentry_t* dirptr = &dir; 
-    if(read_dentry_by_name((uint8_t*)filename, dirptr) != 0) return -1;
-    if(exe_check(dirptr) != 0) return -1;
-    // dereference 8mb kb for shell and 16kb for process and put the pcb struct type obj at the top of these two stacks.
-    read_data(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
-    // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
-    uint32_t pid = find_pid();
-    cur_pid = pid;
-    int parent_pid = 0;
-    pcb_t* currpcb = pcb_init(pid, parent_pid);
-    cur_pcb_ptr = currpcb;
-    
-    int it;
-    for(it = 0; it < 32; it++){
-        if(command[ind] != ' '){
-            cur_pcb_ptr->args[it] = command[ind];
-        }
-        ind++;
-    }
-
-    set_exe_page(pid);
-    // read the executable into memory
-    read_data(dirptr->inode_num, 0, (uint8_t*)0x08048000, 0x300000);
-    cur_pcb_ptr->parent_pid = (pid == 0) ? 0 : (pid -1);
-    uint32_t esp, ebp;
-    asm volatile("\n\
-    movl %%esp, %0  \n\
-    movl %%ebp, %1  \n\
-    " : "=r" (esp), "=r" (ebp) : : "cc");
-    cur_pcb_ptr->esp = esp;
-    cur_pcb_ptr->ebp = ebp;
-    // 
-    uint32_t user_stack_ptr = 8388608 - (pid * 8192);
-    tss.esp0 = user_stack_ptr ;
-    char* user_esp = (char*) (138412028 );
-    asm volatile (" \n\
-    mov %1, %%ds   \n\
-    pushl %1        \n\
-    pushl %3        \n\
-    pushfl          \n\
-    pushl %2        \n\
-    pushl %0        \n\
-    iret            \n\
-    "
-    ::"r" (eip), "r"(USER_DS), "r" (USER_CS), "r"(user_esp) : "cc"
-    );
-    return 0;
-}
 /* getargs
  * Description: grabs argument puts into buffer
  * Inputs: buf - args buffer, nbytes - #bytes written

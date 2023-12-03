@@ -30,6 +30,17 @@ void init_idt(idt_desc_t* idt){
     }
     //maskeable interrupts
 
+    // pit interrupt, this lives at 0x20 on the idt table
+    idt[0x20].seg_selector = KERNEL_CS;
+    idt[0x20].reserved4 = 0;
+    idt[0x20].reserved3 = 0;
+    idt[0x20].reserved2 = 1;
+    idt[0x20].reserved1 = 1;
+    idt[0x20].reserved0 = 0;
+    idt[0x20].size = 1;
+    idt[0x20].dpl = 0;
+    idt[0x20].present = 1;
+
     // keyboard interrupt, this lives at 0x21 on the idt table
     idt[0x21].seg_selector = KERNEL_CS;
     idt[0x21].reserved4 = 0;
@@ -91,7 +102,7 @@ void init_idt(idt_desc_t* idt){
     SET_IDT_ENTRY(idt[0x13], smd);
     
     // the interrupts are assembly linked so that we can preserve our flags when we return after completion of interrupt execution
-    SET_IDT_ENTRY(idt[0x20], pit_handler_asm)
+    SET_IDT_ENTRY(idt[0x20], pit_handler_asm);
     SET_IDT_ENTRY(idt[0x21], keyboard_handler_asm);
     SET_IDT_ENTRY(idt[0x28], rtc_handler_asm);
 

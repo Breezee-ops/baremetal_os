@@ -27,8 +27,10 @@ keyboard_handler_asm:
     popfl
     iret
 
+.globl pit_handler_asm
+
 //handles assembly linkage to the pit_handler_asm
-pit_handler: 
+pit_handler_asm: 
 //save flags
     pushal
     pushfl
