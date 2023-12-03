@@ -249,149 +249,40 @@ void keyboard_handler(void){
     unsigned char printed_key; 
 
     //check if a key that alters keypress is pressed
-    if(special_check(key)){
-        send_eoi(1);
-        sti();
-        return;
-    }
     char* temp = curmem;
     curmem = (char*) 0xb8000;
     //if ctrl held and fn num pressed switch to that terminal
     // 2 pressed
-    if(ctrl_held == 1 && key == 0x03){
+    if(ctrl_held == 1 && key == 0x03 && termIdx != 1){
         to_buf(termIdx + 1);
         from_buf(2);
-        // curr_term[termIdx].esp = esp;
-        // curr_term[termIdx].ebp = ebp;
-    //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-    //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
-    //     set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
-
-    //     cur_pcb_ptr = get_pcb_ptr(curr_term[1].term_pcb.pid);
-
-    //     // uint32_t ebp = cur_pcb_ptr->ebp;
-    //     // uint32_t esp = cur_pcb_ptr->esp;
-    //     // pcb_t* old_ptr;
-    //     // // // uint32_t currpid;
-    //     // // // currpid = curr_term[1].term_pcb.pid;
-    //     // // // *cur_pcb_ptr = curr_term[1].term_pcb;
-
-    //     // // // uint32_t ebp = cur_pcb_ptr->ebp;
-    //     // // // uint32_t esp = cur_pcb_ptr->esp;
-
-    //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
-    //     // set_exe_page(new_ptr->pid);
 
         termIdx = 1;
     }
-    //     send_eoi(1);
-    //     sti();
-    //     if(curr_term[1].status == 0){
-    //         curr_term[1].status = 1; 
-    //         execute((const uint8_t*) "shell");
-    //         return;
-    //     }
-    //     else {
-    //         ebp = curr_term[1].ebp;
-    //         esp = curr_term[1].esp;
-    //         set_exe_page(cur_pcb_ptr->pid);
-    //         tss.ss0 = KERNEL_DS;
-    //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n
-    //         mov %%edx, %%ebp \n
-    //         mov %%ebx, %%esp \n
-    //         "
-    //         ::"d"(ebp), "b"(esp) : "memory"
-    //         );
-    //         return;
-    //     }
-    // }
 
-    if(ctrl_held == 1 && key == 0x02){
+    if(ctrl_held == 1 && key == 0x02 && termIdx != 0){
         to_buf(termIdx + 1);
         from_buf(1);
-        // curr_term[termIdx].esp = esp;
-        // curr_term[termIdx].ebp = ebp;
-    //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-    //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
-    //     set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 
-    //     cur_pcb_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
-
-    //     // uint32_t ebp = cur_pcb_ptr->ebp;
-    //     // uint32_t esp = cur_pcb_ptr->esp;
-    //     // pcb_t* old_ptr;
-    //     // // // uint32_t currpid;
-    //     // // // currpid = curr_term[1].term_pcb.pid;
-    //     // // // *cur_pcb_ptr = curr_term[1].term_pcb;
-
-    //     // // // uint32_t ebp = cur_pcb_ptr->ebp;
-    //     // // // uint32_t esp = cur_pcb_ptr->esp;
-
-    //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
-    //     // set_exe_page(new_ptr->pid);
 
         termIdx = 0;
     }
-    //     send_eoi(1);
-    //     sti();
-    //     if(curr_term[0].status == 0){
-    //         curr_term[0].status = 1; 
-    //         execute((const uint8_t*) "shell");
-    //         return;
-    //     }
-    //     else {
-    //         ebp = curr_term[0].ebp;
-    //         esp = curr_term[0].esp;
-    //         set_exe_page(cur_pcb_ptr->pid);
-    //         tss.ss0 = KERNEL_DS;
-    //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n
-    //         mov %%edx, %%ebp \n
-    //         mov %%ebx, %%esp \n
-    //         "
-    //         ::"d"(ebp), "b"(esp) : "memory"
-    //         );
-    //         return;
-    //     }
-    // }
 
-    if(ctrl_held == 1 && key == 0x04){
+
+    if(key == 0x04 && termIdx != 2 && ctrl_held == 1){
         to_buf(termIdx + 1);
         from_buf(3);
-        // curr_term[termIdx].esp = esp;
-        // curr_term[termIdx].ebp = ebp;
-    //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
-    //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
-    //     set_curr_pos(curr_term[2].x_pos, curr_term[2].y_pos);
-
-    //     cur_pcb_ptr = get_pcb_ptr(curr_term[2].term_pcb.pid);
 
         termIdx = 2;
     }
-    //     send_eoi(1);
-    //     sti();
-    //     if(curr_term[2].status == 0){
-    //         curr_term[2].status = 1; 
-    //         execute((const uint8_t*) "shell");
-    //         return;
-    //     }
-    //     else {
-    //         ebp = curr_term[2].ebp;
-    //         esp = curr_term[2].esp;
-    //         set_exe_page(cur_pcb_ptr->pid);
-    //         tss.ss0 = KERNEL_DS;
-    //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n
-    //         mov %%edx, %%ebp \n
-    //         mov %%ebx, %%esp \n
-    //         "
-    //         ::"d"(ebp), "b"(esp) : "memory"
-    //         );
-    //         return;
-    //     }
-    // }
 
+    set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+    if(special_check(key)){
+        send_eoi(1);
+        curmem = temp;
+        sti();
+        return;
+    }
     if(shift_held == 1 && key == 0x03){
         write_to_buf(2);
     }
