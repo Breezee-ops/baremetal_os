@@ -8,7 +8,7 @@
 #define VIDEO       0xB8000
 #define NUM_COLS    80
 #define NUM_ROWS    25
-#define ATTRIB      0x7 + termIdx    ;
+#define ATTRIB      0x7 + scheduleIdx    ;
 
 static int screen_x;
 static int screen_y;
