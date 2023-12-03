@@ -254,14 +254,15 @@ void keyboard_handler(void){
         sti();
         return;
     }
-
+    char* temp = curmem;
+    curmem = (char*) 0xb8000;
     //if ctrl held and fn num pressed switch to that terminal
     // 2 pressed
-    // if(ctrl_held == 1 && key == 0x03){
-    //     to_buf(termIdx + 1);
-    //     from_buf(2);
-    //     curr_term[termIdx].esp = esp;
-    //     curr_term[termIdx].ebp = ebp;
+    if(ctrl_held == 1 && key == 0x03){
+        to_buf(termIdx + 1);
+        from_buf(2);
+        // curr_term[termIdx].esp = esp;
+        // curr_term[termIdx].ebp = ebp;
     //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
     //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
     //     set_curr_pos(curr_term[1].x_pos, curr_term[1].y_pos);
@@ -281,7 +282,8 @@ void keyboard_handler(void){
     //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
     //     // set_exe_page(new_ptr->pid);
 
-        // termIdx = 1;
+        termIdx = 1;
+    }
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[1].status == 0){
@@ -295,9 +297,9 @@ void keyboard_handler(void){
     //         set_exe_page(cur_pcb_ptr->pid);
     //         tss.ss0 = KERNEL_DS;
     //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n\
-    //         mov %%edx, %%ebp \n\
-    //         mov %%ebx, %%esp \n\
+    //         asm volatile ("\n
+    //         mov %%edx, %%ebp \n
+    //         mov %%ebx, %%esp \n
     //         "
     //         ::"d"(ebp), "b"(esp) : "memory"
     //         );
@@ -305,11 +307,11 @@ void keyboard_handler(void){
     //     }
     // }
 
-    // if(ctrl_held == 1 && key == 0x02){
-    //     to_buf(termIdx + 1);
-    //     from_buf(1);
-    //     curr_term[termIdx].esp = esp;
-    //     curr_term[termIdx].ebp = ebp;
+    if(ctrl_held == 1 && key == 0x02){
+        to_buf(termIdx + 1);
+        from_buf(1);
+        // curr_term[termIdx].esp = esp;
+        // curr_term[termIdx].ebp = ebp;
     //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
     //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
     //     set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
@@ -329,7 +331,8 @@ void keyboard_handler(void){
     //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
     //     // set_exe_page(new_ptr->pid);
 
-        // termIdx = 0;
+        termIdx = 0;
+    }
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[0].status == 0){
@@ -343,9 +346,9 @@ void keyboard_handler(void){
     //         set_exe_page(cur_pcb_ptr->pid);
     //         tss.ss0 = KERNEL_DS;
     //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n\
-    //         mov %%edx, %%ebp \n\
-    //         mov %%ebx, %%esp \n\
+    //         asm volatile ("\n
+    //         mov %%edx, %%ebp \n
+    //         mov %%ebx, %%esp \n
     //         "
     //         ::"d"(ebp), "b"(esp) : "memory"
     //         );
@@ -353,18 +356,19 @@ void keyboard_handler(void){
     //     }
     // }
 
-    // if(ctrl_held == 1 && key == 0x04){
-    //     to_buf(termIdx + 1);
-    //     from_buf(3);
-    //     curr_term[termIdx].esp = esp;
-    //     curr_term[termIdx].ebp = ebp;
+    if(ctrl_held == 1 && key == 0x04){
+        to_buf(termIdx + 1);
+        from_buf(3);
+        // curr_term[termIdx].esp = esp;
+        // curr_term[termIdx].ebp = ebp;
     //     pcbarr[cur_pcb_ptr->pid] = *cur_pcb_ptr;
     //     curr_term[termIdx].term_pcb = *cur_pcb_ptr;
     //     set_curr_pos(curr_term[2].x_pos, curr_term[2].y_pos);
 
     //     cur_pcb_ptr = get_pcb_ptr(curr_term[2].term_pcb.pid);
 
-        // termIdx = 2;
+        termIdx = 2;
+    }
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[2].status == 0){
@@ -378,9 +382,9 @@ void keyboard_handler(void){
     //         set_exe_page(cur_pcb_ptr->pid);
     //         tss.ss0 = KERNEL_DS;
     //         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
-    //         asm volatile ("\n\
-    //         mov %%edx, %%ebp \n\
-    //         mov %%ebx, %%esp \n\
+    //         asm volatile ("\n
+    //         mov %%edx, %%ebp \n
+    //         mov %%ebx, %%esp \n
     //         "
     //         ::"d"(ebp), "b"(esp) : "memory"
     //         );
@@ -425,6 +429,7 @@ void keyboard_handler(void){
     //done with interrupt
     send_eoi(1);
     //resume interrupts
+    curmem = temp;
     sti();
 }
 

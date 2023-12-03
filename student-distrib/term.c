@@ -8,7 +8,7 @@
 #define ATTRIB      0x7
 
 termData term;
-unsigned char* video_mem;
+// unsigned char* curmem; if this doesnt work bring this back
 // int termIdx = 0;
 /* term_init
  * 
@@ -20,7 +20,7 @@ unsigned char* video_mem;
  */
 void term_init(){
 	int i = 0;
-	video_mem = (unsigned char*)0xB8000;
+	curmem = (unsigned char*)0xB8000;
 	for(i = 0; i < 3; i++){
 		curr_term[i].buf_count = 0;
 		curr_term[i].x_pos = 0;
@@ -117,7 +117,7 @@ void keyboard_read(unsigned char* buf){
 			one_line_up();
 		}
 		printf("%c", '\n');
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos); // this must be changing the global cursor position so that we can type
 	}
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	keyboard_write(buf, 1);
@@ -324,9 +324,9 @@ void tabitha(){
 void one_line_up(){
 	int i;
 	int vid_offset = NUM_COLS * 2;
-	unsigned char* dest = video_mem;
-    unsigned char* src = video_mem + vid_offset;
-	unsigned char * bottom = video_mem + (NUM_ROWS - 1) * (vid_offset);
+	unsigned char* dest = curmem;
+    unsigned char* src = curmem + vid_offset;
+	unsigned char * bottom = curmem + (NUM_ROWS - 1) * (vid_offset);
     unsigned int size = vid_offset * (NUM_ROWS - 1);
     memmove(dest, src, size);
 
