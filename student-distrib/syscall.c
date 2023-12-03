@@ -152,7 +152,11 @@ int32_t execute(const uint8_t* command){
     // dereference 8mb kb for shell and 16kb for process and put the pcb struct type obj at the top of these two stacks.
     read_data(dirptr->inode_num, 24, (uint8_t*)&eip, 4);
     // cs is user_cs in inline assembly pushfl for eflags ds is set to user_ds
-    uint32_t pid = find_pid();
+    int32_t pid = find_pid();
+    if(pid == -1){
+        term_write(0, "No available program ID\n", 25);
+        return 0;
+    }
     cur_pid = pid;
     int parent_pid = (cur_pcb_ptr == NULL) ? 0 : cur_pcb_ptr->pid;
     pcb_t* currpcb = pcb_init(pid, parent_pid);
@@ -331,9 +335,9 @@ pcb_t* get_pcb_ptr(uint32_t pid) {
  * Inputs: none
  * Outputs: success or fail
  */
-uint32_t find_pid() {
+int32_t find_pid() {
     int i;
-    uint32_t found;
+    int32_t found;
 
     for(i = 0; i < 6; i++) {
         if(active_processes[i] == 0) {

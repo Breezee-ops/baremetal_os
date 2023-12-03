@@ -8,7 +8,7 @@
 #define PIT_DATA_PORT 0x40
 #define PIT_COM_BYTE 0x37 
 #define PIT_COM_REG 0x43
-#define FREQUENCY 500
+#define FREQUENCY 300
 #define HZ 10
 
 
@@ -72,11 +72,12 @@ void pit_handler() {
     //      //remember to add vidmap address for fish
     // }
     // flush_tlb();
-
     if(termIdx == scheduleIdx){
+        page_vidmap_sched(0);
         write_to_buf(0);
     }
     else{
+        page_vidmap_sched(scheduleIdx + 1);
         write_to_buf(scheduleIdx + 1);
     }
 

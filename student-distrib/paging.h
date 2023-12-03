@@ -51,6 +51,7 @@ void mod_vidmem(int term);
 void from_buf(int term);
 void to_buf(int term);
 void write_to_buf(int term);
+void page_vidmap_sched(int term);
 // char* curmem;
 
 #endif /* ASM */

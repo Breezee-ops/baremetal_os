@@ -293,7 +293,7 @@ void keyboard_handler(void){
         term_clear();
     }
     if(ctrl_held == 1 && key == 0x2E){
-        halt(255); 
+        // halt(255); 
     }
     if(key == 28){
         enter_flag = 1;

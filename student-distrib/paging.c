@@ -203,3 +203,9 @@ void mod_vidmem(int term){
 
     flush_tlb();
 }
+
+void page_vidmap_sched(int term){
+    page_vidmap[0].P_addr = VIDEO_MEMORY + term;
+
+    flush_tlb();
+}
