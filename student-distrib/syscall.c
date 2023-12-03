@@ -40,18 +40,22 @@ void save_stack(){
 int32_t halt (uint8_t status) {
     uint32_t currpid;
     currpid = cur_pcb_ptr->pid;
-    uint32_t ebp = cur_pcb_ptr->ebp;
-    uint32_t esp = cur_pcb_ptr->esp;
+    // uint32_t ebp = cur_pcb_ptr->ebp;
+    // uint32_t esp = cur_pcb_ptr->esp;
 
     free_pid(cur_pcb_ptr->pid);//
-    cur_pcb_ptr = get_pcb_ptr(cur_pcb_ptr->parent_pid);
-    set_exe_page(cur_pcb_ptr->pid);
+    // cur_pcb_ptr = get_pcb_ptr(cur_pcb_ptr->parent_pid);
+    // set_exe_page(cur_pcb_ptr->pid);
     
-    if(currpid == 0){
+    if(currpid == 0 || currpid == 1 || currpid == 2){
         // free_pid(cur_pcb_ptr->pid);
         execute((const uint8_t*) "shell");
     }
     else{
+        uint32_t ebp = cur_pcb_ptr->ebp;
+        uint32_t esp = cur_pcb_ptr->esp;
+        cur_pcb_ptr = get_pcb_ptr(cur_pcb_ptr->parent_pid);
+        set_exe_page(cur_pcb_ptr->pid);
         // free_pid(cur_pcb_ptr->pid);
         tss.ss0 = KERNEL_DS;
         tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
