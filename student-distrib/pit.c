@@ -11,7 +11,13 @@
 #define FREQUENCY 300
 #define HZ 10
 
-
+/* pit_init
+ * 
+ * Initiializes the PIT by setting appropriate outputs, from OSDEVWiki
+ * Inputs: None
+ * Outputs: none
+ * Side Effects: affects registers related to opening PIT
+ */
 void pit_init()
 {
     uint8_t divisor = FREQUENCY / HZ;     /* Calculate our divisor */
@@ -24,6 +30,14 @@ void pit_init()
     enable_irq(0); 
 }
 
+/* pit_handler
+ * 
+ * Called every time a PIT interrupt is recieved, this function performs stack saving, sets video memory for the following process, and handles shell 
+ * spawning
+ * Inputs: None
+ * Outputs: none
+ * Side Effects: switches terminals in the background
+ */
 void pit_handler() {
     cli();
     uint32_t esp, ebp;

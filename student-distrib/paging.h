@@ -41,7 +41,7 @@ page_directory_t page_directory[1024] __attribute__((aligned(4096)));// 1024 ent
 page_table_t page_table[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
 page_table_t page_vidmap[1024] __attribute__((aligned(4096)));// 1024 entries aligned to 4kB
 
-volatile char* curmem;
+volatile unsigned char* curmem;
 
 void init_paging();
 void enable_paging();

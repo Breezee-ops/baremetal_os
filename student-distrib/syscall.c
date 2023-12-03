@@ -73,6 +73,11 @@ int32_t halt (uint8_t status) {
     return 0; 
 }
 
+/* user_context_switch
+ * Description: sets up new stack for a new process in user space
+ * Inputs: none
+ * Outputs: none
+ */
 void user_context_switch(){
     // tss.ss0 = KERNEL_DS;
     tss.esp0 = 8388608 - (cur_pcb_ptr->pid * 8192);
@@ -193,7 +198,12 @@ int32_t execute(const uint8_t* command){
     return 0;
 }
 
-void shell_exec(){
+/* shell_exec
+ * Description: Executes a new shell by allocating the program PID, setting up the page table for the program, and performing a context switch
+ * Inputs: command type
+ * Outputs: changes to page table and system pointers
+ */
+int shell_exec(){
     cli();
     uint8_t* command = (uint8_t*)"shell";
     dentry_t dir = {

@@ -253,6 +253,11 @@ uint32_t strlen(const int8_t* s) {
     return len;
 }
 
+/* set_curr_pos
+ * boundary checks on the current screen position
+ * Inputs: int x, int y
+ * Return Value: None
+*/
 void set_curr_pos(int x, int y) 
 {
 	if (x >= 0 && x <= NUM_COLS)
@@ -266,6 +271,11 @@ void set_curr_pos(int x, int y)
 	return;
 }
 
+/* set_blink
+ * blinks the cursor by setting appropriate memory
+ * Inputs: int x, int y
+ * Return Value: None
+*/
 void set_blink(int x, int y){
     if (x == 0){
 		y++;
@@ -283,10 +293,12 @@ void set_blink(int x, int y){
 	return;
 }
 
+// calculates value to be used in setting OUTPUT_PORT in set_blink
 int16_t createOutputValue(int16_t data, int16_t constant) {
     return (data << COLUMN_OFFSET) + constant;
 }
 
+// returns screen_x and screen_y
 int* get_curr_pos(){
     static int pos[2];
     pos[0] = screen_x;

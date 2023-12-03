@@ -30,10 +30,26 @@ void term_init(){
 	curr_term[0].status = 1;
 }
 
+/* term_open
+ * 
+ * returns 0
+ * Inputs: file name
+ * Outputs: None
+ * Side Effects: None
+ * Coverage: term
+ */
 int32_t term_open(const uint8_t* file_name){
 	return 0;
 }
 
+/* term_open
+ * 
+ * clears terminal then 0
+ * Inputs: file descriptor
+ * Outputs: None
+ * Side Effects: None
+ * Coverage: term
+ */
 int32_t term_close(int32_t fd){
 	term_clear();
 	return 0;
@@ -104,6 +120,15 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	return i;
 }
 
+
+/* keyboard_read
+ * 
+ * Reads the character and updates cursor position
+ * Inputs: char buffer
+ * Outputs: None
+ * Side Effects: sets cursor and blink
+ * Coverage: term
+ */
 void keyboard_read(unsigned char* buf){
 	curr_term[termIdx].x_pos = get_curr_pos()[0];					//grab current position on screen
 	curr_term[termIdx].y_pos = get_curr_pos()[1];
@@ -125,6 +150,15 @@ void keyboard_read(unsigned char* buf){
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 }
+
+/* keyboard_write
+ * 
+ * writes the buffer to the current terminal for a specified number of bytes
+ * Inputs: char buffer
+ * Outputs: None
+ * Side Effects: currTerm array
+ * Coverage: term
+ */
 void keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
@@ -158,7 +192,14 @@ void keyboard_write(const unsigned char* buf, int nbytes){
 	}
 }
 
-
+/* term_keyboard_write
+ * 
+ * loop through characters in buffer and write to terminal
+ * Inputs: char buffer, num bytes to write
+ * Outputs: None
+ * Side Effects: currTerm array
+ * Coverage: term
+ */
 void term_keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
@@ -176,16 +217,6 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 				one_line_up();
 			}
 		}
-		if(curr_term[scheduleIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
-			set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);		//update current position
-			putc(buf[i]);								//print char to screen
-			//line_buf[buf_count] = buf[i];				//add char to buffer
-			//buf_count++;								//increase count
-			if(curr_term[scheduleIdx].x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
-				curr_term[scheduleIdx].x_pos++;
-			}
-		}
-
 		if (buf[i] == '\n') {
 			curr_term[scheduleIdx].x_pos = 0;
 			curr_term[scheduleIdx].y_pos++;
@@ -197,6 +228,15 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 		set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);
 		}	
 		set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);			//update current posiion
+		if(curr_term[scheduleIdx].buf_count < MAX_BUFFER && buf[i] != '\n'){						//if we have not reached buffer limit
+			set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);		//update current position
+			putc(buf[i]);								//print char to screen
+			//line_buf[buf_count] = buf[i];				//add char to buffer
+			//buf_count++;								//increase count
+			if(curr_term[scheduleIdx].x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+				curr_term[scheduleIdx].x_pos++;
+			}
+		}
 	}
 }
 /* term_write

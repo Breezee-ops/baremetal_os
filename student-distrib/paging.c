@@ -134,6 +134,7 @@ void init_paging() {
 
     enable_paging();
 }
+
 /* enable_paging
  * 
  * sets the paging directory registers so that they carry the right address for the pages. Kernel address, video memory address and the address of the actual page directory
@@ -156,6 +157,13 @@ void enable_paging() {
     : : : "eax", "cc" );
 }
 
+/* flush_tlb
+ * 
+ * flushes the TLB
+ * Inputs: None
+ * Outputs: eax
+ * Side Effects: Sets the registers for paging
+ */
 void flush_tlb(){
     asm (
     "movl $page_directory, %%eax      ;"
@@ -163,6 +171,14 @@ void flush_tlb(){
     : : : "eax", "cc" );
 }
 
+
+/* set_exe_page
+ * 
+ * sets up the page table for an executable at a specific PID
+ * Inputs: PID
+ * Outputs: none
+ * Side Effects: none
+ */
 void set_exe_page(uint32_t pid){
     // for 8mb + (processnum*4mb)
     // 0x2 << 10 + (processnum * 0x1 << 10)
@@ -183,14 +199,17 @@ void set_exe_page(uint32_t pid){
     flush_tlb();
 }
 
+// copies a terminals video memory to the display buffer
 void to_buf(int term){
     memcpy((unsigned char*)((VIDEO_MEMORY + term)<<12), (VIDEO_MEMORY<<12), 4096);
 }
 
+//sets the curmem address based on a terminal video memory offset
 void write_to_buf(int term){
     curmem = (unsigned char*)((VIDEO_MEMORY + term)<<12);
 }
 
+//copies from the base display memory to one of the terminals memory locations
 void from_buf(int term){
     memcpy((VIDEO_MEMORY<<12), (unsigned char*)((VIDEO_MEMORY + term)<<12), 4096);
 }
@@ -204,6 +223,7 @@ void mod_vidmem(int term){
     flush_tlb();
 }
 
+// sets the page address based on mulitple terminals
 void page_vidmap_sched(int term){
     page_vidmap[0].P_addr = VIDEO_MEMORY + term;
 

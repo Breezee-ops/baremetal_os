@@ -1,4 +1,4 @@
-checkpoint 1:
+checkpoint 1: the bugman
 1) OS boots and immideatly skips to start screen. GDT init wrong. Had to convert the start of the gdt_desc to a word instead of a long
 2) unable to interact with assembly wrapped functions. including our functions.h was causing those functions to come up as being declared twice. making global symbols and accessing them for assembly linkage through teh header file fixed this.
 3) Keyboard was only registering a single interrupt. gdb showed hanging after interrupt returned. error in sendEOI function so we never finished servicing our first intnerrupt
@@ -28,7 +28,7 @@ checkpoint 3: the bugman evolves into a creature I no longer understand
 8) Problems with keyboard handler not mingling correctly with system calls to terminal read
 9) Problem compiling execute system call without errors.
 
-checkpoint 4
+checkpoint 4: the bugman grows old and his wife finds out he cheated on her
 1) ls hitting directory read fail due to improper updating of file_position/inode_num in fd
 2) ls printing all but last file due to updating file_position every time regardless of success or fail
 3) read syscall not working for different filetypes due to pointer issues
@@ -39,3 +39,15 @@ checkpoint 4
 8) fish not working. vidmap paging structure inaccurate.
 9) getargs not parsing arguments in whole. had a problems with terminal read and write
 10) pingpong output incorrect. had a test interrupts call in read for some reason.
+
+
+checkpoint 5: the bugman retires from his silly buggery
+1) pagefaults all the time: converted the global active pcb pointer to have it's esp and ebp match that of the program when it got a pit interrupt. instead, we needed to maintain original stack boundries and store the esp ebp values from interrupt seperately
+2) cursor position reset to schedulers terminal. had to chang eup control flow.
+3) keyboard was writing to every terminal, not just terminal of interest.
+4) PIT was at a frequency that was causing page faults
+5) Programs on one terminal were leaking to other terminals
+6) Overlapping interrupts between the scheduler and termWrite
+7) Buggy features when adding the third terminal
+8) currMem wasn't updated properly, so fish program was bleeding to other terminals
+9) All three blinking cursors shown on same display because of video memory bugs 
