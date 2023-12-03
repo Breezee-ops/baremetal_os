@@ -175,6 +175,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */
     //term_write(2, (unsigned char*)"Enabling Interrupts", 20);
+    pit_init();
     sti();
 
 #ifdef RUN_TESTS

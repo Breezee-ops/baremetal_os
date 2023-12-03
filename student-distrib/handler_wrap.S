@@ -32,12 +32,14 @@ keyboard_handler_asm:
 //handles assembly linkage to the pit_handler_asm
 pit_handler_asm: 
 //save flags
+    cli
     pushal
     pushfl
     call pit_handler
 //restore flags
     popfl
     popal
+    sti
     iret
 
     

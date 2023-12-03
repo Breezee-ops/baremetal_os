@@ -218,19 +218,23 @@ popfl
 iret
 
 general_protection_asm:
+cli
 pushal
 pushfl
 call general_protection
 popal
 popfl
+sti
 iret
 
 page_fault_asm:
+cli
 pushal
 pushfl
 call page_fault
 popal
 popfl
+sti
 iret
 
 floating_excep_asm:

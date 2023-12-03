@@ -283,6 +283,9 @@ void uh_oh_backspace(){
 	// backspace fills the buffer location with a space
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	putc(' ');
+	if(curr_term[termIdx].buf_count == 0){
+		memset(curr_term[termIdx].line_buf, '\0', sizeof(curr_term[termIdx].line_buf));
+	}
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 
 }
