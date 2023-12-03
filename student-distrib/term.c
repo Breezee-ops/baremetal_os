@@ -51,8 +51,8 @@ int32_t term_close(int32_t fd){
 int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	int i;
 	uint8_t* char_buf = (uint8_t*)buf;
-	curr_term[termIdx].x_pos = get_curr_pos()[0];					//grab current position on screen
-	curr_term[termIdx].y_pos = get_curr_pos()[1];
+	curr_term[scheduleIdx].x_pos = get_curr_pos()[0];					//grab current position on screen
+	curr_term[scheduleIdx].y_pos = get_curr_pos()[1];
 	if(char_buf == NULL){
 		return -1;
 	}
@@ -62,7 +62,7 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 	if(length > MAX_BUFFER){
 		length = MAX_BUFFER;
 	}
-	while(curr_term[termIdx].buf_count == 0 || curr_term[termIdx].line_buf[curr_term[termIdx].buf_count - 1] != '\n'){
+	while(curr_term[scheduleIdx].buf_count == 0 || curr_term[scheduleIdx].line_buf[curr_term[scheduleIdx].buf_count - 1] != '\n'){
 		// if(dequeue() != -1){
 		// 	shell_execute();
 		// }
@@ -77,12 +77,12 @@ int32_t term_read(int32_t fd, int32_t* offset, void* buf, int32_t length) {
 		// }
 	};
 	// here
-	for(i = 0; i < length && curr_term[termIdx].line_buf[i] != '\0'; i++){
-		char_buf[i] = curr_term[termIdx].line_buf[i];
+	for(i = 0; i < length && curr_term[scheduleIdx].line_buf[i] != '\0'; i++){
+		char_buf[i] = curr_term[scheduleIdx].line_buf[i];
 	}
 	char_buf[i] = '\n';
-	memset(curr_term[termIdx].line_buf, '\0', sizeof(curr_term[termIdx].line_buf));
-	curr_term[termIdx].buf_count = 0;
+	memset(curr_term[scheduleIdx].line_buf, '\0', sizeof(curr_term[scheduleIdx].line_buf));
+	curr_term[scheduleIdx].buf_count = 0;
 	// for (i = 0; i < nbytes; i++) {
     //     if (buf[i] == '\n') {
     //         term.x_pos = 0;
@@ -158,40 +158,40 @@ void term_keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
 	//loop over all characters in buffer
 	for(i = 0; i < nbytes; i++){
-		curr_term[termIdx].x_pos = get_curr_pos()[0];					// get current postiion
-		curr_term[termIdx].y_pos = get_curr_pos()[1];
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current position
+		curr_term[scheduleIdx].x_pos = get_curr_pos()[0];					// get current postiion
+		curr_term[scheduleIdx].y_pos = get_curr_pos()[1];
+		set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);			//update current position
 		
-		if((curr_term[termIdx].x_pos == NUM_COLS)){				//if x position is at edge of screen, move down a line
-			curr_term[termIdx].x_pos = 0;
-			if(curr_term[termIdx].y_pos < NUM_ROWS - 1){
-				curr_term[termIdx].y_pos++;
+		if((curr_term[scheduleIdx].x_pos == NUM_COLS)){				//if x position is at edge of screen, move down a line
+			curr_term[scheduleIdx].x_pos = 0;
+			if(curr_term[scheduleIdx].y_pos < NUM_ROWS - 1){
+				curr_term[scheduleIdx].y_pos++;
 			}
 			else{
 				one_line_up();
 			}
 		}
-		if(curr_term[termIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
-			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);		//update current position
+		if(curr_term[scheduleIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
+			set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);		//update current position
 			putc(buf[i]);								//print char to screen
 			//line_buf[buf_count] = buf[i];				//add char to buffer
 			//buf_count++;								//increase count
-			if(curr_term[termIdx].x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
-				curr_term[termIdx].x_pos++;
+			if(curr_term[scheduleIdx].x_pos < NUM_COLS - 1){				//if we have not reached the edge of screen increase position by 1
+				curr_term[scheduleIdx].x_pos++;
 			}
 		}
 
 		if (buf[i] == '\n') {
-			curr_term[termIdx].x_pos = 0;
-			curr_term[termIdx].y_pos++;
-			if (curr_term[termIdx].y_pos >= NUM_ROWS - 1) {
-				curr_term[termIdx].y_pos--;
+			curr_term[scheduleIdx].x_pos = 0;
+			curr_term[scheduleIdx].y_pos++;
+			if (curr_term[scheduleIdx].y_pos >= NUM_ROWS - 1) {
+				curr_term[scheduleIdx].y_pos--;
 				one_line_up();
 			}
 			//printf("%c", '\n');
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+		set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);
 		}	
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current posiion
+		set_curr_pos(curr_term[scheduleIdx].x_pos, curr_term[scheduleIdx].y_pos);			//update current posiion
 	}
 }
 /* term_write

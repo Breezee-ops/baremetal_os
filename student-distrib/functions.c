@@ -281,7 +281,7 @@ void keyboard_handler(void){
     //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
     //     // set_exe_page(new_ptr->pid);
 
-    //     termIdx = 1;
+        // termIdx = 1;
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[1].status == 0){
@@ -329,7 +329,7 @@ void keyboard_handler(void){
     //     // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
     //     // set_exe_page(new_ptr->pid);
 
-    //     termIdx = 0;
+        // termIdx = 0;
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[0].status == 0){
@@ -364,7 +364,7 @@ void keyboard_handler(void){
 
     //     cur_pcb_ptr = get_pcb_ptr(curr_term[2].term_pcb.pid);
 
-    //     termIdx = 2;
+        // termIdx = 2;
     //     send_eoi(1);
     //     sti();
     //     if(curr_term[2].status == 0){

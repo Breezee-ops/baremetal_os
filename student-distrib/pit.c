@@ -8,7 +8,7 @@
 #define PIT_DATA_PORT 0x40
 #define PIT_COM_BYTE 0x37 
 #define PIT_COM_REG 0x43
-#define FREQUENCY 200
+#define FREQUENCY 500
 #define HZ 10
 
 
@@ -31,6 +31,11 @@ void pit_handler() {
     movl %%esp, %0  \n\
     movl %%ebp, %1  \n\
     " : "=r" (esp), "=r" (ebp) : : "cc");
+    if(termIdx != scheduleIdx + 1) {
+
+    } else {//if scheduler on current terminal
+        //dont change paging
+    }
     to_buf(scheduleIdx + 1);
     from_buf(((scheduleIdx + 1) % 3) + 1);
     curr_term[scheduleIdx].esp = esp;
