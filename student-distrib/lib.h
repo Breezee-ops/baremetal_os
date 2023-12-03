@@ -25,6 +25,8 @@ int8_t* strcpy(int8_t* dest, const int8_t*src);
 int8_t* strncpy(int8_t* dest, const int8_t*src, uint32_t n);
 void set_curr_pos(int x, int y);
 int* get_curr_pos();
+void set_blink(int x, int y);
+int16_t createOutputValue(int16_t data, int16_t constant);
 
 
 /* Userspace address-check functions */

@@ -9,6 +9,9 @@
 #define NUM_COLS    80
 #define NUM_ROWS    25
 #define ATTRIB      0x7 + scheduleIdx    ;
+#define COLUMN_OFFSET 8
+#define OUTPUT_PORT 0x03D4
+#define CONTROL_REGISTER 0x0F
 
 static int screen_x;
 static int screen_y;
@@ -256,6 +259,32 @@ void set_curr_pos(int x, int y)
 		screen_x = x;
 	if (y >= 0 && y <= NUM_ROWS)
 		screen_y = y;
+
+    if (x == 0){
+		y++;
+	}
+	return;
+}
+
+void set_blink(int x, int y){
+    if (x == 0){
+		y++;
+	}
+	int32_t pixelIndex = y * NUM_COLS + x;
+
+    int16_t lowerByte = pixelIndex & 0xFF;
+    int16_t upperByte = (pixelIndex >> COLUMN_OFFSET) & 0xFF;
+
+    int16_t outputValue = createOutputValue(upperByte, 0x0E);
+    outw(outputValue, OUTPUT_PORT);
+
+    outputValue = createOutputValue(lowerByte, CONTROL_REGISTER);
+    outw(outputValue, OUTPUT_PORT);
+	return;
+}
+
+int16_t createOutputValue(int16_t data, int16_t constant) {
+    return (data << COLUMN_OFFSET) + constant;
 }
 
 int* get_curr_pos(){

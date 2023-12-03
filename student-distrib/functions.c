@@ -277,6 +277,7 @@ void keyboard_handler(void){
     }
 
     set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+    set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
     if(special_check(key)){
         send_eoi(1);
         curmem = temp;

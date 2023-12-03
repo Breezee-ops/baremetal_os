@@ -117,11 +117,14 @@ void keyboard_read(unsigned char* buf){
 			one_line_up();
 		}
 		printf("%c", '\n');
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos); // this must be changing the global cursor position so that we can type
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+		set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos); // this must be changing the global cursor position so that we can type
 	}
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+	set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	keyboard_write(buf, 1);
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+	set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 }
 void keyboard_write(const unsigned char* buf, int nbytes){
 	int i;
@@ -129,7 +132,8 @@ void keyboard_write(const unsigned char* buf, int nbytes){
 	for(i = 0; i < nbytes; i++){
 		curr_term[termIdx].x_pos = get_curr_pos()[0];					// get current postiion
 		curr_term[termIdx].y_pos = get_curr_pos()[1];
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current position
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+		set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current position
 		
 		if((curr_term[termIdx].x_pos == NUM_COLS - 1)){				//if x position is at edge of screen, move down a line
 			curr_term[termIdx].x_pos = 0;
@@ -142,6 +146,7 @@ void keyboard_write(const unsigned char* buf, int nbytes){
 		}
 		if(curr_term[termIdx].buf_count < MAX_BUFFER){						//if we have not reached buffer limit
 			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);		//update current position
+			set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 			putc(buf[i]);								//print char to screen
 			curr_term[termIdx].line_buf[curr_term[termIdx].buf_count] = buf[i];				//add char to buffer
 			curr_term[termIdx].buf_count++;								//increase count
@@ -149,7 +154,8 @@ void keyboard_write(const unsigned char* buf, int nbytes){
 				curr_term[termIdx].x_pos++;
 			}
 		}
-		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);			//update current posiion
+		set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);		
+		set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);	//update current posiion
 	}
 }
 
@@ -275,6 +281,7 @@ void uh_oh_backspace(){
 			curr_term[termIdx].x_pos = id % NUM_COLS; // calculate the x and y position of the cursor in the buffer using our id
 			curr_term[termIdx].y_pos = id / NUM_COLS;
 			set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+			set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 			curr_term[termIdx].tab_flag = 0;
 			return;
 		}
@@ -282,11 +289,13 @@ void uh_oh_backspace(){
 	}
 	// backspace fills the buffer location with a space
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+	set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 	putc(' ');
 	if(curr_term[termIdx].buf_count == 0){
 		memset(curr_term[termIdx].line_buf, '\0', sizeof(curr_term[termIdx].line_buf));
 	}
 	set_curr_pos(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
+	set_blink(curr_term[termIdx].x_pos, curr_term[termIdx].y_pos);
 
 }
 /* term_clear
