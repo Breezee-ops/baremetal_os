@@ -130,7 +130,7 @@ void init_paging() {
     page_vidmap[0].available = 0;
     page_vidmap[0].P_addr = VIDEO_MEMORY;
 
-    curmem = 0xB8000;
+    curmem = (unsigned char*)0xB8000;
 
     enable_paging();
 }
@@ -201,7 +201,7 @@ void set_exe_page(uint32_t pid){
 
 // copies a terminals video memory to the display buffer
 void to_buf(int term){
-    memcpy((unsigned char*)((VIDEO_MEMORY + term)<<12), (VIDEO_MEMORY<<12), 4096);
+    memcpy((unsigned char*)((VIDEO_MEMORY + term)<<12), (unsigned char*)(VIDEO_MEMORY<<12), 4096);
 }
 
 //sets the curmem address based on a terminal video memory offset
@@ -211,13 +211,13 @@ void write_to_buf(int term){
 
 //copies from the base display memory to one of the terminals memory locations
 void from_buf(int term){
-    memcpy((VIDEO_MEMORY<<12), (unsigned char*)((VIDEO_MEMORY + term)<<12), 4096);
+    memcpy((unsigned char*)(VIDEO_MEMORY<<12), (unsigned char*)((VIDEO_MEMORY + term)<<12), 4096);
 }
 
 // zero index terminals
 void mod_vidmem(int term){
     uint32_t mem = VIDEO_MEMORY + term;
-    page_table[VIDEO_MEMORY].P_addr = (char*) mem;
+    page_table[VIDEO_MEMORY].P_addr = mem;
     // curmem = (char*)(mem << 12);
 
     flush_tlb();

@@ -6,7 +6,7 @@
 
 #define ATTRIB      0x7
 
-termData term;
+// static termData term;
 // unsigned char* curmem; if this doesnt work bring this back
 // int termIdx = 0;
 /* term_init
@@ -372,9 +372,9 @@ void tabitha(){
 void one_line_up(){
 	int i;
 	int vid_offset = NUM_COLS * 2;
-	unsigned char* dest = curmem;
-    unsigned char* src = curmem + vid_offset;
-	unsigned char * bottom = curmem + (NUM_ROWS - 1) * (vid_offset);
+	unsigned char* dest = (unsigned char*)curmem;
+    unsigned char* src = (unsigned char*)(curmem + vid_offset);
+	unsigned char * bottom = (unsigned char*)(curmem + (NUM_ROWS - 1) * (vid_offset));
     unsigned int size = vid_offset * (NUM_ROWS - 1);
     memmove(dest, src, size);
 

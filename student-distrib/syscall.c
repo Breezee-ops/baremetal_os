@@ -14,7 +14,7 @@ file_operation_t dir = {&directory_read, &directory_write, &directory_open, &dir
 
 uint8_t active_processes[6] = {0,0,0,0,0,0};
 uint32_t cur_pid = 0;
-
+uint32_t currfd = 0;
 
 /*  latest_pid
  * Description: returns current pid
@@ -43,6 +43,10 @@ int32_t halt (uint8_t status) {
     // uint32_t ebp = cur_pcb_ptr->ebp;
     // uint32_t esp = cur_pcb_ptr->esp;
 
+    //means syscall didnt close a file it opened so we manually close it
+    if(cur_pcb_ptr->fda[currfd].flags == 1) {
+        close(currfd);
+    }
     free_pid(cur_pcb_ptr->pid);//
     // cur_pcb_ptr = get_pcb_ptr(cur_pcb_ptr->parent_pid);
     // set_exe_page(cur_pcb_ptr->pid);
@@ -311,7 +315,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes) {
         case 0: return term_read(0, 0, buf, nbytes);
         case 1: return -1;
         default: 
-            file_position_ptr = &(cur_pcb_ptr->fda[fd].file_position);
+            file_position_ptr = (int32_t*)&(cur_pcb_ptr->fda[fd].file_position);
             bytes = cur_pcb_ptr->fda[fd].file_operations->read( cur_pcb_ptr->fda[fd].inode_num, file_position_ptr, buf, nbytes);
             //works for ls since ++ is how we update file position for a directory
             //but ideally need to change read() param to *offset so each dir/file/rtc can change its own file_position
@@ -357,6 +361,7 @@ int32_t open(const uint8_t* filename) {
     for(i = 2; i < 8; i++){
         if(cur_pcb_ptr->fda[i].flags == 0){
             cur_pcb_ptr->fda[i].flags = 1;
+            currfd = i;
             break;
         }
     }
@@ -468,7 +473,7 @@ pcb_t* pcb_init(uint32_t pid, uint32_t parent_pid){
     pcbarr[pid].ebp = 0;
     pcbarr[pid].esp = 0;
     pcbarr[pid].pid = pid;
-    return &pcbarr[pid];
+    return (pcb_t*)&pcbarr[pid];
 }
 /* vidmap
  * Description: passes an address that points to user space video memory

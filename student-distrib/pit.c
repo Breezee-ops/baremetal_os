@@ -45,9 +45,7 @@ void pit_handler() {
     movl %%esp, %0  \n\
     movl %%ebp, %1  \n\
     " : "=r" (esp), "=r" (ebp) : : "cc");
-
-    // to_buf(scheduleIdx + 1);//delete after vidmem mapping
-    // from_buf(((scheduleIdx + 1) % 3) + 1);//delete after vidmem mapping
+    
     curr_term[scheduleIdx].esp = esp;
     curr_term[scheduleIdx].ebp = ebp;
     int next = (scheduleIdx + 1) % 3;
@@ -62,30 +60,8 @@ void pit_handler() {
 
     cur_pcb_ptr = get_pcb_ptr(curr_term[next].term_pcb.pid);
 
-    // uint32_t ebp = cur_pcb_ptr->ebp;
-    // uint32_t esp = cur_pcb_ptr->esp;
-    // pcb_t* old_ptr;
-    // // // uint32_t currpid;
-    // // // currpid = curr_term[1].term_pcb.pid;
-    // // // *cur_pcb_ptr = curr_term[1].term_pcb;
-
-    // // // uint32_t ebp = cur_pcb_ptr->ebp;
-    // // // uint32_t esp = cur_pcb_ptr->esp;
-
-    // old_ptr = get_pcb_ptr(curr_term[0].term_pcb.pid);
-    // set_exe_page(new_ptr->pid);
-
     scheduleIdx = (scheduleIdx + 1) % 3;
 
-    // if(termIdx != scheduleIdx) {
-    //     page_table[VIDEO_MEMORY].P_addr = (VIDEO_MEMORY + scheduleIdx + 1)<<12;
-    //     //remember to change vidmap address for fish to work
-    // } else {//if scheduler on current terminal
-    //     //dont change paging
-    //     page_table[VIDEO_MEMORY].P_addr = (VIDEO_MEMORY)<<12;
-    //      //remember to add vidmap address for fish
-    // }
-    // flush_tlb();
     if(termIdx == scheduleIdx){
         page_vidmap_sched(0);
         write_to_buf(0);

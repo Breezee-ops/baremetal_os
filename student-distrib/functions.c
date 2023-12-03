@@ -248,8 +248,8 @@ void keyboard_handler(void){
     unsigned char printed_key; 
 
     //check if a key that alters keypress is pressed
-    char* temp = curmem;
-    curmem = (char*) 0xb8000;
+    unsigned char* temp = (unsigned char*)curmem;
+    curmem = (unsigned char*) 0xb8000;
     //if ctrl held and fn num pressed switch to that terminal
     // 2 pressed
     if(ctrl_held == 1 && key == 0x03 && termIdx != 1){
