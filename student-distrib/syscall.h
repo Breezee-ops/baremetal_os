@@ -21,7 +21,7 @@ typedef struct {
 } fd_t;
 
 typedef struct {
-    fd_t fda[8];//file descriptor array
+    fd_t fda[36];//file descriptor array
     uint32_t esp;
     uint32_t ebp;
     uint32_t eip;

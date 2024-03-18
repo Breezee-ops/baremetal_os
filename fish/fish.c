@@ -24,15 +24,15 @@ int main(void)
 {
     int rtc_fd, ret_val, i, garbage;
     struct mp1_blink_struct blink_struct;
-
+    // set the entire blink array to empty
     ece391_memset(blink_array, 0, sizeof(struct mp1_blink_struct)*80*25);
-
+    // get vnem addr
     if(mp1_set_video_mode() == NULL) {
         return -1;
     }
-
+    // open the rtc and get file descriptor
     rtc_fd = ece391_open((uint8_t*)"rtc");
-
+    //
     add_frames(file0, file1, rtc_fd);
 
     ret_val = 32;
@@ -98,10 +98,12 @@ add_frames(uint8_t *f0, uint8_t *f1, int32_t rtc_fd)
     while(eof0 == 0 || eof1 == 0) {
         col = 0;
         while(1) {
-
+            // c0 and c1 are bytes from respective frames
             if(c0 != '\n') {
+                // read one byte from fd0 into c0
                 num_bytes = ece391_read(fd0, &c0, 1);
                 if(num_bytes == 0) {
+                    // keep reading until no more frames left
                     c0 = '\n';
                     eof0 = 1;
                 }
@@ -116,6 +118,7 @@ add_frames(uint8_t *f0, uint8_t *f1, int32_t rtc_fd)
             }
 
             if(c0 == '\n' && c1 == '\n') {
+                // break out of loop if we have finished reading both frames into blink struct
                 break;
 
             } else {

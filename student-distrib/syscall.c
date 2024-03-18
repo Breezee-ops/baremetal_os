@@ -107,7 +107,7 @@ int context_switch(uint32_t pid){
     tss.esp0 = user_stack_ptr ;
     char* user_esp = (char*) (138412028 );
     asm volatile (" \n\
-    mov %1, %%ds   \n\
+    mov %1, %%ds    \n\
     pushl %1        \n\
     pushl %3        \n\
     pushfl          \n\
@@ -358,14 +358,14 @@ int32_t open(const uint8_t* filename) {
     if(read_dentry_by_name(filename, &pos)) return -1;
     int i;
     //set flags
-    for(i = 2; i < 8; i++){
+    for(i = 2; i < 37; i++){
         if(cur_pcb_ptr->fda[i].flags == 0){
             cur_pcb_ptr->fda[i].flags = 1;
             currfd = i;
             break;
         }
     }
-    if(i == 8) return -1;
+    if(i == 37) return -1;
     cur_pcb_ptr->fda[i].file_position = 0;
     cur_pcb_ptr->fda[i].inode_num = pos.inode_num;
     switch(pos.filetype){
@@ -436,7 +436,7 @@ int find_fda_idx() {
     int i;
     int found;
 
-    for(i = 0; i < 8; i++) {
+    for(i = 0; i < 33; i++) {
         if(cur_pcb_ptr->fda[i].flags == 0) {//found free spot
             cur_pcb_ptr->fda[i].flags = 1;
             found = i;
